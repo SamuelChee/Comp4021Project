@@ -1,4 +1,16 @@
-//retrive each weapon sprite based on an ID?
+/**
+ * Creates a new Weapon object with a sprite that's retrieved based on a weapon ID.
+ *
+ * @param {object}    params              - The parameters for creating the Weapon.
+ * @param {CanvasRenderingContext2D} params.ctx  - The 2D context of the canvas on which to draw the sprite.
+ * @param {number}    params.wep_id       - The ID of the weapon to retrieve the sprite for.
+ * @param {number}    params.x            - The x-coordinate at which to draw the sprite.
+ * @param {number}    params.y            - The y-coordinate at which to draw the sprite.
+ * @param {number}    params.scale        - The scale at which to draw the sprite. Defaults to 2 if not provided.
+ * @param {number}    params.rotation     - The rotation of the sprite in radians. Defaults to 0 if not provided.
+ * @returns {object}  An object representing the Weapon with methods for getting its position, bounding box,
+ *                    drawing it, updating it, and setting actions to be done when its sprite's image is loaded.
+ */
 const Weapon = function ({ctx, wep_id, x, y, scale=2, rotation=0}) {
 
     const weapon_sequences = 

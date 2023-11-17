@@ -1,3 +1,17 @@
+/**
+ * Constructs an Item object that represents a spawnable item for a player to pick up in a game field.
+ *
+ * @param {object} params - The parameters for creating the Item.
+ * @param {CanvasRenderingContext2D} params.ctx - The canvas context to draw the item.
+ * @param {number} params.wep_id - The weapon ID.
+ * @param {number} params.x - The initial x position of the item.
+ * @param {number} params.y - The initial y position of the item.
+ * @param {number} params.lifetime - The total lifetime of the item in milliseconds.
+ *
+ * The Item will start to blink when its remaining lifetime is 30% of the total lifetime. It will disappear (become invisible) when the remaining lifetime is 0.
+ *
+ * @returns {object} An object representing the Item with various methods for manipulating, drawing, and updating its state.
+ */
 const Item = function({ctx, wep_id, x, y, lifetime}) {
     const item = Weapon({ctx, wep_id, x, y, scale: 2});
     let blinkInterval;
@@ -34,13 +48,39 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
     item.setOnLoad(checkLifetimeAndStartBlinking);
 
     return {
+        /**
+         * Gets the current position of the item.
+         *
+         * @return {object} An object containing the x and y coordinates of the item.
+         */
         getXY: item.getXY,
+
+        /**
+         * Sets the position of the item.
+         *
+         * @param {number} x - The new x position.
+         * @param {number} y - The new y position.
+         */
         setXY: item.setXY,
+
+        /**
+         * Gets the bounding box of the item, which can be used for collision detection.
+         *
+         * @return {object} An object representing the bounding box of the item.
+         */
         getBoundingBox: item.getBoundingBox,
+
+        /**
+         * Removes the item from the game field. The item becomes invisible and stops blinking.
+         */
         remove: function() {
             isVisible = false;
             clearInterval(blinkInterval);
         },
+
+        /**
+         * Draws the item on the canvas with its current opacity. The item will not be drawn if it's not visible.
+         */
         draw: function() {
             if(isVisible){
                 ctx.save();
@@ -49,11 +89,16 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
                 ctx.restore();
             }
         },
+
+        /**
+         * Updates the item's state by calling the update method of the underlying Weapon object. It also checks if the item should be destroyed based on its visibility.
+         *
+         * @return {boolean} Whether the item should be destroyed (true if the item is not visible, false otherwise).
+         */
         update: function() {
             item.update();
-
-            // Return whether the item should be destroyed
             return !isVisible;
         }
+
     };
 };

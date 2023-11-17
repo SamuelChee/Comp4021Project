@@ -50,6 +50,7 @@
     <script src="sprite/weapon.js"></script>
     <script src="sprite/sprite.js"></script>
     <script src="sprite/item.js"></script>
+    <script src="background/generate_background.js"></script>
 
 
 
@@ -57,147 +58,22 @@
     <script>
         $(document).ready(function () {
 
-            var sprites = {
-                "staticBackgroundWall":
-                {
-                    "src": "./res/background.png",
-                    "spriteSheetStartX": 0,
-                    "spriteSheetStartY": 0,
-                    "spriteWidth": 423,
-                    "spriteHeight": 240,
-                    "spriteDefaultPosX": 211,
-                    "spriteDefaultPosY": 120,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                },
-                "staticBackGroundPipeBend":
-                {
-                    "src": "./res/environment_set.png",
-                    "spriteSheetStartX": 4,
-                    "spriteSheetStartY": 53,
-                    "spriteWidth": 13,
-                    "spriteHeight": 13,
-                    "spriteDefaultPosX": 0,
-                    "spriteDefaultPosY": 0,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                },
-
-                "staticBackGroundPipeStraight":
-                {
-                    "src": "./res/environment_set.png",
-                    "spriteSheetStartX": 21,
-                    "spriteSheetStartY": 53,
-                    "spriteWidth": 10,
-                    "spriteHeight": 16,
-                    "spriteDefaultPosX": 0,
-                    "spriteDefaultPosY": 0,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                },
-
-                "staticBackGroundPipeEnd":
-                {
-                    "src": "./res/environment_set.png",
-                    "spriteSheetStartX": 35,
-                    "spriteSheetStartY": 53,
-                    "spriteWidth": 10,
-                    "spriteHeight": 12,
-                    "spriteDefaultPosX": 0,
-                    "spriteDefaultPosY": 0,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                },
-
-                "staticBackGroundPipeSupport":
-                {
-                    "src": "./res/environment_set.png",
-                    "spriteSheetStartX": 53,
-                    "spriteSheetStartY": 66,
-                    "spriteWidth": 16,
-                    "spriteHeight": 12,
-                    "spriteDefaultPosX": 0,
-                    "spriteDefaultPosY": 0,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                },
-
-                "staticBackGroundVent":
-                {
-                    "src": "./res/environment_set.png",
-                    "spriteSheetStartX": 12,
-                    "spriteSheetStartY": 73,
-                    "spriteWidth": 25,
-                    "spriteHeight": 16,
-                    "spriteDefaultPosX": 0,
-                    "spriteDefaultPosY": 0,
-                    "spriteSequenceCount": 1,
-                    "spriteSequenceTiming": 0,
-                    "spriteSequenceLoop": false,
-                    "interactive": false
-                }
-            };
-
-            let backgroundWall = BackgroundSpriteModule.backgroundSprite({ spriteData: sprites.staticBackgroundWall });
-            BackgroundSpriteModule.drawToContainer("#staticBackground", backgroundWall)
-
-
-            let backgroundPipes = [BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 180, 5,
-                'down down left left left left left end')),
-            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 350, 219,
-                'right right up up up up right down down down down down down down down left left end')),
-            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 660, 60,
-                'down down down down right right end')),
-            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 660, 500,
-                'up up up up right right down down down down end')),
-            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 100, 500,
-                'up up up up up up up right right right right up up up up up end'))]
-            for (let pipe of backgroundPipes) {
-                BackgroundSpriteModule.drawToContainer("#staticBackground", pipe);
-            }
-
-            let backgroundVents = BackgroundSpriteModule.backgroundSpriteGroup(VentGenerator.generateVents(sprites, [{ x: 75.5, y: 39 }, { x: 345.5, y: 134 },
-            { x: 697.5, y: 291 }, { x: 259.5, y: 371 }, { x: 783.5, y: 65 }]));
-            BackgroundSpriteModule.drawToContainer("#staticBackground", backgroundVents);
-
+            BackgroundGenerator.generateBackground("#staticBackground");
 
 
             const cv = $("canvas").get(0);
             const context = cv.getContext("2d");
 
             let wep0 = Weapon({ ctx: context, wep_id: 0, x: 50, y: 50, scale: 2, rotation: 0 });
-            // wep0.setOnLoad(function () { wep0.draw() });
+            let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
+            let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
+            let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
+            let wep4 = Weapon({ ctx: context, wep_id: 4, x: 250, y: 50 });
+            let wep5 = Weapon({ ctx: context, wep_id: 5, x: 300, y: 50 });
+            let wep6 = Weapon({ ctx: context, wep_id: 6, x: 350, y: 50 });
+            let wep7 = Weapon({ ctx: context, wep_id: 7, x: 400, y: 50 });
+            let weapons = [wep0, wep1, wep2, wep3, wep4, wep5, wep6, wep7];
 
-            // let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
-            // wep1.setOnLoad(function () { wep1.draw() });
-
-            // let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
-            // wep2.setOnLoad(function () { wep2.draw() });
-
-            // let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
-            // wep3.setOnLoad(function () { wep3.draw() });
-
-            // let wep4 = Weapon({ ctx: context, wep_id: 4, x: 250, y: 50 });
-            // wep4.setOnLoad(function () { wep4.draw() });
-
-            // let wep5 = Weapon({ ctx: context, wep_id: 5, x: 300, y: 50 });
-            // wep5.setOnLoad(function () { wep5.draw() });
-
-            // let wep6 = Weapon({ ctx: context, wep_id: 6, x: 350, y: 50 });
-            // wep6.setOnLoad(function () { wep6.draw() });
-
-            // let wep7 = Weapon({ ctx: context, wep_id: 7, x: 400, y: 50 });
-            // wep7.setOnLoad(function () { wep7.draw() });
 
             let items = [];
             items.push(Item({ ctx: context, wep_id: 0, x: 200, y: 200, lifetime: 5000 }));
@@ -208,9 +84,12 @@
                 // Clear the canvas for the new frame
                 context.clearRect(0, 0, cv.width, cv.height);
                 // Call the next game loop
-                wep0.draw();
                 for (let item of items) {
                     item.draw();
+                }
+
+                for (let weapon of weapons){
+                    weapon.draw();
                 }
                 requestAnimationFrame(gameLoop);
             }

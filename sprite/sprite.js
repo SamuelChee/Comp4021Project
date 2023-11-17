@@ -1,7 +1,11 @@
-// This function defines a Sprite module.
-// - `ctx` - A canvas context for drawing
-// - `x` - The initial x position of the sprite
-// - `y` - The initial y position of the sprite
+/**
+ * Defines a Sprite module.
+ *
+ * @param {CanvasRenderingContext2D} ctx - A canvas context for drawing.
+ * @param {number} x - The initial x position of the sprite.
+ * @param {number} y - The initial y position of the sprite.
+ * @returns {object} An object representing the Sprite with various methods for manipulating and drawing it.
+ */
 const Sprite = function(ctx, x, y) {
 
     // This is the image object for the sprite sheet.

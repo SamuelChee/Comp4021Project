@@ -1,8 +1,12 @@
 const PipeGenerator = (function () {
 
 
-    // Helper function to get the rotation of the bend based on the previous and current directions
-    function getBend(previousDirection, currentDirection) {
+/**
+     * Helper function to get the rotation of the bend based on the previous and current directions
+     * @param {string} previousDirection - The previous direction of the pipe.
+     * @param {string} currentDirection - The current direction of the pipe.
+     * @returns {Object} - An object containing the rotation angle and x/y offsets for the pipe bend
+     */    function getBend(previousDirection, currentDirection) {
         // You would need to determine the correct rotations based on your sprites and game logic
         // For now, let's assume all bends are 90 degrees
         if (previousDirection == "up" && currentDirection == "right") {
@@ -31,8 +35,11 @@ const PipeGenerator = (function () {
         }
     }
 
-    // Helper function to get the rotation of the support based on the current direction
-    function getSupportRotation(currentDirection) {
+ /**
+     * Helper function to get the rotation of the support based on the current direction
+     * @param {string} currentDirection - The current direction of the pipe.
+     * @returns {number} - The rotation angle for the pipe support
+     */    function getSupportRotation(currentDirection) {
         // You would need to determine the correct rotations based on your sprites and game logic
         // For now, let's assume all supports are 90 degrees
         if (currentDirection == "up" || currentDirection == "down") {
@@ -43,8 +50,11 @@ const PipeGenerator = (function () {
         }
     }
 
-    // Helper function to get the rotation of the support based on the current direction
-    function getEnd(currentDirection) {
+/**
+     * Helper function to get the rotation and offsets for the end of the pipe based on the current direction
+     * @param {string} currentDirection - The current direction of the pipe.
+     * @returns {Object} - An object containing the rotation angle and x/y offsets for the pipe end
+     */    function getEnd(currentDirection) {
         // You would need to determine the correct rotations based on your sprites and game logic
         // For now, let's assume all supports are 90 degrees
         if (currentDirection == "up") {
@@ -60,7 +70,11 @@ const PipeGenerator = (function () {
             return { rotation: 90, x_offset: -4, y_offset: 2 };
         }
     }
-
+    /**
+         * Helper function to get the rotation and offsets for the start of the pipe based on the current direction
+         * @param {string} currentDirection - The current direction of the pipe.
+         * @returns {Object} - An object containing the rotation angle and x/y offsets for the pipe start
+         */
     function getStart(currentDirection) {
         // You would need to determine the correct rotations based on your sprites and game logic
         // For now, let's assume all supports are 90 degrees
@@ -78,7 +92,14 @@ const PipeGenerator = (function () {
         }
     }
     return {
-
+        /**
+                 * Function to generate pipe sections.
+                 * @param {Object} sprites - The sprite objects for the different pipe sections.
+                 * @param {number} startX - The x-coordinate where the pipe should start.
+                 * @param {number} startY - The y-coordinate where the pipe should start.
+                 * @param {string} directionString - A string of space-separated directions for the pipe.
+                 * @returns {Array} - An array of objects, each representing a pipe section with its sprite, position, rotation, and draggable property.
+                 */
         generatePipeSection: function (sprites, startX, startY, directionString) {
             const DIRECTION_MAP = {
                 'down': { dx: 0, dy: 1, sprite: sprites.staticBackGroundPipeStraight, rotation: 0 },

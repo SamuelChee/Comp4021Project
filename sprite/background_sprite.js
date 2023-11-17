@@ -60,14 +60,14 @@ const BackgroundSpriteModule = (function() {
         }
     };
 
-    const drawToContainer = function(spriteOrGroup) {
+    const drawToContainer = function(container, spriteOrGroup) {
         if (Array.isArray(spriteOrGroup)) {
             for(let sprite of spriteOrGroup){
-                $('#gameContainer').append(sprite);
+                $(container).append(sprite);
             }
         }
         else {
-            $('#gameContainer').append(spriteOrGroup);
+            $(container).append(spriteOrGroup);
         }
     };
 

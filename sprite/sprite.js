@@ -7,6 +7,7 @@ const Sprite = function(ctx, x, y) {
     // This is the image object for the sprite sheet.
     const sheet = new Image();
 
+
     // This is an object containing the sprite sequence information used by the sprite containing:
     // - `x` - The starting x position of the sprite sequence in the sprite sheet
     // - `y` - The starting y position of the sprite sequence in the sprite sheet
@@ -19,7 +20,7 @@ const Sprite = function(ctx, x, y) {
 
     // This is the index indicating the current sprite image used in the sprite sequence.
     let index = 0;
-
+    let rotation = 0;
     // This is the scaling factor for drawing the sprite.
     let scale = 1;
 
@@ -38,9 +39,15 @@ const Sprite = function(ctx, x, y) {
         sheet.src = spriteSheet;
         return this;
     };
-
+    const setRotation = function(angle) {
+        rotation = angle;
+        return this;
+    };
     // This function returns the readiness of the sprite sheet image.
     const isReady = function() {
+        if(!(sheet.complete && sheet.naturalHeight != 0)){
+            console.log("Sprite sheet is not ready");
+        }
         return sheet.complete && sheet.naturalHeight != 0;
     };
 
@@ -132,35 +139,35 @@ const Sprite = function(ctx, x, y) {
     const drawSprite = function() {
         /* Save the settings */
         ctx.save();
-
+    
         /* Get the display size of the sprite */
         const size = getDisplaySize();
-
-
-        /* TODO */
-        /* Replace the following code to draw the sprite correctly */
-        // ctx.fillStyle = "red";
-        // ctx.globalAlpha = 0.6;
-        // ctx.fillRect(parseInt(x - size.width / 2), parseInt(y - size.height / 2),
-        //              size.width, size.height);
-        // console.log(sequence)
+    
+        /* Translate to the center of the sprite */
+        ctx.translate(x, y);
+    
+        /* Rotate the canvas */
+        ctx.rotate(rotation* (Math.PI / 180));
+    
+        /* Translate back by half the size of the sprite */
+        ctx.translate(-size.width / 2, -size.height / 2);
+    
         ctx.imageSmoothingEnabled = false;
-        // let x_, y_ = getXY()
-        // console.log(x_, y_)
-        // console.log("X: ",  parseInt(x - size.width / 2), "Y: ", parseInt(y - size.height / 2))
+    
         ctx.drawImage(
             sheet,
             sequence.x + index * sequence.width, sequence.y,
             sequence.width, sequence.height,
-            parseInt(x - size.width / 2),  parseInt(y - size.height / 2),
+            0, 0, // Draw the sprite at the new origin
             parseInt(size.width), parseInt(size.height)
-            );
+        );
+    
         /* Restore saved settings */
         ctx.restore();
     };
      
     // This function draws the shadow and the sprite.
-    const draw = function() {
+    const drawWithShadow = function() {
         if (isReady()) {
             drawShadow();
             drawSprite();
@@ -199,10 +206,15 @@ const Sprite = function(ctx, x, y) {
         setSequence: setSequence,
         setScale: setScale,
         setShadowScale: setShadowScale,
+        setRotation: setRotation,
         getDisplaySize: getDisplaySize,
         getBoundingBox: getBoundingBox,
         isReady: isReady,
-        draw: draw,
-        update: update
+        drawWithShadow: drawWithShadow,
+        draw: drawSprite,
+        update: update,
+        setOnLoad: function(callback) {
+            sheet.onload = callback;
+        }
     };
 };

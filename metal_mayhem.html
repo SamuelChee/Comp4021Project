@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        #gameContainer {
+            width: 845px;
+            height: 480px;
+            border: 1px solid black;
+            position: relative;
+            /* Required for absolute positioning of child elements */
+            overflow: hidden;
+            /* Hide anything that goes outside the bounding box */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Your sprites will be appended here -->
+    <div id="gameContainer"></div>
+
+    <!-- Your JavaScript code will go here -->
+    <script src="sprite/background_sprite.js"></script>
+    <script src="background/generate_pipes.js"></script>
+    <script src="background/generate_vents.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            var sprites = {
+                "staticBackgroundWall":
+                {
+                    "src": "./res/background.png",
+                    "spriteSheetStartX": 0,
+                    "spriteSheetStartY": 0,
+                    "spriteWidth": 423,
+                    "spriteHeight": 240,
+                    "spriteDefaultPosX": 211,
+                    "spriteDefaultPosY": 120,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                },
+                "staticBackGroundPipeBend":
+                {
+                    "src": "./res/environment_set.png",
+                    "spriteSheetStartX": 4,
+                    "spriteSheetStartY": 53,
+                    "spriteWidth": 13,
+                    "spriteHeight": 13,
+                    "spriteDefaultPosX": 0,
+                    "spriteDefaultPosY": 0,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                },
+
+                "staticBackGroundPipeStraight":
+                {
+                    "src": "./res/environment_set.png",
+                    "spriteSheetStartX": 21,
+                    "spriteSheetStartY": 53,
+                    "spriteWidth": 10,
+                    "spriteHeight": 16,
+                    "spriteDefaultPosX": 0,
+                    "spriteDefaultPosY": 0,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                },
+
+                "staticBackGroundPipeEnd":
+                {
+                    "src": "./res/environment_set.png",
+                    "spriteSheetStartX": 35,
+                    "spriteSheetStartY": 53,
+                    "spriteWidth": 10,
+                    "spriteHeight": 12,
+                    "spriteDefaultPosX": 0,
+                    "spriteDefaultPosY": 0,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                },
+
+                "staticBackGroundPipeSupport":
+                {
+                    "src": "./res/environment_set.png",
+                    "spriteSheetStartX": 53,
+                    "spriteSheetStartY": 66,
+                    "spriteWidth": 16,
+                    "spriteHeight": 12,
+                    "spriteDefaultPosX": 0,
+                    "spriteDefaultPosY": 0,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                },
+
+                "staticBackGroundVent":
+                {
+                    "src": "./res/environment_set.png",
+                    "spriteSheetStartX": 12,
+                    "spriteSheetStartY": 73,
+                    "spriteWidth": 25,
+                    "spriteHeight": 16,
+                    "spriteDefaultPosX": 0,
+                    "spriteDefaultPosY": 0,
+                    "spriteSequenceCount": 1,
+                    "spriteSequenceTiming": 0,
+                    "spriteSequenceLoop": false,
+                    "interactive": false
+                }
+            };
+
+            let backgroundWall = BackgroundSpriteModule.backgroundSprite({ spriteData: sprites.staticBackgroundWall });
+            BackgroundSpriteModule.drawToContainer(backgroundWall)
+
+
+            let backgroundPipes = [BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 180, 5,
+                'down down left left left left left end')),
+            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 350, 219,
+                'right right up up up up right down down down down down down down down left left end')),
+            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 660, 60,
+                'down down down down right right end')),
+            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 660, 500,
+                'up up up up right right down down down down end')),
+            BackgroundSpriteModule.backgroundSpriteGroup(PipeGenerator.generatePipeSection(sprites, 100, 500,
+                'up up up up up up up right right right right up up up up up end'))]
+            for (let pipe of backgroundPipes) {
+                BackgroundSpriteModule.drawToContainer(pipe);
+            }
+
+            let backgroundVents = BackgroundSpriteModule.backgroundSpriteGroup(VentGenerator.generateVents(sprites, [{ x: 75.5, y: 39 }, { x: 345.5, y: 134 },
+            { x: 697.5, y: 291 }, { x: 259.5, y: 371 }, { x: 783.5, y: 65 }]));
+            BackgroundSpriteModule.drawToContainer(backgroundVents);
+        });
+
+    </script>
+</body>
+
+</html>

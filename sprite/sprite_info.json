@@ -1,0 +1,16 @@
+{
+    "staticBackground":
+        {
+            "src": "./res/background.png",
+            "spriteSheetStartX": 0,
+            "spriteSheetStartY": 0,
+            "spriteWidth": 1280,
+            "spriteHeight": 800,
+            "spritePosX": 0,
+            "spritePosY": 0,
+            "spriteSequenceCount": 1,
+            "spriteSequenceTiming": 0,
+            "spriteSequenceLoop": false
+        }
+    
+}

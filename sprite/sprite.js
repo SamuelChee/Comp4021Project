@@ -328,10 +328,10 @@ const HorizontalSpriteGroup = function(ctx, x, y, offset) {
       ctx.save();
   
       /* Get the display size of the sprite group */
-      const size = getDisplaySize();
+    //   const size = getDisplaySize();
   
       /* Translate to the center /of the sprite group */
-      ctx.translate(x - size.width / 2, y - size.height / 2);
+    //   ctx.translate(x - size.width / 2, y - size.height / 2);
   
       /* Draw each sprite in the group */
       sprites.forEach(sprite => sprite.draw());

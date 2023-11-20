@@ -50,6 +50,9 @@
     <script src="sprite/weapon.js"></script>
     <script src="sprite/sprite.js"></script>
     <script src="sprite/item.js"></script>
+    <script src="sprite/platform.js"></script>
+    <script src="sprite/bounding_box.js"></script>
+    <script src="server/item_ctrl.js"></script>
     <script src="background/generate_background.js"></script>
 
 
@@ -75,27 +78,67 @@
             let weapons = [wep0, wep1, wep2, wep3, wep4, wep5, wep6, wep7];
 
 
+
             let items = [];
-            items.push(Item({ ctx: context, wep_id: 0, x: 200, y: 200, lifetime: 5000 }));
-            // item.setOnLoad(function () { item.draw() });
-            function gameLoop() {
-                items = items.filter(item => !item.update());
+            items.push(Item({ ctx: context, wep_id: 0, x: 422.25, y: 200, lifetime: 5000 }));
+            items.push(Item({ ctx: context, wep_id: 1, x: 500.25, y: 200, lifetime: 5000 }));
+
+
+            let NUM_PLATFORM = 7;
+            let PLATFORM_SPACING = 100;
+            let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
+            let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
+            let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
+            let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+            let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+            let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
+
+            let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
+            let startTime;
+            let elapsedTime;
+            let itemController = ItemCtrl({context: context, platforms: platforms});
+
+            function gameLoop(timestamp) {
+
+                if (!startTime) {
+                    startTime = timestamp;
+                }
+
+                elapsedTime = timestamp - startTime;
+
+                // items = items.filter(item => !item.update());
                 // Render the game...
                 // Clear the canvas for the new frame
                 context.clearRect(0, 0, cv.width, cv.height);
-                // Call the next game loop
-                for (let item of items) {
+                // for (let item of items) {
+                //     item.draw();
+                // }
+
+                // Spawn item
+                itemController.spawnItem(elapsedTime);
+
+                // Update the state of all items
+                itemController.updateItems();
+
+                // Draw all items
+                itemController.drawItems();
+
+                for (let item of items){
                     item.draw();
                 }
-
-                for (let weapon of weapons){
+                for (let weapon of weapons) {
                     weapon.draw();
                 }
+                for (let platform of platforms) {
+                    platform.draw();
+                }
+
+                // Call the next game loop
                 requestAnimationFrame(gameLoop);
             }
 
             // Start the game loop
-            gameLoop();
+            requestAnimationFrame(gameLoop);
 
 
 

@@ -13,7 +13,12 @@
  * @returns {object} An object representing the Item with various methods for manipulating, drawing, and updating its state.
  */
 const Item = function({ctx, wep_id, x, y, lifetime}) {
-    const item = Weapon({ctx, wep_id, x, y, scale: 2});
+    console.log = function() {}
+
+    console.log(`Creating new item with lifetime ${lifetime}`);
+
+    let DEFAULT_ITEM_SCALE = 1.3;
+    const item = Weapon({ctx, wep_id, x, y, scale: DEFAULT_ITEM_SCALE});
     let blinkInterval;
     let checkLifetimeTimeout;
     let opacity = 1;
@@ -23,13 +28,15 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
     const blinkStartLifetime = lifetime * 0.3; // 20% of total lifetime
 
     const startBlinking = function() {
+        console.log("Starting to blink");
         const intervalTime = Math.max(50, remainingLifetime / 100);
         blinkInterval = setInterval(() => {
             opacity = (opacity === 1) ? 0.5 : 1;
             remainingLifetime -= intervalTime;
-            console.log(remainingLifetime);
             if (remainingLifetime <= 0) {
+                console.log("Blinking stopped");
                 isVisible = false;
+                console.log("here");
                 clearInterval(blinkInterval);
                 clearTimeout(checkLifetimeTimeout);
             }
@@ -44,9 +51,9 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
             checkLifetimeTimeout = setTimeout(checkLifetimeAndStartBlinking, 100);
         }
     };
-    
     item.setOnLoad(checkLifetimeAndStartBlinking);
-
+    
+    // checkLifetimeAndStartBlinking()
     return {
         /**
          * Gets the current position of the item.
@@ -73,15 +80,16 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
         /**
          * Removes the item from the game field. The item becomes invisible and stops blinking.
          */
-        remove: function() {
-            isVisible = false;
-            clearInterval(blinkInterval);
-        },
+        // remove: function() {
+        //     isVisible = false;
+        //     clearInterval(blinkInterval);
+        // },
 
         /**
          * Draws the item on the canvas with its current opacity. The item will not be drawn if it's not visible.
          */
         draw: function() {
+            console.log(`Drawing item with visibility ${isVisible}`);
             if(isVisible){
                 ctx.save();
                 ctx.globalAlpha = opacity;
@@ -96,8 +104,9 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
          * @return {boolean} Whether the item should be destroyed (true if the item is not visible, false otherwise).
          */
         update: function() {
-            item.update();
-            return !isVisible;
+            console.log("asd");
+            // item.update();
+            return isVisible;
         }
 
     };

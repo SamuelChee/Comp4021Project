@@ -75,7 +75,7 @@ const BackgroundGenerator = (function () {
                 "spriteSheetStartX": 53,
                 "spriteSheetStartY": 66,
                 "spriteWidth": 16,
-                "spriteHeight": 12,
+                "spriteHeight": 7,
                 "spriteDefaultPosX": 0,
                 "spriteDefaultPosY": 0,
                 "spriteSequenceCount": 1,

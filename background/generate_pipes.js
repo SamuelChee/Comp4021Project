@@ -168,7 +168,7 @@ const PipeGenerator = (function () {
                     // Add a support if it's a straight pipe and we've reached the support frequency
                     if (sprite === sprites.staticBackGroundPipeStraight && ++straightCount % SUPPORT_FREQUENCY === 0) {
                         let supportRotation = getSupportRotation(direction);
-                        pipeSection.push({ spriteData: PIPE_SUPPORT, posX: x - 3, posY: y, draggable: false, rotation: supportRotation });
+                        pipeSection.push({ spriteData: PIPE_SUPPORT, posX: x - 3, posY: y+3, draggable: false, rotation: supportRotation });
                     }
                     x += dx * 32;
                     y += dy * 32;

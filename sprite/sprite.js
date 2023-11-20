@@ -1,3 +1,5 @@
+let DEFAULT_SPRITE_SCALE = 2;
+
 /**
  * Defines a Sprite module.
  *
@@ -184,12 +186,16 @@ const Sprite = function(ctx, x, y) {
     // - `time` - The timestamp when this function is called
     const update = function(time) {
         if (lastUpdate == 0) lastUpdate = time;
+        console.log("Incrementing");
 
         if(time - lastUpdate >= sequence.timing){
             if(index < sequence.count-1){
+                console.log("Incrementing");
                 index += 1
             }
             else if(sequence.loop){
+                console.log("Incrementing");
+
                 index = 0
             }
             lastUpdate = time
@@ -218,7 +224,139 @@ const Sprite = function(ctx, x, y) {
         draw: drawSprite,
         update: update,
         setOnLoad: function(callback) {
+            console.log("setOnLoad called. Sheet src:", sheet.src, "Complete:", sheet.complete);
             sheet.onload = callback;
         }
     };
 };
+
+/**
+ * Defines a HorizontalSpriteGroup module that stacks sprites horizontally and treats the group as one sprite.
+ *
+ * @param {CanvasRenderingContext2D} ctx - A canvas context for drawing.
+ * @param {number} x - The initial x position of the sprite group.
+ * @param {number} y - The initial y position of the sprite group.
+ * @returns {object} An object representing the HorizontalSpriteGroup with various methods for manipulating and drawing it.
+ */
+const HorizontalSpriteGroup = function(ctx, x, y, offset) {
+    const sprites = []; // Array to hold the sprites in the group
+  
+    // This function adds a sprite to the group.
+    // - `sprite` - The sprite object to be added to the group
+    const addSprite = function(sprite) {
+        // If there are already sprites in the group
+        if(sprites.length > 0) {
+          // Get the most right sprite
+          const lastSprite = sprites[sprites.length - 1];
+      
+          // Get the size of the last sprite
+          const lastSpriteSize = lastSprite.getDisplaySize();
+      
+          // Get the size of the new sprite
+          const spriteSize = sprite.getDisplaySize();
+      
+          // Position the new sprite to the right of the last sprite
+          const newX = lastSprite.getXY().x + (lastSpriteSize.width-1) + offset;
+          sprite.setXY(newX, y);
+        }
+      
+        sprites.push(sprite);
+        return this;
+      };
+  
+    // This function removes a sprite from the group.
+    // - `sprite` - The sprite object to be removed from the group
+    const removeSprite = function(sprite) {
+      const index = sprites.indexOf(sprite);
+      if (index !== -1) {
+        sprites.splice(index, 1);
+      }
+      return this;
+    };
+  
+    // This function gets the current position of the sprite group.
+    const getXY = function() {
+      return { x, y };
+    };
+  
+    // This function sets the position of the sprite group.
+    // - `xvalue` - The new x position
+    // - `yvalue` - The new y position
+    const setXY = function(xvalue, yvalue) {
+      [x, y] = [xvalue, yvalue];
+      return this;
+    };
+  
+    // This function sets the scaling factor of the sprite group.
+    // - `value` - The new scaling factor
+    const setScale = function(value) {
+      sprites.forEach(sprite => sprite.setScale(value));
+      return this;
+    };
+  
+    // This function gets the display size of the sprite group.
+    const getDisplaySize = function() {
+      let width = 0;
+      let height = 0;
+  
+      sprites.forEach(sprite => {
+        const spriteSize = sprite.getDisplaySize();
+        width += spriteSize.width;
+        height = Math.max(height, spriteSize.height);
+      });
+  
+      return { width, height };
+    };
+  
+    // This function gets the bounding box of the sprite group.
+    const getBoundingBox = function() {
+      /* Get the display size of the sprite group */
+      const size = getDisplaySize();
+  
+      /* Find the box coordinates */
+      const top = y - size.height / 2;
+      const left = x - size.width / 2;
+      const bottom = y + size.height / 2;
+      const right = x + size.width / 2;
+  
+      return BoundingBox(ctx, top, left, bottom, right);
+    };
+  
+    // This function draws the sprite group.
+    const draw = function() {
+      /* Save the settings */
+      ctx.save();
+  
+      /* Get the display size of the sprite group */
+      const size = getDisplaySize();
+  
+      /* Translate to the center /of the sprite group */
+      ctx.translate(x - size.width / 2, y - size.height / 2);
+  
+      /* Draw each sprite in the group */
+      sprites.forEach(sprite => sprite.draw());
+  
+      /* Restore saved settings */
+      ctx.restore();
+    };
+  
+    // This function updates the sprite group by updating each sprite in the group.
+    // - `time` - The timestamp when this function is called
+    const update = function(time) {
+      sprites.forEach(sprite => sprite.update(time));
+      return this;
+    };
+  
+    // The methods are returned as an object here.
+    return {
+      addSprite: addSprite,
+      removeSprite: removeSprite,
+      getXY: getXY,
+      setXY: setXY,
+      setScale: setScale,
+      getDisplaySize: getDisplaySize,
+      getBoundingBox: getBoundingBox,
+      draw: draw,
+      update: update
+    };
+  };

@@ -1,0 +1,18 @@
+ const sequences = {
+        /* Idling sprite sequences for facing different directions */
+        idleLeft:  { x: 17290, y: 0, width: 319, height: 550, count: 10, timing: 50, loop: true },
+        
+        idleRight: { x: 5880, y: 0, width: 319, height: 550, count: 10, timing: 50, loop: true },
+        
+
+        /* Moving sprite sequences for facing different directions */
+        moveLeft:  { x: 24566, y: 0, width: 410, height: 550, count: 10, timing: 50, loop: true },
+        charjump:    { x: 9060, y: 0, width: 410, height: 550, count: 10, timing: 50, loop: false },
+        moveRight: { x: 13154, y: 0, width: 412, height: 550, count: 10, timing: 50, loop: true },
+        chardead:  { x: 0, y: 0, width: 585, height: 550, count: 10, timing: 50, loop: false }
+    };
+
+// If we are using the char_sprite
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

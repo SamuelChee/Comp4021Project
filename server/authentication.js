@@ -9,7 +9,6 @@ const Authentication = (function() {
         return user;
     }
 
-
     // This function sends a sign-in request to the server
     // * `username`  - The username for the sign-in
     // * `password`  - The password of the user

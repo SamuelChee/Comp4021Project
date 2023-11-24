@@ -12,6 +12,9 @@ const GameManager = function(id, io){
     let map = Map();
     let gameID = id;
 
+    // Collision stuff
+    
+
     const initialize = function(account1, account2, mapInfo, playerSockets){
         // Initialize map
         map.initialize(account1, account2, mapInfo);

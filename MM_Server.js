@@ -2,7 +2,8 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const session = require("express-session");
-const disconnectableQueue = require('./Util/disconnectableQueue');
+const disconnectableQueue = require('./util/disconnectableQueue');
+const path = require('path');
 
 const Mutex = require('async-mutex').Mutex;
 const Semaphore = require('async-mutex').Semaphore;
@@ -10,8 +11,10 @@ const withTimeout = require('async-mutex').withTimeout;
 // Create the Express app
 const app = express();
 // Use the 'public' folder to serve static files
-app.use(express.static("public"));
-// Use the json middleware to parse JSON data
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', function(req, res) {
+res.sendFile(path.join(__dirname, 'public', 'metal_mayhem.html'));
+});// Use the json middleware to parse JSON data
 app.use(express.json());
 
 // Use the session middleware to maintain sessions

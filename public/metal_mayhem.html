@@ -52,12 +52,12 @@
     <script src="sprite/item.js"></script>
     <script src="sprite/platform.js"></script>
     <script src="sprite/bounding_box.js"></script>
-    <script src="server/item_ctrl.js"></script>
+    <script src="sprite/item_ctrl.js"></script>
     <script src="background/generate_background.js"></script>
 
 
     <!-- Server -->
-
+<!-- 
     <script src="server/authentication.js"></script>
     <script src="server/avatar.js"></script>
     <script src="server/registration.js"></script>
@@ -65,8 +65,8 @@
     
     <script src="server/server_side_game_mechanics/GameManager.js"></script>
     <script src="server/server_side_game_mechanics/Map.js"></script>
-    <script src="server/server_side_game_mechanics/PlayerState.js"></script>
-    <script src=""></script>
+    <script src="server/server_side_game_mechanics/PlayerState.js"></script> -->
+    <!-- <script src=""></script> -->
 
 
 
@@ -77,16 +77,16 @@
         $(document).ready(function () {
 
             // Validate the signin
-            Authentication.validate(
-                () => {
-                    SignInForm.hide();
-                    UserPanel.update(Authentication.getUser());
-                    UserPanel.show();
+            // Authentication.validate(
+            //     () => {
+            //         SignInForm.hide();
+            //         UserPanel.update(Authentication.getUser());
+            //         UserPanel.show();
 
-                    Socket.connect();
-                },
-                () => { SignInForm.show(); }
-            );
+            //         Socket.connect();
+            //     },
+            //     () => { SignInForm.show(); }
+            // );
 
             BackgroundGenerator.generateBackground("#staticBackground");
 
@@ -140,7 +140,7 @@
                 // for (let item of items) {
                 //     item.draw();
                 // }
-
+                console.log
                 // Spawn item
                 itemController.spawnItem(elapsedTime);
 

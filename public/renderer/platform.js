@@ -38,3 +38,5 @@ const Platform = function ({ ctx, type, x, y, num_platforms}) {
     };
 
 };
+
+

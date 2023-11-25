@@ -44,16 +44,16 @@
     </div>
 
     <!-- Your JavaScript code will go here -->
-    <script src="sprite/background_sprite.js"></script>
-    <script src="background/generate_pipes.js"></script>
-    <script src="background/generate_vents.js"></script>
-    <script src="sprite/weapon.js"></script>
-    <script src="sprite/sprite.js"></script>
-    <script src="sprite/item.js"></script>
-    <script src="sprite/platform.js"></script>
-    <script src="sprite/bounding_box.js"></script>
-    <script src="sprite/item_ctrl.js"></script>
-    <script src="background/generate_background.js"></script>
+    <script src="renderer/background/background_sprite.js"></script>
+    <script src="renderer/background/generate_pipes.js"></script>
+    <script src="renderer/background/generate_vents.js"></script>
+    <script src="renderer/weapon.js"></script>
+    <script src="renderer/sprite.js"></script>
+    <script src="renderer/item.js"></script>
+    <script src="renderer/platform.js"></script>
+    <script src="renderer/bounding_box.js"></script>
+    <script src="renderer/item_ctrl.js"></script>
+    <script src="renderer/background/generate_background.js"></script>
 
 
     <!-- Server -->
@@ -111,61 +111,67 @@
             items.push(Item({ ctx: context, wep_id: 1, x: 500.25, y: 200, lifetime: 5000 }));
 
 
-            let NUM_PLATFORM = 7;
-            let PLATFORM_SPACING = 100;
-            let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
-            let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
-            let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
-            let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-            let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-            let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
+                let NUM_PLATFORM = 7;
+                let PLATFORM_SPACING = 100;
+                let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
+                let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
+                let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
+                let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+                let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+                let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
 
-            let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
-            let startTime;
-            let elapsedTime;
-            let itemController = ItemCtrl({context: context, platforms: platforms});
+                let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
 
-            function gameLoop(timestamp) {
+            /* inside game loop
+                 for (let platform of platforms) {
+                     platform.draw();
+                 }
+                 */
+            // let startTime;
+            // let elapsedTime;
+            // let itemController = ItemCtrl({context: context, platforms: platforms});
 
-                if (!startTime) {
-                    startTime = timestamp;
-                }
+            // function gameLoop(timestamp) {
 
-                elapsedTime = timestamp - startTime;
+                // if (!startTime) {
+                    // startTime = timestamp;
+                // }
+
+                // elapsedTime = timestamp - startTime;
 
                 // items = items.filter(item => !item.update());
                 // Render the game...
                 // Clear the canvas for the new frame
-                context.clearRect(0, 0, cv.width, cv.height);
+                // context.clearRect(0, 0, cv.width, cv.height);
                 // for (let item of items) {
                 //     item.draw();
                 // }
-                console.log
+                // console.log
                 // Spawn item
-                itemController.spawnItem(elapsedTime);
+                // itemController.spawnItem(elapsedTime);
 
                 // Update the state of all items
-                itemController.updateItems();
+                // itemController.updateItems();
 
                 // Draw all items
-                itemController.drawItems();
+                // itemController.drawItems();
 
                 // for (let item of items){
                 //     item.draw();
                 // }
-                for (let weapon of weapons) {
-                    weapon.draw();
-                }
-                for (let platform of platforms) {
-                    platform.draw();
-                }
+            //     for (let weapon of weapons) {
+            //         weapon.draw();
+            //     }
+            //     for (let platform of platforms) {
+            //         platform.draw();
+            //     }
 
-                // Call the next game loop
-                requestAnimationFrame(gameLoop);
-            }
+            //     // Call the next game loop
+            //     requestAnimationFrame(gameLoop);
+            // }
 
             // Start the game loop
-            requestAnimationFrame(gameLoop);
+            // requestAnimationFrame(gameLoop);
 
 
 

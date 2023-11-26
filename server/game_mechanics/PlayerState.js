@@ -3,12 +3,13 @@
 const PlayerState = function(playerInfo, initPosition){
 
     // contains player name, avatar and profile
-    let info = playerInfo;
-    let health = 100;
-    let position = initPosition;
-    let direction = [];
-
-    let speed = 1;
+    // let info = playerInfo;
+    // let health = 100;
+    let x = initPosition.x;
+    let y = initPosition.y;
+    let direction_multiple = {"left": -1, "right": 1, "jump": 1};
+    let direction = "right";
+    let speed = 5;
 
     let statistics = {
         kills: 0,
@@ -24,21 +25,32 @@ const PlayerState = function(playerInfo, initPosition){
 
     let ammo = 0;
 
-    const getPlayerState = function(){
-        return {health, position, direction, ammo, status};
+    const getPlayerPosition = function(){
+        return{x: x, y: y};
+        // return {health, position, direction, ammo, status};
     }
 
-    const getPlayerStatistics = function(){
-        return statistics;
+    const getPlayerDirection = function(){
+        return direction;
+        // return {health, position, direction, ammo, status};
     }
 
-    const setDirection = function(newDirection){
-        direction = newDirection;
-    }
+    // const getPlayerStatistics = function(){
+    //     return statistics;
+    // }
 
-    const move = function(){
+    // const setDirection = function(newDirection){
+    //     direction = newDirection;
+    // }
+
+    const move = function(dir){
+        direction = dir
+        x = x + speed * direction_multiple[dir];
+        console.log("Moving ", dir, ": ", x);
         
     }
 
-    return {getPlayerState, getPlayerStatistics, setDirection}
+    return {getPlayerPosition, move, getPlayerDirection}//, getPlayerStatistics, setDirection}
 };
+
+module.exports = PlayerState;

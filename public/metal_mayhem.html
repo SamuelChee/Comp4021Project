@@ -54,9 +54,11 @@
     <script src="renderer/bounding_box.js"></script>
     <script src="renderer/item_ctrl.js"></script>
     <script src="renderer/background/generate_background.js"></script>
-
+    <script src="renderer/player.js"></script>
     <!-- Listener -->
     <script src="listener/platform_listener.js"></script>
+    <script src="listener/player_listener.js"></script>
+
 
     <!-- Server -->
     <!-- <script src="server/authentication.js"></script>
@@ -64,7 +66,7 @@
     <!-- <script src="server/registration.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="socket.js"></script>
-    
+
     <!-- <script src="server/server_side_game_mechanics/GameManager.js"></script>
     <script src="server/server_side_game_mechanics/Map.js"></script>
     <script src="server/server_side_game_mechanics/PlayerState.js"></script>  -->
@@ -91,18 +93,18 @@
             // );
             const cv = $("canvas").get(0);
             const context = cv.getContext("2d");
-            console.log(context);
-
+            let username = "username";
             BackgroundGenerator.generateBackground("#staticBackground");
             Socket.connect();
             socket = Socket.getSocket();
-            console.log(context);
+            PlatformListener.init({ ctx: context, socket: socket });
+            // PlayerListener.init({ ctx: context, socket: socket });
+            let wep0 = Weapon({ ctx: context, wep_id: 0, x: 0, y: 0, scale: 1.7, rotation: 0 });
+            const player = Player(context, 400, 300); // The player
+            // wep0.setRotation(-);
+            player.setWeapon(0);
+            socket.emit('ready');
 
-            PlatformListener.init({ctx: context, socket: socket});
-
-
-
-            // let wep0 = Weapon({ ctx: context, wep_id: 0, x: 50, y: 50, scale: 2, rotation: 0 });
             // let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
             // let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
             // let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
@@ -136,22 +138,27 @@
                      platform.draw();
                  }
                  */
-            // let startTime;
-            // let elapsedTime;
             // let itemController = ItemCtrl({context: context, platforms: platforms});
+            let startTime;
+            let elapsedTime;
+            let gameLoopStarted = false;
 
-            // function gameLoop(timestamp) {
+            function gameLoop(timestamp) {
 
-                // if (!startTime) {
-                    // startTime = timestamp;
-                // }
+                if (!startTime) {
+                    startTime = timestamp;
+                }
 
-                // elapsedTime = timestamp - startTime;
+                elapsedTime = timestamp - startTime;
+                context.clearRect(0, 0, cv.width, cv.height);
+                PlatformListener.draw();
+                PlayerListener.draw();
+                player.update(timestamp);
+                player.draw();
 
                 // items = items.filter(item => !item.update());
                 // Render the game...
                 // Clear the canvas for the new frame
-                // context.clearRect(0, 0, cv.width, cv.height);
                 // for (let item of items) {
                 //     item.draw();
                 // }
@@ -168,24 +175,96 @@
                 // for (let item of items){
                 //     item.draw();
                 // }
-            //     for (let weapon of weapons) {
-            //         weapon.draw();
-            //     }
-            //     for (let platform of platforms) {
-            //         platform.draw();
-            //     }
+                //     for (let weapon of weapons) {
+                //         weapon.draw();
+                //     }
+                //     for (let platform of platforms) {
+                //         platform.draw();
+                //     }
 
-            //     // Call the next game loop
-            //     requestAnimationFrame(gameLoop);
-            // }
+                //     // Call the next game loop
+                // context.clearRect(0, 0, cv.width, cv.height);
+
+                if (gameLoopStarted) {
+                    requestAnimationFrame(gameLoop);
+                }
+            }
+
 
             // Start the game loop
-            // requestAnimationFrame(gameLoop);
+            requestAnimationFrame(gameLoop);
+
+            function startGameLoop() {
+                gameLoopStarted = true;
+                requestAnimationFrame(gameLoop);
+            }
+
+            function stopGameLoop() {
+                gameLoopStarted = false;
+            }
+
+            socket.on("start", () => {
+                startGameLoop();
+            });
+
+            socket.on("stop", () => {
+                stopGameLoop();
+            });
 
 
+            const DIR_LEFT = 1;
+            const DIR_RIGHT = 2;
+            const DIR_JUMP = 3;
 
 
+            $(document).on('keydown', function (event) {
+                let dir;
+                if (event.key === 'w' || event.key === 'W') {
+                    dir = "jump";
+                } else if (event.key === 'a' || event.key === 'A') {
+                    dir = "left";
+                } else if (event.key === 'd' || event.key === 'D') {
+                    dir = "right";
+                }
+                else {
+                    return;
+                }
 
+                Socket.onKeyDown(JSON.stringify({ user: username, key: event.key }));
+                player.move_animation(dir);
+            });
+
+            $(document).on("keyup", function (event) {
+                let dir;
+                if (event.key === 'w' || event.key === 'W') {
+                    dir = "jump";
+                } else if (event.key === 'a' || event.key === 'A') {
+                    dir = "left";
+                } else if (event.key === 'd' || event.key === 'D') {
+                    dir = "right";
+                }
+                else {
+                    return;
+                }
+                Socket.onKeyUp(JSON.stringify({ user: username, key: event.key }));
+
+                player.stop_animation(dir);
+            });
+
+            $(document).on('mousemove', function (evt) {
+                const rect = cv.getBoundingClientRect();
+                const mouseX = evt.pageX - rect.left;
+                const mouseY = evt.pageY - rect.top;
+
+                // Assuming `player` is your Player object
+                const { x: playerX, y: playerY } = player.getXY();
+
+                // Calculate the angle between the player and the mouse
+                const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
+
+                // Set the rotation of the weapon
+                player.setWeaponRotation(angle);
+            });
 
 
 

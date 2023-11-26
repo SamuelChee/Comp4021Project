@@ -127,14 +127,14 @@ const Socket = (function() {
     // Call this when the player holds down a key in game
     // action could be the key that the player pressed or some sort of enum 
     const onKeyDown = function(action){
-        console.log("player pressed " + action);
+        // console.log("player pressed " + action);
         socket.emit("on keydown", JSON.parse(action));
     }
 
     // Call this when the player stops pressing a key in game
     // action could be the key that the player pressed or some sort of enum 
     const onKeyUp = function(action){
-        console.log("player stopped pressing " + action);
+        // console.log("player stopped pressing " + action);
         socket.emit("on keyup", JSON.parse(action));
     }
 

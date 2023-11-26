@@ -1,26 +1,30 @@
 const PlatformListener = (function() {
-    let ctx = null;
-    let socket = null;
+    let context_ = null;
+    let socket_ = null;
+    let platforms = null;
 
-    const init = function({ ctx, socket }) {
+    const init = function({ctx, socket}) {
 
-        ctx = ctx;
-        socket = socket;
+        context_ = ctx;
+        socket_ = socket;
 
         socket.on('load level', function (event) {
             const event_data = JSON.parse(event);
-            console.log(event_data.map.platforms);
-            const platforms = event_data.map.platforms.map(platformData =>
+            const platform_data = event_data.map.platforms.map(platformData =>
                 Platform({ ctx: ctx, type: platformData.type, x: platformData.x, y: platformData.y, num_platforms: platformData.num_platforms })
             );
-
-            for (let platform of platforms) {
-                platform.draw();
-            }
+            platforms = platform_data;
         });
     };
 
+    const draw = function(){
+        if (platforms) {
+            platforms.forEach(platform => platform.draw());
+        }
+    };
+
     return {
-        init: init
+        init: init,
+        draw: draw
     };
 })();

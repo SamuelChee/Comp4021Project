@@ -29,7 +29,19 @@ const Weapon = function ({ctx, wep_id, x, y, scale=2, rotation=0}) {
     .setShadowScale({ x: 0.75, y: 0.2 })
     .useSheet("./res/weapons_set.png")
     .setRotation(rotation);
+    const setRotation = function (rot) {
+        if(rot <= 90 && rot >= -90){
+            sprite.setFlip(false);
+        }
+        else{
+            rot = rot + 180;
+            sprite.setFlip(true);
+        }
+        sprite.setRotation(rot);
+    };
 
+
+    
     // The methods are returned as an object here.
     return {
         getXY: sprite.getXY,
@@ -37,6 +49,7 @@ const Weapon = function ({ctx, wep_id, x, y, scale=2, rotation=0}) {
         getBoundingBox: sprite.getBoundingBox,
         draw: sprite.draw,
         update: sprite.update,
+        setRotation: setRotation,
         drawWithShadow: sprite.drawWithShadow,
         setOnLoad: sprite.setOnLoad
     };

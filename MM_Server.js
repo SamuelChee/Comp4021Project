@@ -45,7 +45,7 @@ const playerQueue = disconnectableQueue();
 const onGoingGames = {}
 // Track the games that online users are in. Key = username, value = game id
 const usersToGames = {}
-
+let game;
 // Max number of games
 const maxNumGames = 3;
 
@@ -135,7 +135,7 @@ function createGame(socket) {
     // Initialize game
     // let gameID = createGameID();
     let gameId = 1;
-    let game = GameManager(gameId, io);
+    game = GameManager(gameId, io);
     let NUM_PLATFORM = 7;
     let PLATFORM_SPACING = 100;
     mapInfo.platforms = [
@@ -369,53 +369,57 @@ io.on("connection", (socket) => {
         // find the game that the user belongs to and tell the corresponding gamemanager
         // that they are ready to start the game.
 
-        let account = JSON.parse(socket.request.session.user);
-        let username = account.username;
+        // let account = JSON.parse(socket.request.session.user);
+        // let username = account.username;
 
-        if (username in usersToGames) {
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+        // if (username in usersToGames) {
+        //     let gameID = usersToGames[username];
+        //     let game = onGoingGames[gameID];
 
-            game.ready(username);
-        }
+        //     game.ready(username);
+        // }
+
+        console.log("ready");
+        game.ready("username");
 
     });
 
     // Processes key down event
     socket.on("on keydown", (action) => {
 
-        let account = JSON.parse(socket.request.session.user);
-        let username = account.username;
+        // let account = JSON.parse(socket.request.session.user);
+        // let username = account.username;
 
         // if user is in a game
-        if (username in usersToGames) {
+        // if (username in usersToGames) {
 
             // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+            // let gameID = usersToGames[username];
+            // let game = onGoingGames[gameID];
 
             // ask the corresponding gamemanager to process the action from the user
-            game.processKeyDown(username, action);
-        }
+            game.processKeyDown("username", action);
+        // }
 
     });
 
     // Processes key up event
     socket.on("on keyup", (action) => {
 
-        let account = JSON.parse(socket.request.session.user);
-        let username = account.username;
+        // let account = JSON.parse(socket.request.session.user);
+        // let username = account.username;
 
-        // if user is in a game
-        if (username in usersToGames) {
+        // // if user is in a game
+        // if (username in usersToGames) {
 
-            // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+        //     // find the game the user is in
+        //     let gameID = usersToGames[username];
+        //     let game = onGoingGames[gameID];
 
-            // ask the corresponding gamemanager to process the action from the user
-            game.processKeyUp(username, action);
-        }
+        //     // ask the corresponding gamemanager to process the action from the user
+        //     game.processKeyUp(username, action);
+        // }
+        game.processKeyUp("username", action);
 
     });
 

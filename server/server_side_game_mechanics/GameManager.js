@@ -1,3 +1,6 @@
+const {PlayerState} = require("./PlayerState");
+const {Map} = require("./Map");
+
 const GameManager = function(id, io){
 
     // Mainly server stuff
@@ -12,8 +15,10 @@ const GameManager = function(id, io){
     let map = Map();
     let gameID = id;
 
-    // Collision stuff
-    
+    // Each projectile is represented by the following
+    // {ID, boundingBox, position, direction, speed, damage}
+    let projectiles = {};
+
 
     const initialize = function(account1, account2, mapInfo, playerSockets){
         // Initialize map
@@ -32,6 +37,9 @@ const GameManager = function(id, io){
             profile: account2.profile,
             opponent: account1.username};
 
+        // initialize projectiles
+        projectiles[account1.username] = {};
+        projectiles[account2.username] = {};
 
         // Initialize usernames:
         usernames.push(account1.username);
@@ -51,7 +59,9 @@ const GameManager = function(id, io){
             map.getPlayerInitialDir(account1.username)
             );
 
-        let player2 = PlayerState(player2Info, map.getPlayerInitialPos(account2.username));
+        let player2 = PlayerState(player2Info, 
+            map.getPlayerInitialPos(account2.username),
+            map.getPlayerInitialDir(account1.username));
 
         players[account1.username] = player1;
         players[account2.username] = player2;
@@ -95,6 +105,10 @@ const GameManager = function(id, io){
         }
     };
 
+    // time since last update
+    let gameStartTime = 0;
+    let timeSinceLastUpdate = 0;
+
     // The function to start the game, maybe run this after everything is done loading in the client side.
     const start = function(){
         // Tell the clients that the game can start
@@ -128,12 +142,34 @@ const GameManager = function(id, io){
         socket.to(JSON.stringify(gameID)).emit("gameOver", JSON.stringify(statistics));
     }
 
+    // Checks collision of projectile for each player
+    function checkBulletCollisions(){
+        let bulletCollisions = {};
+        for(username in usernames){
+            let collisions = [];
+            let playerState = players[username];
+
+            let enemyProjectiles = projectiles[playerInfos[username].opponent];
+
+        }
+    }
+
     // Update function or gameloop
     const update = function(){
         // TODO: run update repeatedly using a timer.
+        if(gameStartTime == 0){
+            gameStartTime = Date.now();
+        }
 
         // object to send information to client about the game state.
         let updateObject = {};
+        updateObject.projectiles = projectiles;
+
+        // Returns the bullets to be deleted (already deleted in server)
+        updateObject.projectileCollisions = projectileCollisions;
+
+        // update last update time;
+
         // emit object to all clients in the game.
         socket.to(JSON.stringify(gameID)).emit("update", JSON.stringify(updateObject));
     };
@@ -160,6 +196,21 @@ const GameManager = function(id, io){
         return {username: username, profile: players[username].profile};   
     };
 
+    // Const use this function to spawn a projectile,
+    // Projectile should been drawn in the next update.
+
+    // generates ids for items and projectiles
+    // object to check whether the generated ID is already in it
+    function generateID(object){
+        
+    }
+    
+    const spawnProjectile = function(username){
+        
+
+    }
+
+
     // Consider this function to handle key down events
     const processKeyDown = function(username, action){
         // TODO: process key down event
@@ -174,3 +225,6 @@ const GameManager = function(id, io){
 
     return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp};
 };
+
+if(typeof(module) === "object")
+    module.exports = {GameManager};

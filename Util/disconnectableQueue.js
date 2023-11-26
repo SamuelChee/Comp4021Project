@@ -1,3 +1,5 @@
+const {LinkedList, LinkedListNode} = require("./linkedList");
+
 const disconnectableQueue = function(){
     const queue = LinkedList();
     const queuedPlayers = {};
@@ -54,3 +56,6 @@ const disconnectableQueue = function(){
 
     return {enqueue, dequeue, removeFromQueue, peak, numOfQueuedPlayers, inQueue};
 };
+
+if(typeof(module) === "object")
+    module.exports = {disconnectableQueue};

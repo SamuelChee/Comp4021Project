@@ -1,10 +1,11 @@
 // This function defines the BoundingBox module.
-// - `ctx` - A canvas context for using isPathInPoint()
 // - `top` - The top side of the box
 // - `left` - The left side of the box
 // - `bottom` - The bottom side of the box
 // - `right` - The right side of the box
-const BoundingBox = function(ctx, top, left, bottom, right) {
+
+// Context independent bounding box.
+const BoundingBox = function(top, left, bottom, right) {
 
     // This is the path containing the bounding box.
     // It is initialized using the parameters of the function.
@@ -13,8 +14,11 @@ const BoundingBox = function(ctx, top, left, bottom, right) {
     // the canvas context. This path is used to detect the
     // intersection of a point or a box against this
     // bounding box.
+
+    /*
     const path = new Path2D();
     path.rect(left, top, right - left, bottom - top);
+    */
 
     // This function gets the top side of the bounding box.
     const getTop = function() {
@@ -36,6 +40,23 @@ const BoundingBox = function(ctx, top, left, bottom, right) {
         return right;
     };
 
+    // functions to set points on boundning box
+    const setTop = function(t){
+        top = t;
+    }
+
+    const setBottom = function(b){
+        bottom = b;
+    }
+
+    const setLeft = function(l){
+        left = t;
+    }
+
+    const setRight = function(r){
+        right = r;
+    }
+
     // This function gets the four corner points of the bounding box.
     const getPoints = function() {
         return {
@@ -48,9 +69,16 @@ const BoundingBox = function(ctx, top, left, bottom, right) {
 
     // This function tests whether a point is in the bounding box.
     // - `x`, `y` - The (x, y) position to be tested
+
+    /*
     const isPointInBox = function(x, y) {
         return ctx.isPointInPath(path, x, y);
     };
+    */
+
+    const isPointInBox = function(x, y){
+        return (x >= left) && (x <= right) && (y >= top) && (y <= bottom);
+    }
 
     // This function checks whether the two bounding boxes intersect.
     // - `box` - The other bounding box
@@ -88,6 +116,13 @@ const BoundingBox = function(ctx, top, left, bottom, right) {
         getPoints: getPoints,
         isPointInBox: isPointInBox,
         intersect: intersect,
-        randomPoint: randomPoint
+        randomPoint: randomPoint,
+        setTop: setTop,
+        setBottom: setBottom,
+        setLeft: setLeft,
+        setRight: setRight
     };
 };
+
+if(typeof(module) === "object")
+    module.exports = {BoundingBox};

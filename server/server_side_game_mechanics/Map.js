@@ -1,3 +1,5 @@
+const {BoundingBox} = require("../../sprite/bounding_box");
+
 const Map = function(){
 
     let platforms = null;
@@ -5,6 +7,8 @@ const Map = function(){
 
     let initialPlayerLocations = {};
     let initialPlayerDirections = {};
+
+    let gameArea = BoundingBox(165, 60, 420, 800); // TODO: change this
 
     // initializes the map, probably don't need this if we don't plan on randomly initializing 
     // items.
@@ -55,5 +59,19 @@ const Map = function(){
         return items;
     }
 
-    return {initialize, getMapInfo, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir};
+    const getGameArea = function(){
+        return gameArea;
+    }
+
+    return {
+        initialize, 
+        getMapInfo, 
+        getPlatforms, 
+        getItems, 
+        getPlayerInitialPos, 
+        getPlayerInitialDir,
+        getGameArea};
 };
+
+if(typeof(module) === "object")
+    module.exports = {Map};

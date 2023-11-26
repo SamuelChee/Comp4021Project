@@ -4,8 +4,17 @@ const fs = require("fs");
 const session = require("express-session");
 
 const Mutex = require('async-mutex').Mutex;
-const Semaphore = require('async-mutex').Semaphore;
-const withTimeout = require('async-mutex').withTimeout;
+
+// utility functions
+const { Util } = require("./Util/Util"); 
+
+// queue
+const {disconnectableQueue} = require("./Util/disconnectableQueue");
+// Gamemanager
+const {GameManager} = require("./server/server_side_game_mechanics/GameManager");
+
+
+
 // Create the Express app
 const app = express();
 // Use the 'public' folder to serve static files
@@ -97,10 +106,13 @@ function canCreateGame(){
 
 // Helper function for creating a gameID
 function createGameID(){
+    /*
     let gameID = Math.floor(maxID * Math.random());
     while(gameID in onGoingGames){
         gameID = Math.floor(maxID * Math.random());
     }
+    */
+    Util.generateID();
     return gameID;
 }
 

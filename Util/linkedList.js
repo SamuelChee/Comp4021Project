@@ -149,5 +149,8 @@ const LinkedList = function(){
     return {initialize, addNode, removeNode, removeElement, getCount, peak};
 };
 
+if(typeof(module) === "object")
+    module.exports = {LinkedListNode, LinkedList};
+
 
 

@@ -9,70 +9,78 @@ const GameManager = function(id, io){
 
     // Gameplay stuff
     let players = {};
-    let map = Map();
+    const Map = require("./Map");
+    let map = Map(); // Creates a new instance of `Map`
     let gameID = id;
 
     // Collision stuff
     
 
-    const initialize = function(account1, account2, mapInfo, playerSockets){
+    const initialize = function(account1, account2, mapInfo, player_socket){
         // Initialize map
         map.initialize(account1, account2, mapInfo);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
-        playerInfos[account1.username] = {
-            name: account1.name, 
-            avatar: account1.avatar, 
-            profile: account1.profile,
-            opponent: account2.username};
+        // playerInfos[account1.username] = {
+        //     name: account1.name, 
+        //     avatar: account1.avatar, 
+        //     profile: account1.profile,
+        //     opponent: account2.username};
 
-        playerInfos[account2.username] = {
-            name: account2.name, 
-            avatar: account2.avatar, 
-            profile: account2.profile,
-            opponent: account1.username};
+        // playerInfos[account2.username] = {
+        //     name: account2.name, 
+        //     avatar: account2.avatar, 
+        //     profile: account2.profile,
+        //     opponent: account1.username};
 
 
         // Initialize usernames:
-        usernames.push(account1.username);
-        usernames.push(account2.username);
+        // usernames.push(account1.username);
+        // usernames.push(account2.username);
         
         // Initialize sockets
-        sockets = playerSockets;
+        // sockets = playerSockets;
 
         // Initialize is ready
-        isReady[account1.username] = false;
-        isReady[account2.username] = false;
+        // isReady[account1.username] = false;
+        // isReady[account2.username] = false;
 
         // Init players
-        let player1 = PlayerState(
-            player1Info, 
-            map.getPlayerInitialPos(account1.username),
-            map.getPlayerInitialDir(account1.username)
-            );
+        // let player1 = PlayerState(
+        //     player1Info, 
+        //     map.getPlayerInitialPos(account1.username),
+        //     map.getPlayerInitialDir(account1.username)
+        //     );
 
-        let player2 = PlayerState(player2Info, map.getPlayerInitialPos(account2.username));
+        // let player2 = PlayerState(player2Info, map.getPlayerInitialPos(account2.username));
 
-        players[account1.username] = player1;
-        players[account2.username] = player2;
+        // players[account1.username] = player1;
+        // players[account2.username] = player2;
 
         // contains information related to gameplay, e.g. health, position, direction
-        let playerStates = {};
-        playerStates[account1.username] = players[account1.username].getPlayerState();
-        playerStates[account2.username] = players[account2.username].getPlayerState();
+        // let playerStates = {};
+        // playerStates[account1.username] = players[account1.username].getPlayerState();
+        // playerStates[account2.username] = players[account2.username].getPlayerState();
 
         // Make players join a room
         // Put player sockets in a room:
-        account1.socket.join(JSON.stringify(gameID));
-        account2.socket.join(JSON.stringify(gameID));
+        // account1.socket.join(JSON.stringify(gameID));
+        // account2.socket.join(JSON.stringify(gameID));
+        // player_socket.join(JSON.stringify(gameID))
         
         // Tell all clients to start loading their levels
-        socket.to(JSON.stringify(gameID)).emit("load level", JSON.stringify({
+        console.log("emitting");
+        socket.emit("load level", JSON.stringify({
             gameID, 
-            usernames, 
             map: map.getMapInfo(),
-            playerInfos,
-            playerStates}));
+        }));
+        // socket.to(JSON.stringify(gameID)).emit("load level", JSON.stringify({
+        //     gameID, 
+        //     // usernames, 
+        //     map: map.getMapInfo(),
+        //     // playerInfos,
+        //     // playerStates
+        // }));
     };
 
     // Check if user's client is done loading the level. Once both players are ready, start the game.
@@ -174,3 +182,5 @@ const GameManager = function(id, io){
 
     return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp};
 };
+
+module.exports = GameManager;

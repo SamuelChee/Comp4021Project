@@ -55,18 +55,20 @@
     <script src="renderer/item_ctrl.js"></script>
     <script src="renderer/background/generate_background.js"></script>
 
+    <!-- Listener -->
+    <script src="listener/platform_listener.js"></script>
 
     <!-- Server -->
-<!-- 
-    <script src="server/authentication.js"></script>
-    <script src="server/avatar.js"></script>
-    <script src="server/registration.js"></script>
-    <script src="server/socket.js"></script>
+    <!-- <script src="server/authentication.js"></script>
+    <script src="server/avatar.js"></script> -->
+    <!-- <script src="server/registration.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket.js"></script>
     
-    <script src="server/server_side_game_mechanics/GameManager.js"></script>
+    <!-- <script src="server/server_side_game_mechanics/GameManager.js"></script>
     <script src="server/server_side_game_mechanics/Map.js"></script>
-    <script src="server/server_side_game_mechanics/PlayerState.js"></script> -->
-    <!-- <script src=""></script> -->
+    <script src="server/server_side_game_mechanics/PlayerState.js"></script>  -->
+
 
 
 
@@ -87,40 +89,47 @@
             //     },
             //     () => { SignInForm.show(); }
             // );
-
-            BackgroundGenerator.generateBackground("#staticBackground");
-
-
             const cv = $("canvas").get(0);
             const context = cv.getContext("2d");
+            console.log(context);
 
-            let wep0 = Weapon({ ctx: context, wep_id: 0, x: 50, y: 50, scale: 2, rotation: 0 });
-            let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
-            let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
-            let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
-            let wep4 = Weapon({ ctx: context, wep_id: 4, x: 250, y: 50 });
-            let wep5 = Weapon({ ctx: context, wep_id: 5, x: 300, y: 50 });
-            let wep6 = Weapon({ ctx: context, wep_id: 6, x: 350, y: 50 });
-            let wep7 = Weapon({ ctx: context, wep_id: 7, x: 400, y: 50 });
-            let weapons = [wep0, wep1, wep2, wep3, wep4, wep5, wep6, wep7];
+            BackgroundGenerator.generateBackground("#staticBackground");
+            Socket.connect();
+            socket = Socket.getSocket();
+            console.log(context);
+
+            PlatformListener.init({ctx: context, socket: socket});
 
 
 
-            let items = [];
-            items.push(Item({ ctx: context, wep_id: 0, x: 422.25, y: 200, lifetime: 5000 }));
-            items.push(Item({ ctx: context, wep_id: 1, x: 500.25, y: 200, lifetime: 5000 }));
+            // let wep0 = Weapon({ ctx: context, wep_id: 0, x: 50, y: 50, scale: 2, rotation: 0 });
+            // let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
+            // let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
+            // let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
+            // let wep4 = Weapon({ ctx: context, wep_id: 4, x: 250, y: 50 });
+            // let wep5 = Weapon({ ctx: context, wep_id: 5, x: 300, y: 50 });
+            // let wep6 = Weapon({ ctx: context, wep_id: 6, x: 350, y: 50 });
+            // let wep7 = Weapon({ ctx: context, wep_id: 7, x: 400, y: 50 });
+            // let weapons = [wep0, wep1, wep2, wep3, wep4, wep5, wep6, wep7];
 
 
-                let NUM_PLATFORM = 7;
-                let PLATFORM_SPACING = 100;
-                let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
-                let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
-                let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
-                let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-                let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-                let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
 
-                let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
+            // let items = [];
+            // items.push(Item({ ctx: context, wep_id: 0, x: 422.25, y: 200, lifetime: 5000 }));
+            // items.push(Item({ ctx: context, wep_id: 1, x: 500.25, y: 200, lifetime: 5000 }));
+
+
+            // let NUM_PLATFORM = 7;
+            // let PLATFORM_SPACING = 100;
+            // let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
+            // let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
+            // let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
+            // let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+            // let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
+            // let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
+
+            // let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
+            // var socket = io.connect('http://localhost:8000');
 
             /* inside game loop
                  for (let platform of platforms) {

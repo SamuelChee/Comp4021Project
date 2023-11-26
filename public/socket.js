@@ -10,12 +10,12 @@ const Socket = (function() {
     // This function connects the server and initializes the socket
     const connect = function() {
         socket = io();
-
         // Wait for the socket to connect successfully
         socket.on("connect", () => {
-            
         });
-
+        socket.on("connect_error", (err) => {
+            console.log(`Connect error due to ${err.message}`);
+        });
 
         // Acknowledgement from server that user joined queue, if they couldn't join a game.
         socket.on("joined queue", (queue_position) => {
@@ -32,7 +32,7 @@ const Socket = (function() {
         });
 
         // Acknowledgement from server telling that user has joined a game.
-        socket.on("load level", (init) => {
+        // socket.on("load level", (init) => {
             /*
             init contains the following
             JSON.stringify({
@@ -44,16 +44,16 @@ const Socket = (function() {
 
             see GameManager.js
             */
-
-            init = JSON.parse(init);
-
+            // init = JSON.parse(init);
+            // console.log(init);
+            // console.log(init.map.platforms);
             // TODO: Implement how the client will load the level like drawing sprites etc.
             // the function should probably take the opponent's information and map as a parameter
 
 
             // When the client is done loading the level, send an acknowledgement event to 
             // the server that they're ready.
-        });
+        // });
         
 
         // Acknowledgement from server telling the user has left a game/match.

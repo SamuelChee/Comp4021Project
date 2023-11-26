@@ -8,22 +8,22 @@ const Map = function(){
 
     // initializes the map, probably don't need this if we don't plan on randomly initializing 
     // items.
-    const initialize = function(mapInfo, account1, account2){
+    const initialize = function(account1, account2, mapInfo){
         // mapinfo could contain boundingboxes for obstacles, position of the items and their 
         // spawn probabilities?
 
         platforms = mapInfo.platforms;
-
+        console.log(platforms);
         // TODO: initialize items 
         // if you don't want to randomly initialize items then just assign items from mapinfo to Map.items
         // items 
-        items = mapInfo.items;
+        // items = mapInfo.items;
 
         // initialize the initial positions and directions of the players on the map, assign it to users
-        initialPlayerLocations[account1.username] = mapInfo.initialPlayerLocations[0];
-        initialPlayerLocations[account2.username] = mapInfo.initialPlayerLocations[1];
-        initialPlayerDirections[account1.username] = mapInfo.initialPlayerDirections[0];
-        initialPlayerDirections[account2.username] = mapInfo.initialPlayerDirections[1]; 
+        // initialPlayerLocations[account1.username] = mapInfo.initialPlayerLocations[0];
+        // initialPlayerLocations[account2.username] = mapInfo.initialPlayerLocations[1];
+        // initialPlayerDirections[account1.username] = mapInfo.initialPlayerDirections[0];
+        // initialPlayerDirections[account2.username] = mapInfo.initialPlayerDirections[1]; 
     }
 
     const getPlayerInitialPos = function(username){
@@ -57,3 +57,5 @@ const Map = function(){
 
     return {initialize, getMapInfo, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir};
 };
+
+module.exports = Map;

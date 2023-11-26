@@ -224,7 +224,6 @@ const Sprite = function(ctx, x, y) {
         draw: drawSprite,
         update: update,
         setOnLoad: function(callback) {
-            console.log("setOnLoad called. Sheet src:", sheet.src, "Complete:", sheet.complete);
             sheet.onload = callback;
         }
     };

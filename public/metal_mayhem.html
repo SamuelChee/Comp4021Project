@@ -55,6 +55,7 @@
     <script src="renderer/item_ctrl.js"></script>
     <script src="renderer/background/generate_background.js"></script>
     <script src="renderer/player.js"></script>
+    <script src ="../shared/enums.js"></script>
     <!-- Listener -->
     <script src="listener/platform_listener.js"></script>
     <script src="listener/player_listener.js"></script>
@@ -98,11 +99,11 @@
             Socket.connect();
             socket = Socket.getSocket();
             PlatformListener.init({ ctx: context, socket: socket });
-            // PlayerListener.init({ ctx: context, socket: socket });
+            PlayerListener.init({ ctx: context, socket: socket });
             let wep0 = Weapon({ ctx: context, wep_id: 0, x: 0, y: 0, scale: 1.7, rotation: 0 });
-            const player = Player(context, 400, 300); // The player
+            // const player = Player(context, 50, 50); // The player
             // wep0.setRotation(-);
-            player.setWeapon(0);
+            // player.setWeapon(0);
             socket.emit('ready');
 
             // let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
@@ -152,9 +153,11 @@
                 elapsedTime = timestamp - startTime;
                 context.clearRect(0, 0, cv.width, cv.height);
                 PlatformListener.draw();
+                PlayerListener.update(timestamp);
                 PlayerListener.draw();
-                player.update(timestamp);
-                player.draw();
+                // PlayerListener.move_ani();
+                // player.move_animation("right");
+                // player.update(timestamp);
 
                 // items = items.filter(item => !item.update());
                 // Render the game...
@@ -218,52 +221,52 @@
 
 
             $(document).on('keydown', function (event) {
-                let dir;
-                if (event.key === 'w' || event.key === 'W') {
-                    dir = "jump";
-                } else if (event.key === 'a' || event.key === 'A') {
-                    dir = "left";
+                let key;
+                if (event.key === 'a' || event.key === 'A') {
+                    key = Keys.LEFT;
                 } else if (event.key === 'd' || event.key === 'D') {
-                    dir = "right";
+                    key = Keys.RIGHT;
+                }
+                else if (event.key === 'w' || event.key === 'W') {
+                    
+                    key = Keys.JUMP;
                 }
                 else {
                     return;
                 }
 
-                Socket.onKeyDown(JSON.stringify({ user: username, key: event.key }));
-                player.move_animation(dir);
+                Socket.onKeyDown(JSON.stringify({username, key}));
             });
 
             $(document).on("keyup", function (event) {
-                let dir;
-                if (event.key === 'w' || event.key === 'W') {
-                    dir = "jump";
-                } else if (event.key === 'a' || event.key === 'A') {
-                    dir = "left";
+                let key;
+                if (event.key === 'a' || event.key === 'A') {
+                    key = Keys.LEFT;
                 } else if (event.key === 'd' || event.key === 'D') {
-                    dir = "right";
+                    key = Keys.RIGHT;
+                }
+                else if (event.key === 'w' || event.key === 'W') {
+                    key = Keys.JUMP;
                 }
                 else {
                     return;
                 }
-                Socket.onKeyUp(JSON.stringify({ user: username, key: event.key }));
-
-                player.stop_animation(dir);
+                Socket.onKeyUp(JSON.stringify({ username, key}));
             });
 
             $(document).on('mousemove', function (evt) {
                 const rect = cv.getBoundingClientRect();
                 const mouseX = evt.pageX - rect.left;
                 const mouseY = evt.pageY - rect.top;
-
-                // Assuming `player` is your Player object
-                const { x: playerX, y: playerY } = player.getXY();
+                player_self = PlayerListener.getPlayer("username");
+                // // Assuming `player` is your Player object
+                const { x: playerX, y: playerY } = player_self.getXY();
 
                 // Calculate the angle between the player and the mouse
                 const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
-
-                // Set the rotation of the weapon
-                player.setWeaponRotation(angle);
+                
+                Socket.onMouseMove(JSON.stringify({ username, angle}));
+                // // Set the rotation of the weapon
             });
 
 

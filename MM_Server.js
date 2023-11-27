@@ -12,6 +12,7 @@ const withTimeout = require('async-mutex').withTimeout;
 const app = express();
 // Use the 'public' folder to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/shared', express.static(path.join(__dirname, 'shared')));
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'metal_mayhem.html'));
 });// Use the json middleware to parse JSON data
@@ -385,7 +386,7 @@ io.on("connection", (socket) => {
     });
 
     // Processes key down event
-    socket.on("on keydown", (action) => {
+    socket.on("on keydown", (key_event) => {
 
         // let account = JSON.parse(socket.request.session.user);
         // let username = account.username;
@@ -398,13 +399,14 @@ io.on("connection", (socket) => {
             // let game = onGoingGames[gameID];
 
             // ask the corresponding gamemanager to process the action from the user
-            game.processKeyDown("username", action);
+            // let keyEventObj = JSON.parse(key_event);
+            game.processKeyDown(key_event);
         // }
 
     });
 
     // Processes key up event
-    socket.on("on keyup", (action) => {
+    socket.on("on keyup", (key_event) => {
 
         // let account = JSON.parse(socket.request.session.user);
         // let username = account.username;
@@ -419,7 +421,28 @@ io.on("connection", (socket) => {
         //     // ask the corresponding gamemanager to process the action from the user
         //     game.processKeyUp(username, action);
         // }
-        game.processKeyUp("username", action);
+        // let keyEventObj = JSON.parse(key_event);
+        game.processKeyUp(key_event);
+
+    });
+
+    socket.on("on mousemove", (mouse_evt) => {
+
+        // let account = JSON.parse(socket.request.session.user);
+        // let username = account.username;
+
+        // // if user is in a game
+        // if (username in usersToGames) {
+
+        //     // find the game the user is in
+        //     let gameID = usersToGames[username];
+        //     let game = onGoingGames[gameID];
+
+        //     // ask the corresponding gamemanager to process the action from the user
+        //     game.processKeyUp(username, action);
+        // }
+        // let keyEventObj = JSON.parse(key_event);
+        game.processMouseMove(mouse_evt);
 
     });
 

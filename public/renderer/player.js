@@ -2,6 +2,8 @@
 // - `ctx` - A canvas context for drawing
 // - `x` - The initial x position of the player
 // - `y` - The initial y position of the player
+
+
 // - `gameArea` - The bounding box of the game area
 const Player = function (ctx, x, y) {
 
@@ -11,8 +13,7 @@ const Player = function (ctx, x, y) {
     const sequences = {
         /* Idling sprite sequences for facing different directions */
         idle: { x: 0, y: 1, width: 16, height: 16, count: 1, timing: 0, loop: false },
-        jump: { x: 16, y: 1, width: 16, height: 16, count: 1, timing: 0, loop: false },
-        move: { x: 0, y: 18, width: 16, height: 16, count: 4, timing: 100, loop: true },
+        move: { x: 0, y: 18, width: 16, height: 16, count: 4, timing: 70, loop: true },
     };
 
     // This is the sprite object of the player created from the Sprite module.
@@ -29,7 +30,7 @@ const Player = function (ctx, x, y) {
     // - `1` - moving to the left
     // - `2` - moving to the right
     // - `3` - jumping up
-    let direction = "right";
+    let direction = Directions.RIGHT;
 
     // This is the moving speed (pixels per second) of the player
     let speed = 150;
@@ -70,55 +71,37 @@ const Player = function (ctx, x, y) {
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
     const move_animation = function (dir) {
             switch (dir) {
-                case "left": {
+                case Directions.LEFT: {
                     sprite.setSequence(sequences.move);
                     sprite.setFlip(true);
                     break;
                 }
-                case "right": {
+                case Directions.RIGHT: {
                     sprite.setSequence(sequences.move);
                     sprite.setFlip(false);
                     break;
                 }
-                case "jump": {
-                    sprite.setSequence(sequences.jump);
-                    if(direction == 1){
-                        sprite.setFlip(true);
-                    }
-                    else if(direction == 2){
-                        sprite.setFlip(false);
-                    }
-                    break;
-                }
+                
             }
             direction = dir;
     };
 
     // This function stops the player from moving.
     // - `dir` - the moving direction when the player is stopped (1: Left, 2: Up, 3: Right, 4: Down)
-    const stop_animation = function (dir) {
+    const idle_animation = function (dir) {
         if (direction == dir) {
             switch (dir) {
-                case "left": {
+                case Directions.LEFT: {
                     sprite.setSequence(sequences.idle);
                     sprite.setFlip(true);
                     break;
                 }
-                case "right": {
+                case Directions.RIGHT: {
                     sprite.setSequence(sequences.idle);
                     sprite.setFlip(false);
                     break;
                 }
-                case "jump": {
-                    sprite.setSequence(sequences.idle);
-                    if(direction == 1){
-                        sprite.setFlip(true);
-                    }
-                    else if(direction == 2){
-                        sprite.setFlip(false);
-                    }
-                    break;
-                }
+        
             }
         }
     };
@@ -136,24 +119,7 @@ const Player = function (ctx, x, y) {
     // This function updates the player depending on his movement.
     // - `time` - The timestamp when this function is called
     const update = function (time) {
-        /* Update the player if the player is moving */
-        // if (direction != 0) {
-        //     let { x, y } = sprite.getXY();
-
-        //     /* Move the player */
-        //     switch (direction) {
-        //         case 1: x -= speed / 60; break;
-        //         case 2: y -= speed / 60; break;
-        //         case 3: x += speed / 60; break;
-        //         case 4: y += speed / 60; break;
-        //     }
-
-        //     /* Set the new position if it is within the game area */
-        //     if (gameArea.isPointInBox(x, y))
-        //         sprite.setXY(x, y);
-        // }
-
-        /* Update the sprite object */
+       
         sprite.update(time);
     };
 
@@ -162,7 +128,7 @@ const Player = function (ctx, x, y) {
     // The methods are returned as an object here.
     return {
         move_animation: move_animation,
-        stop_animation: stop_animation,
+        idle_animation: idle_animation,
         speedUp: speedUp,
         slowDown: slowDown,
         setWeapon: setWeapon,

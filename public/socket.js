@@ -138,6 +138,11 @@ const Socket = (function() {
         socket.emit("on keyup", JSON.parse(action));
     }
 
+    const onMouseMove = function(action){
+        // console.log("player stopped pressing " + action);
+        socket.emit("on mousemove", JSON.parse(action));
+    }
+
     return { 
         getSocket, 
         connect, 
@@ -146,6 +151,7 @@ const Socket = (function() {
         leaveQueue,
         ready,
         leaveGame,
+        onMouseMove,
         onKeyDown,
         onKeyUp};
 })();

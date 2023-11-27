@@ -1,3 +1,8 @@
+const InputStateManager = require("./InputStateManager");
+const Map = require("./Map");
+const PlayerState = require("./PlayerState");
+
+
 const GameManager = function(id, io){
 
     // Mainly server stuff
@@ -10,10 +15,9 @@ const GameManager = function(id, io){
 
     // Gameplay stuff
     let players = {};
-    const Map = require("./Map");
-    const PlayerState = require("./PlayerState");
-
+    
     let map = Map(); // Creates a new instance of `Map`
+    let inputStateManager = InputStateManager();
     let gameID = id;
 
     // Collision stuff
@@ -51,7 +55,7 @@ const GameManager = function(id, io){
 
         // Init players
         let player1 = PlayerState(
-            null, {x: 50, y: 50}
+            null, {x: 50, y: 430}
         );
 
         // let player2 = PlayerState(player2Info, map.getPlayerInitialPos(account2.username));
@@ -143,20 +147,7 @@ const GameManager = function(id, io){
         socket.to(JSON.stringify(gameID)).emit("gameOver", JSON.stringify(statistics));
     }
 
-    const handlePlayerMoveLoop = function(){
-        let dir;
-        if (keys['w']) {
-            dir = "jump";
-        } else if (keys['a']) {
-            dir = "left";
-        } else if (keys['d']) {
-            dir = "right";
-        }
-        else{
-            return;
-        }
-        playerStates["username"].move(dir);
-    };
+
     // Update function or gameloop
     const update = function(){
         // TODO: run update repeatedly using a timer.
@@ -165,20 +156,22 @@ const GameManager = function(id, io){
 
         // console.log(action);
         
-        handlePlayerMoveLoop();
-        let updateObject = {};
-        pos = playerStates["username"].getPlayerPosition();
-        dir = playerStates["username"].getPlayerDirection();
+        playerStates["username"].update(inputStateManager)
+        let playerStateObj = playerStates["username"].getObj();
+        // console.log(playerStateObj);
+        let updateObject = {playerState: playerStateObj};
+        // pos = playerStates["username"].getPlayerPosition();
+        // dir = playerStates["username"].getPlayerDirection();
         // console.log(dir);
-        updateObject.playerStates = {"username": {x: pos.x, y: pos.y, direction: dir}};
-        console.log(updateObject);
+        // updateObject.playerStates = {"username": {x: pos.x, y: pos.y, direction: dir}};
+        // console.log(updateObject);
         // emit object to all clients in the game.
         // socket.to(JSON.stringify(gameID)).emit("update", JSON.stringify(updateObject));
         socket.emit("update", JSON.stringify(updateObject));
     };
 
     const getID = function(){
-        return matchID;
+        return matchID;d
     };
 
     const disconnectPlayer = function(username){
@@ -200,22 +193,24 @@ const GameManager = function(id, io){
     };
 
     // Consider this function to handle key down events
-    let keys = {"w": false, "a": false, "d": false};
-    const processKeyDown = function(username, action){
+    const processKeyDown = function(keyEventObj){
         // TODO: process key down event
-        keys[action.key] = true;
-       
+        inputStateManager.updateKeyDown(keyEventObj.username, keyEventObj.key);
 
     };
 
     // Consider this function to handle key up events
-    const processKeyUp = function(username, action){
-        keys[action.key] = false;
+    const processKeyUp = function(keyEventObj){
+        inputStateManager.updateKeyUp(keyEventObj.username, keyEventObj.key);
 
         // TODO: process key up event 
     };
 
-    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp};
+    const processMouseMove = function(mouseEventObj){
+        inputStateManager.updateAimAngle(mouseEventObj.username, mouseEventObj.angle)
+    };
+
+    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};
 };
 
 module.exports = GameManager;

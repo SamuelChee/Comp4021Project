@@ -177,12 +177,10 @@ const Lobby = (function(){
 
     const show = function(){
         $("#lobby").show()
-        //$("#profile-button").show();
     };
 
     const hide = function(){
         $("#lobby").hide();
-        //$("#profile-button").hide();
     };
 
     return {initialize, show, hide, update};
@@ -206,11 +204,19 @@ const Profile = (function(){
     const show = function(){
         if(!updated){
             let profile = Authentication.getUser().profile;
-            let head = $("#profile title");
+            let keys = Object.keys(profile);
 
-            for(const [key,value] in Object.entries(profile)){
-                
+            for(let i = 0; i < keys.length; i++){
+                let key = keys[i];
+                let newElementId = "profile " + key;
+
+                $("#append").append('<p id="' + newElementId + '">' +
+                key + ': ' + profile[key] + '</p>');
+
+                head = $("#" + newElementId);
             }
+
+            updated = true;
         }
         $("#profile").show();
     };

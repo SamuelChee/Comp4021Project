@@ -19,7 +19,7 @@ const PlayerState = function(playerInfo, initPosition){
     let player_height = 50; // change this
     
     // bounding box representing the player
-    let bounding_box = Boundingbox(
+    let bounding_box = BoundingBox(
         initPosition.y - player_height / 2, 
         initPosition.x - player_height / 2, 
         initPosition.y + player_height / 2,

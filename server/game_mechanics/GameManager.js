@@ -23,7 +23,7 @@ const GameManager = function(id, io){
 
     const initialize = function(account1, account2, mapInfo, playerSockets){
         // Initialize map
-        map.initialize(account1, account2, mapInfo);
+        map.initialize(mapInfo, account1, account2);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
         playerInfos[account1.username] = {
@@ -47,6 +47,7 @@ const GameManager = function(id, io){
         usernames.push(account2.username);
         
         // Initialize sockets
+        console.log(playerSockets);
         sockets = playerSockets;
 
         // Initialize is ready
@@ -55,12 +56,12 @@ const GameManager = function(id, io){
 
         // Init players
         let player1 = PlayerState(
-            player1Info, 
+            playerInfos[account1.username], 
             map.getPlayerInitialPos(account1.username),
             map.getPlayerInitialDir(account1.username)
             );
 
-        let player2 = PlayerState(player2Info, 
+        let player2 = PlayerState(playerInfos[account2.username], 
             map.getPlayerInitialPos(account2.username),
             map.getPlayerInitialDir(account1.username));
 
@@ -74,8 +75,8 @@ const GameManager = function(id, io){
 
         // Make players join a room
         // Put player sockets in a room:
-        account1.socket.join(JSON.stringify(gameID));
-        account2.socket.join(JSON.stringify(gameID));
+        sockets[account1.username].join(JSON.stringify(gameID));
+        sockets[account2.username].join(JSON.stringify(gameID));
         
         // Tell all clients to start loading their levels
         socket.to(JSON.stringify(gameID)).emit("load level", JSON.stringify({
@@ -151,7 +152,7 @@ const GameManager = function(id, io){
         let projectileCollisions = {};
 
         // for every player in the game
-        for(username in usernames){
+        for(const username of usernames){
             let collisions = [];
             let playerState = players[username];
 
@@ -167,7 +168,7 @@ const GameManager = function(id, io){
             }
 
             // delete bullets that collided with player
-            for(collision in collisions){
+            for(const collision in collisions){
                 delete enemyProjectiles[collision.id];
             }
             

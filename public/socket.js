@@ -22,12 +22,20 @@ const Socket = (function() {
             // TODO: change UI to show that user has been queued up. Change the queue up button to leave queue button.
             // TODO: maybe add a mechanism to stop someone from spamming the queue button.
 
+            // update the appearance of the queue button
+            Lobby.update(false);
+            // update console to inform client queue has been joined
+            Console.update("Joined queue! Position: " + queue_position.toString());
         });
 
         // Acknowledgement from server that user left queue.
         socket.on("left queue", () => {
             // TODO: change UI to show that user has left the queue. Change the leave queue button to join queue button.
             // TODO: maybe add a mechanism to stop someone from spamming the queue button.
+            // update the appearance of the queue button
+            Lobby.update(true);
+            // update console to inform client queue has been joined
+            Console.update("Left queue!");
 
         });
 
@@ -44,15 +52,26 @@ const Socket = (function() {
 
             see GameManager.js
             */
-
+            
             init = JSON.parse(init);
 
             // TODO: Implement how the client will load the level like drawing sprites etc.
             // the function should probably take the opponent's information and map as a parameter
+            
+            // reset the queue button
+            Lobby.update(true);
 
+            // Hide UI
+            $("#container").hide();
+            // show game stuff
+            $("#staticBackground").show();
+
+            // TODO: write your code needed to load the sprites for the game.
+            
 
             // When the client is done loading the level, send an acknowledgement event to 
             // the server that they're ready.
+            ready();
         });
         
 

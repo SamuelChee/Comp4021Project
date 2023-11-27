@@ -62,8 +62,13 @@ const maxID = 1024;
 //const mapPool = JSON.parse(fs.readFileSync("data/maps.json"));
 
 // for only one map
-// TODO: add platforms, items, initial player position and directions here.
-const mapInfo = {}
+// TODO: add platforms, items (spawn location and spawn time after being picked up), initial player position and directions here.
+const mapInfo = {
+    platforms:[], 
+    items: [{spawnlocation: {x: 0, y: 0}, time: 20}], 
+    initialPlayerLocations: [{x:0, y:0}, {x:0, y:0}],
+    initialPlayerDirections: [{x:0, y:0}, {x:0, y:0}],
+}
 
 // mutex for accessing queue
 const queue_mutex = new Mutex();
@@ -101,25 +106,19 @@ function removeFromGame(playerToRemove){
 
 // Helper function to check whether a new game can be created.
 function canCreateGame(){
-    return playerQueue.numOfQueuedPlayers() < maxNumGames && playerQueue.numOfQueuedPlayers() > 2;
+    return Object.keys(onGoingGames) < maxNumGames && playerQueue.numOfQueuedPlayers() >= 2;
 }
 
 // Helper function for creating a gameID
 function createGameID(){
-    /*
-    let gameID = Math.floor(maxID * Math.random());
-    while(gameID in onGoingGames){
-        gameID = Math.floor(maxID * Math.random());
-    }
-    */
-    Util.generateID();
-    return gameID;
+    return Util.generateID(onGoingGames);
 }
 
 // Helper function for creating a match between two players 
 function createGame(){
     // create as many games as needed
     while(canCreateGame()){
+        console.log("creating game")
 
         // dequeue the two users
         let account1 = playerQueue.dequeue();
@@ -143,14 +142,12 @@ function createGame(){
         // Initialize game
         let gameID = createGameID();
         let game = GameManager(gameID, io);
-        
-        game.initialize(account1, account2, mapInfo, sockets);
 
-
-        // Add games to on going games and users to userstogames
         onGoingGames[gameID] = game;
         usersToGames[account1.username] = gameID;
         usersToGames[account2.username] = gameID;
+        
+        game.initialize(account1, account2, mapInfo, sockets);
     }
 }
 
@@ -243,7 +240,8 @@ app.get("/validate", (req, res) => {
 });
 
 // Handle the /signout endpoint
-app.post("/signout", (req, res) => {
+app.get("/signout", (req, res) => {
+    console.log("sign out");
 
     // remove user in queue or any ongoing games.
     playerToRemove = JSON.parse(req.session.user).username;
@@ -275,13 +273,16 @@ app.get("/profile", (req, res) => {
 // Adding a user on connection
 io.on("connection", (socket) => {
     console.log("connection test");
+    
     let account = JSON.parse(socket.request.session.user);
+    console.log(socket.request.session.user);
 
     onlineUsers[account.username] = {
         avatar: account.avatar, 
         name: account.name, 
         profile: account.profile, 
         socket: socket};
+    
 
     // notify others that a user connected.
     //io.emit("add user", JSON.stringify(account));
@@ -293,6 +294,7 @@ io.on("connection", (socket) => {
         playerToRemove = account.username;
         delete onlineUsers[account.username];
 
+        
         // acquire mutex to access player queue
         queue_mutex.acquire().then((release) => {
             // remove player from queue if player is in queue
@@ -305,10 +307,12 @@ io.on("connection", (socket) => {
             // release mutex for accessing queue.
             release();
         });
+        
     });
 
     // Joining a queue
     socket.on("join queue", () => {
+        console.log("joining queue " + socket.request.session.user);
         let account = JSON.parse(socket.request.session.user);
 
         // acquire mutex for accessing the queue
@@ -333,6 +337,7 @@ io.on("connection", (socket) => {
 
     // leave a queue
     socket.on("leave queue", () => {
+        console.log("leaving queue " + socket.request.session.user);
         let account = JSON.parse(socket.request.session.user);
         let playerToRemove = account.username;
 

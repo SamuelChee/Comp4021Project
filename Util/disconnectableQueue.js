@@ -6,21 +6,21 @@ const disconnectableQueue = function(){
 
     const enqueue = function(account){
         // account should have the username, avatar, name, profile
-        if(!(account.username in queuedPlayer)){
+        if(!(account.username in queuedPlayers)){
             queuedPlayers[account.username] = {
                 name: account.name, 
                 avatar: account.avatar,
                 profile: account.profile};
 
-            let newNode = LinkedListNode;
-            newNode.initialize(account.username);
-            queue.addNode(newNode);
+            queue.addNode(account.username);
         }    
     };
 
     const dequeue = function(){
         // remove player from queue
         user = queue.removeNode();
+        console.log(user);
+        console.log(typeof(user));
         // Get account information back
         let account = {
             username: user, 

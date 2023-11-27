@@ -1,3 +1,16 @@
+const Console = (function(){
+    // Init
+    const initialize = function(){
+        $("#console").text("Welcome to Metal Mayhem!");
+    }
+
+    const update = function(text){
+        $("#console").text(text);
+    }
+
+    return {initialize, update};
+})();
+
 const SignInForm = (function() {
     // This function initializes the UI
     const initialize = function() {
@@ -119,6 +132,87 @@ const UserPanel = (function() {
     return { initialize, show, hide, update };
 })();
 
+const Lobby = (function(){
+
+    // For queue button
+    let join = true;
+    let waitingOnServer = false;
+    
+    // Init
+    const initialize = function(){
+        // submit event for queue event
+        $("#queue-button").click(() => {
+            console.log("pressed");
+
+            if(!waitingOnServer){
+                if(join){
+                    Socket.joinQueue();
+                }
+                else{
+                    Socket.leaveQueue();
+                }
+                $("#queue-button").css('color', "red");
+            }
+        });
+
+        // show profile
+        $("#profile-button").click(() => {
+            Lobby.hide();
+            Profile.show();
+        });
+    }
+
+    const update = function(joinOrLeave){
+        waitingOnServer = false;
+        $("#queue-button").css('color', "white");
+
+        if(joinOrLeave){
+            $("#queue-button").text("Join Queue");
+        }
+        else{
+            $("#queue-button").text("Leave Queue");
+        }
+        join = joinOrLeave;
+    }
+
+    const show = function(){
+        $("#lobby").show()
+        //$("#profile-button").show();
+    };
+
+    const hide = function(){
+        $("#lobby").hide();
+        //$("#profile-button").hide();
+    };
+
+    return {initialize, show, hide, update};
+
+
+})();
+
+const Profile = (function(){
+    const components = [];
+
+    const initialize = function(){
+        $("#profile").hide();
+
+        $("#profile-back-button").click(() => {
+            Profile.hide();
+            Lobby.show();
+        });
+    };
+
+    const show = function(){
+        $("#profile").show();
+    };
+
+    const hide = function(){
+        $("#profile").hide();
+    };
+
+    return {initialize, show, hide};
+})();
+
 
 const UI = (function() {
     // This function gets the user display
@@ -130,15 +224,25 @@ const UI = (function() {
     };
 
     // The components of the UI are put here
-    const components = [SignInForm, UserPanel];
+    const components = [SignInForm, UserPanel, Lobby];
 
     // This function initializes the UI
     const initialize = function() {
+        // Might hide all the components, but not the Console.
+        Console.initialize();
         // Initialize the components
         for (const component of components) {
             component.initialize();
         }
     };
 
+    const hide = function(){
+        for(const component of components){
+            component.hide();
+        }
+    }
+
     return { getUserDisplay, initialize };
 })();
+
+

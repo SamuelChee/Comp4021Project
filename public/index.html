@@ -45,7 +45,7 @@
     <!--Lobby-->
     <div id="container" class="col">
         <div id="header" class="row">
-            <div id="title">Metal Mayhem!!!
+            <div id="title">METAL MEYHAM!!!
                 <span class="material-icons">chat</span>
             </div>
 
@@ -61,10 +61,42 @@
         </div>
 
         <div id="main-panel" class="row">
-            <button type="submit" id="queue-button">QUEUE UP</button>
-            <button type="profile" id="profile">SHOW PROFILE</button>
+            <div id="lobby" class="row">
+                <button id="queue-button">QUEUE UP</button>
+                <button id="profile-button">SHOW PROFILE</button>
+                <p id="console" style=
+                "position:absolute; 
+                bottom:0; 
+                left:0;
+                padding-left:30px;
+                padding-right:30px;
+                color:red"></p>
+            </div>
         </div>
+
     </div>
+
+        <!--
+        <div id="lobby" class="row">
+            <button id="queue-button">QUEUE UP</button>
+            <button id="profile-button">SHOW PROFILE</button>
+            <p id="console" style=
+            "position:absolute; 
+            bottom:0; 
+            left:0;
+            padding-left:30px;
+            padding-right:30px;
+            color:red"></p>
+        </div>
+    -->
+    
+    <!-- profile 
+    <div id="profile">
+        <p style="font-size: 300%;"> Test lolololo </p>
+        <button id="profile-back-button">BACK</button>
+    </div>
+-->
+
 
     <!-- sign in and registration -->
     <div id="signin-overlay" class="overlay row">
@@ -129,6 +161,9 @@
 
     <script>
         $(document).ready(function () {
+            BackgroundGenerator.generateBackground("#staticBackground");
+            $("#staticBackground").hide();
+
             UI.initialize();
 
             // Validate the signin
@@ -142,6 +177,7 @@
                 },
                 () => { SignInForm.show(); }
             );
+            
 
             /*
 

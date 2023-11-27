@@ -8,9 +8,6 @@ const Map = function(){
     let initialPlayerLocations = {};
     let initialPlayerDirections = {};
 
-    // a list of locations where items spawn and the rate at which they are spawned
-    let itemSpawnLocations = {};
-
     let gameArea = BoundingBox(165, 60, 420, 800); // TODO: change this
 
     // initializes the map, probably don't need this if we don't plan on randomly initializing 
@@ -24,7 +21,7 @@ const Map = function(){
         // TODO: initialize items 
         // if you don't want to randomly initialize items then just assign items from mapinfo to Map.items
         // items 
-        items = mapInfo.itemSpawnLocations;
+        items = mapInfo.items;
 
         // initialize the initial positions and directions of the players on the map, assign it to users
         initialPlayerLocations[account1.username] = mapInfo.initialPlayerLocations[0];

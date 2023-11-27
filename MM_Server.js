@@ -372,16 +372,22 @@ io.on("connection", (socket) => {
         // find the game that the user belongs to and tell the corresponding gamemanager
         // that they are ready to start the game.
         console.log("socket on ready");
-        let account = JSON.parse(socket.request.session.user);
-        let username = account.username;
+
+        ready_mutex.acquire().then((release) => {
+            let account = JSON.parse(socket.request.session.user);
+            let username = account.username;
 
 
-        if (username in usersToGames) {
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+            if (username in usersToGames) {
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
 
-            game.ready(username);
-        }
+                game.ready(username);
+            }
+
+            release();
+        });
+        
 
     });
 

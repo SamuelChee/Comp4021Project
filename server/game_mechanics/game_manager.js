@@ -70,6 +70,9 @@ const GameManager = function(id, io){
         player_sockets[account1.username].join(JSON.stringify(gameID));
         player_sockets[account2.username].join(JSON.stringify(gameID));
 
+        isReady[account1.username] = false;
+        isReady[account2.username] = false;
+
 
 
         console.log("emitting load level");

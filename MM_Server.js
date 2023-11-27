@@ -11,7 +11,7 @@ const { Util } = require("./Util/Util");
 // queue
 const {disconnectableQueue} = require("./Util/disconnectableQueue");
 // Gamemanager
-const {GameManager} = require("./server/server_side_game_mechanics/GameManager");
+const {GameManager} = require("./server/game_mechanics/GameManager");
 
 
 

@@ -98,9 +98,11 @@ const LinkedList = function(){
     }
 
     const removeElement = function(element){
+        console.log("removing element: " + element);
+
         if(count > 0){
             let iterator = head;
-            while(iterator != null || iterator.getElement() != element){
+            while(iterator != null && iterator.getElement() != element){
                 iterator = iterator.getNext();
             }
     

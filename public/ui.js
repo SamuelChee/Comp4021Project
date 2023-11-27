@@ -192,6 +192,8 @@ const Lobby = (function(){
 
 const Profile = (function(){
 
+    let updated = false;
+
     const initialize = function(){
         $("#profile").hide();
 
@@ -202,6 +204,14 @@ const Profile = (function(){
 
     };
     const show = function(){
+        if(!updated){
+            let profile = Authentication.getUser().profile;
+            let head = $("#profile title");
+
+            for(const [key,value] in Object.entries(profile)){
+                
+            }
+        }
         $("#profile").show();
     };
 

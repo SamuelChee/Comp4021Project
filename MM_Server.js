@@ -88,6 +88,7 @@ function containWordCharsOnly(text) {
 // Helper function for removing players from queue on signout or disconnect, or manually leaving the queue
 // playerToRemove = username of player to remove
 function removeFromQueue(playerToRemove) {
+    console.log("remove from queue called");
     playerQueue.removeFromQueue(playerToRemove);
 }
 
@@ -336,6 +337,7 @@ io.on("connection", (socket) => {
 
                 // if the player didn't make it into a game, send an event notifying the client that they are queued.
                 if (!(account.username in usersToGames)) {
+                    console.log("not in game!");
                     socket.emit(SocketEvents.JOINED_QUEUE, JSON.stringify(playerQueue.numOfQueuedPlayers()));
                 }
             }
@@ -348,21 +350,24 @@ io.on("connection", (socket) => {
     // leave a queue
     socket.on(SocketEvents.LEAVE_QUEUE, () => {
         console.log("leaving queue " + socket.request.session.user);
-        let account = JSON.parse(socket.request.session.user);
-        let playerToRemove = account.username;
 
         // acquire mutex for accessing queue
         queue_mutex.acquire().then((release) => {
             // remove player from queue if player is in queue
+            let account = JSON.parse(socket.request.session.user);
+            let playerToRemove = account.username;
+
+            console.log(playerToRemove);
+
             if (playerQueue.inQueue(playerToRemove)) {
-                playerQueue.removeFromQueue();
+                playerQueue.removeFromQueue(playerToRemove);
             }
 
             // release mutex for accessing queue.
             release();
         });
 
-        socket.emit(SocketEvents.LEFT_GAME);
+        socket.emit(SocketEvents.LEFT_QUEUE);
 
     });
 

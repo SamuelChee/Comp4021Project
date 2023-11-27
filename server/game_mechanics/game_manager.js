@@ -73,8 +73,6 @@ const GameManager = function(id, io){
         isReady[account1.username] = false;
         isReady[account2.username] = false;
 
-
-
         console.log("emitting load level");
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
             [LoadLevelProps.GAME_ID]: gameID,
@@ -88,7 +86,7 @@ const GameManager = function(id, io){
     const ready = function(username){
         console.log("game manager ready");
         // Just double checking, not necessary
-        if(username in players){
+        if(username in playerInfos){
             isReady[username] = true;
             let canStart = true;
 

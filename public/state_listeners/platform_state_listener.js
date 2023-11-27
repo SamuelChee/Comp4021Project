@@ -11,7 +11,12 @@ const PlatformStateListener = (function () {
 
     // Flag to check if all platforms have been loaded
     let isLoaded = false;
+    let loadPromiseResolve;
 
+    const loadPromise = new Promise((resolve, reject) => {
+        loadPromiseResolve = resolve;
+    });
+    
     /**
      * Initialize the listener with the given context and socket
      * @param {Object} params - The context and socket to use
@@ -20,8 +25,10 @@ const PlatformStateListener = (function () {
         context = context;
         socket = socket;
 
+        console.log("here");
         // Listen for 'load level' event to initialize platform states
         socket.on(SocketEvents.LOAD_LEVEL, function (event) {
+            console.log("not being run");
             const eventData = JSON.parse(event);
 
             // Map platform states from the event data to the platforms array
@@ -34,7 +41,7 @@ const PlatformStateListener = (function () {
                     num_platforms: platformData[PlatformDataProps.NUM_PLATFORMS]
                 })
             );
-
+            loadPromiseResolve();
             isLoaded = true; // Set flag to true after populating the platforms array
         });
     };
@@ -66,6 +73,7 @@ const PlatformStateListener = (function () {
         init: init,
         draw: draw,
         getPlatform: getPlatform,
-        getIsLoaded: getIsLoaded
+        getIsLoaded: getIsLoaded,
+        loadPromise: loadPromise
     };
 })();

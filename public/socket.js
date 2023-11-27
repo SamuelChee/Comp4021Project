@@ -15,6 +15,11 @@ const Socket = (function () {
     const connect = function () {
         socket = io();
         // Wait for the socket to connect successfully
+        cv = $("canvas").get(0);
+        context = cv.getContext("2d");
+        PlatformStateListener.init({ context, socket });
+        PlayerStateListener.init({ context, socket });
+
         socket.on(SocketEvents.CONNECT, () => {
         });
         socket.on(SocketEvents.CONNECT_ERROR, (err) => {
@@ -45,23 +50,27 @@ const Socket = (function () {
         });
 
         socket.on(SocketEvents.LOAD_LEVEL, () => {
-            console.log("Load Level called!");
-            // reset the queue button
-            Lobby.update(true);
-            // Hide UI
-            $("#container").hide();
-
-            cv = $("canvas").get(0);
-            context = cv.getContext("2d");
-            BackgroundGenerator.generateBackground("#staticBackground");
-
-            PlatformStateListener.init({ context, socket });
-            PlayerStateListener.init({ context, socket });
-            while(!PlatformStateListener.getIsLoaded() && !PlayerStateListener.getIsLoaded()){
-                console.log("not loaded");
+            async function setupGame() {
+                console.log("Load Level called!");
+            
+                // reset the queue button
+                Lobby.update(true);
+                // Hide UI
+                $("#container").hide();
+            
+                
+                BackgroundGenerator.generateBackground("#staticBackground");
+            
+                
+            
+                // Wait for both load promises to resolve
+                await Promise.all([PlatformStateListener.loadPromise, PlayerStateListener.loadPromise]);
+                InputStateManager.init({ socket: socket, cv: cv, username: Authentication.getUser().username });
+                console.log("emitting ready");
+                socket.emit(SocketEvents.READY);
             }
-            InputStateManager.init({ socket: socket, cv: cv, username: username });
-            socket.emit(SocketEvents.READY);
+            
+            setupGame();
 
         })
 

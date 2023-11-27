@@ -83,6 +83,7 @@ const GameManager = function(id, io){
 
     // Check if user's client is done loading the level. Once both players are ready, start the game.
     const ready = function(username){
+        console.log("game manager ready");
         // Just double checking, not necessary
         if(username in players){
             isReady[username] = true;

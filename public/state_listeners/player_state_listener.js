@@ -15,7 +15,10 @@ const PlayerStateListener = (function () {
     // Keep track of the previous actions and directions of each player
     const prevAction = {};
     const prevDirection = {};
-
+    let loadPromiseResolve;
+    const loadPromise = new Promise((resolve, reject) => {
+        loadPromiseResolve = resolve;
+    });
     /**
      * Initialize the listener with the given context and socket
      * @param {Object} params - The context and socket to use
@@ -26,9 +29,9 @@ const PlayerStateListener = (function () {
         
   
         // Listen for 'load level' event to initialize player states
+        console.log("here1");
         
         socket.on(SocketEvents.LOAD_LEVEL, function (event) {
-            
             const eventData = JSON.parse(event);
             console.log(eventData);
 
@@ -42,8 +45,9 @@ const PlayerStateListener = (function () {
                 prevDirection[username] = null;
                 return result;
             }, {});
-
+            
             isLoaded = true; // Set flag to true after populating the players object
+            loadPromiseResolve();
         });
 
         // Listen for 'update' event to update player states and trigger appropriate animations
@@ -110,6 +114,7 @@ const PlayerStateListener = (function () {
         draw: draw,
         update: update,
         getPlayer: getPlayer,
-        getIsLoaded
+        getIsLoaded,
+        loadPromise: loadPromise
     };
 })();

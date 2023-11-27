@@ -77,6 +77,7 @@ const mapInfo = {
 
 // mutex for accessing queue
 const queue_mutex = new Mutex();
+const ready_mutex = new Mutex();
 
 // Handles registration
 // This helper function checks whether the text only contains word characters
@@ -373,6 +374,7 @@ io.on("connection", (socket) => {
         console.log("socket on ready");
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
+
 
         if (username in usersToGames) {
             let gameID = usersToGames[username];

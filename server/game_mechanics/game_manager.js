@@ -42,7 +42,6 @@ const GameManager = function(id, io){
 
     const initialize = function(account1, account2, mapState, sockets){
         // Initialize map
-        let username = "username";
         map.initialize(account1, account2, mapState);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
@@ -62,7 +61,8 @@ const GameManager = function(id, io){
         projectiles[account1.username] = {};
         projectiles[account2.username] = {};
 
-        playerStateManager.addPlayer(username, {x: PlayerConsts.PLAYER_1_INI_X, y: PlayerConsts.PLAYER_1_INI_Y}, PlayerConsts.PLAYER_1_INI_WEP_ID)
+        playerStateManager.addPlayer(account1.username, {x: PlayerConsts.PLAYER_1_INI_X, y: PlayerConsts.PLAYER_1_INI_Y}, PlayerConsts.PLAYER_1_INI_WEP_ID);
+        playerStateManager.addPlayer(account2.username, {x: PlayerConsts.PLAYER_2_INI_X, y: PlayerConsts.PLAYER_2_INI_Y}, PlayerConsts.PLAYER_2_INI_WEP_ID);
         
         player_sockets = sockets;
         // Make players join a room
@@ -186,11 +186,13 @@ const GameManager = function(id, io){
 
     // Consider this function to handle key up events
     const processKeyUp = function(keyEventObj){
-        inputStateListener.updateKeyUp(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
+        let parsedKeyEventObj = JSON.parse(keyEventObj);
+        inputStateListener.updateKeyUp(parsedKeyEventObj[KeyEventProps.USERNAME], parsedKeyEventObj[KeyEventProps.KEY]);
     };
 
     const processMouseMove = function(mouseEventObj){
-        inputStateListener.updateAimAngle(mouseEventObj[MouseEventProps.USERNAME], mouseEventObj[MouseEventProps.ANGLE])
+        let parsedmouseEventObj = JSON.parse(mouseEventObj);
+        inputStateListener.updateAimAngle(parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE])
     };
 
     return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};

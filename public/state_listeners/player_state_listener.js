@@ -31,21 +31,21 @@ const PlayerStateListener = (function () {
         // Listen for 'load level' event to initialize player states
         console.log("here1");
         
-        socket.on(SocketEvents.LOAD_LEVEL, function (event) {
+        socket.on(SocketEvents.LOAD_LEVEL, (event) => {
             const eventData = JSON.parse(event);
             console.log(eventData);
-
-            // Map player states from the event data to the players object
-            players = Object.entries(eventData[LoadLevelProps.PLAYER_STATES]).reduce((result, [username, playerState]) => {
-                result[username] = Player(context, playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
-                console.log(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
-                result[username].setWeapon(playerState[PlayerStateProps.WEP_ID]);
-
+        
+        
+            // Iterate over player states from the event data and populate the players object
+            Object.entries(eventData.playerStates).forEach(([username, playerState]) => {
+                players[username] = Player(context, playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
+                console.log("USERNAME IN LOAD LEVEL", username);
+                players[username].setWeapon(playerState[PlayerStateProps.WEP_ID]);
+        
                 prevAction[username] = null;
                 prevDirection[username] = null;
-                return result;
-            }, {});
-            
+            });
+        
             isLoaded = true; // Set flag to true after populating the players object
             loadPromiseResolve();
         });
@@ -53,7 +53,6 @@ const PlayerStateListener = (function () {
         // Listen for 'update' event to update player states and trigger appropriate animations
          socket.on(SocketEvents.UPDATE, (update) => {
             const updateObj = JSON.parse(update);
-
             Object.entries(updateObj.playerStates).forEach(([username, playerState]) => {
                 // Update player's coordinates and weapon rotation
                 players[username].setXY(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);

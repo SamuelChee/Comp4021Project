@@ -86,7 +86,15 @@ const MapConsts = {
   MAP_WIDTH: 32,
   MAP_HEIGHT: 32,
   PLATFORM_WIDTH: 0,
-  PLATFORM_HEIGHT: 0
+  PLATFORM_HEIGHT: 0,
+  PLATFORMS: [
+    { type: "thick", x: 17, y: 400, num_platforms: 7 },
+    { type: "thick", x: 635, y: 400, num_platforms: 7 },
+    { type: "thick", x: 335, y: 400 - 100, num_platforms: 7 },
+    { type: "thick", x: 17, y: 400 - 100 * 2, num_platforms: 7 },
+    { type: "thick", x: 635, y: 400 - 100 * 2, num_platforms: 7 },
+    { type: "thick", x: 335, y: 400 - 100 * 3, num_platforms: 7 }
+  ]
 };
 
 

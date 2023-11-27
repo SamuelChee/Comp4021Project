@@ -29,11 +29,9 @@ const InputStateManager = (function () {
         socket = _socket;
         cv = _cv;
         username = _username;
-        console.log(username);
         $(document).on('keydown', function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
-            console.log(key);
             socket.emit(SocketEvents.ON_KEY_DOWN, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
@@ -44,13 +42,11 @@ const InputStateManager = (function () {
         });
 
         $(document).on('mousemove', function (evt) {
-            if (!PlayerStateListener.getIsLoaded()) {
-                return; // If the players object has not been populated yet, do not handle the event
-            }
+            
             const rect = cv.getBoundingClientRect();
             const mouseX = evt.pageX - rect.left;
             const mouseY = evt.pageY - rect.top;
-            const player_self = PlayerStateListener.getPlayer("username");
+            const player_self = PlayerStateListener.getPlayer(username);
 
             const { x: playerX, y: playerY } = player_self.getXY();
 

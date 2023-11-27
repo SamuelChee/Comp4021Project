@@ -67,6 +67,7 @@ const PlayerStateManager = function () {
     const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
+            // console.log("player state update: ", username);
 
             // If player's Y position is greater than initial, reset Y position and velocity, and set falling to false
             if (player[PlayerStateProps.Y] > player[PlayerStateProps.Y_INI]) {
@@ -90,12 +91,13 @@ const PlayerStateManager = function () {
 
             // If left or right key is pressed, update direction, action, and X position
             if (inputStateListener.getKeyPressed(username, Keys.LEFT)) {
-                console.log("here");
+                // console.log("key pressed left");
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
             }
             else if (inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
+                // console.log("key pressed right");
                 player[PlayerStateProps.DIRECTION] = Directions.RIGHT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];

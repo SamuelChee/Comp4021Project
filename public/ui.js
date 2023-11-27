@@ -199,7 +199,22 @@ const Profile = (function(){
             Profile.hide();
             Lobby.show();
         });
+
     };
+
+    const initProfile = function(){
+        let profile = Authentication.getProfile();
+
+        let element = $("#profile title");
+        for(const [key,value] of Object.entries(profile)){
+            let newElementId = "profile " + key.toString();
+
+            element.append('<p id="' + newElementId + '">' +
+            key.toString + ': ' + value.toString() + '</p>');
+
+            element = $("#"+ newElementId);
+        }      
+    }
 
     const show = function(){
         $("#profile").show();
@@ -209,10 +224,21 @@ const Profile = (function(){
         $("#profile").hide();
     };
 
+
     const update = function(){
-        Authentication.getProfile(()=>{
+        Authentication.requestProfile(()=>{
             let profile = Authentication.getProfile();
+
+            for(const [key,value] of Object.entries(profile)){
+                let newElementId = "profile " + key.toString();
+
+                element = $("#"+ newElementId);
+                element.text(key.toString + ': ' + value.toString());
+            }
+
             
+        }, () => {
+            console.log("Error updating profile.");
         });
     };
 

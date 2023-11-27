@@ -85,7 +85,7 @@
             socket = Socket.getSocket();
             PlatformStateListener.init({context, socket});
             PlayerStateListener.init({context, socket});
-            socket.emit('ready');
+            socket.emit(SocketEvents.READY);
 
 
 
@@ -120,11 +120,11 @@
                 gameLoopStarted = false;
             }
 
-            socket.on("start", () => {
+            socket.on(SocketEvents.START_GAME_LOOP, () => {
                 startGameLoop();
             });
 
-            socket.on("stop", () => {
+             socket.on(SocketEvents.STOP_GAME_LOOP, () => {
                 stopGameLoop();
             });
 

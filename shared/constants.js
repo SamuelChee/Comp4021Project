@@ -71,6 +71,33 @@ const MouseEventProps = {
 
 
 
+const SocketEvents = {
+  CONNECT: "connect",
+  CONNECT_ERROR: "connect_error",
+  DISCONNECT: "disconnect",
+  JOIN_QUEUE: "join_queue",
+  JOINED_QUEUE: "joined_queue",
+  LEAVE_QUEUE: "leave_queue",
+  LEFT_QUEUE: "left_queue",
+  READY: "ready",
+  ON_KEY_DOWN: "on_key_down",
+  ON_KEY_UP: "on_key_up",
+  ON_KEY_UP: "on_key_up",
+  ON_MOUSE_MOVE: "on_mouse_move",
+  LEAVE_GAME: "leave_game",
+  LEFT_GAME: "left_game",
+  PLAYER_LEFT: "player_left",
+  GAME_OVER: "game_over",
+  UPDATE: "update",
+  LOAD_LEVEL: "load_level",
+  START_GAME_LOOP: "start_game_loop",
+  STOP_GAME_LOOP: "stop_game_loop",
+
+
+}
+
+
+
 
 // Check the environment and set global variables accordingly
 if (typeof window !== 'undefined') {
@@ -86,6 +113,7 @@ if (typeof window !== 'undefined') {
   window.KeyEventProps = KeyEventProps;
   window.MouseEventProps = MouseEventProps;
   window.MapStateProps = MapStateProps;
+  window.SocketEvents = SocketEvents;
 
 } else {
   // Running in Node.js
@@ -100,6 +128,7 @@ if (typeof window !== 'undefined') {
     ServerUpdateProps,
     KeyEventProps,
     MouseEventProps,
-    MapStateProps
+    MapStateProps,
+    SocketEvents
   };
 }

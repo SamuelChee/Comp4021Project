@@ -11,7 +11,8 @@ const {
     LoadLevelProps,
     ServerUpdateProps,
     KeyEventProps,
-    MouseEventProps
+    MouseEventProps,
+    SocketEvents
 } = require('../../shared/constants');
 
 const GameManager = function(id, io){
@@ -45,7 +46,7 @@ const GameManager = function(id, io){
 
 
         console.log("emitting load level");
-        socket.emit("load level", JSON.stringify({
+        socket.emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
             [LoadLevelProps.GAME_ID]: gameID,
             [LoadLevelProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
             [LoadLevelProps.MAP_STATE]: map.getMapState(),
@@ -80,7 +81,7 @@ const GameManager = function(id, io){
         // Tell the clients that the game can start
         // socket.to(JSON.stringify(gameID)).emit("start");
         console.log("emit start")
-        socket.emit("start");
+        socket.emit(SocketEvents.START_GAME_LOOP);
 
         // TODO: Start GameLoop, or put this in a timer if we need a countdown before starting the game.
         // Start the game loop
@@ -108,7 +109,7 @@ const GameManager = function(id, io){
 
 
         // winner is the username of the winner
-        socket.to(JSON.stringify(gameID)).emit("gameOver", JSON.stringify(statistics));
+        socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
     }
 
 
@@ -119,7 +120,7 @@ const GameManager = function(id, io){
         playerStateManager.update(inputStateManager);
         let updateObject = {[ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates()};
 
-        socket.emit("update", JSON.stringify(updateObject));
+        socket.emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
     };
 
     const getID = function(){
@@ -129,7 +130,7 @@ const GameManager = function(id, io){
     const disconnectPlayer = function(username){
         // TODO: disconnect the player 
 
-        sockets[username].broadcast.to(JSON.stringify(gameID)).emit("player left", JSON.stringify(playerInfos[username]));
+        sockets[username].broadcast.to(JSON.stringify(gameID)).emit(SocketEvents.PLAYER_LEFT, JSON.stringify(playerInfos[username]));
 
         // kick the player out of the room
         sockets[username].leave(JSON.stringify(gameID));

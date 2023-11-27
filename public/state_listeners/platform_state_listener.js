@@ -21,7 +21,7 @@ const PlatformStateListener = (function () {
         socket = socket;
 
         // Listen for 'load level' event to initialize platform states
-        socket.on('load level', function (event) {
+        socket.on(SocketEvents.LOAD_LEVEL, function (event) {
             const eventData = JSON.parse(event);
 
             // Map platform states from the event data to the platforms array

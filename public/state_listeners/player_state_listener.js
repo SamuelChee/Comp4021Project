@@ -25,7 +25,7 @@ const PlayerStateListener = (function () {
         socket = socket;
 
         // Listen for 'load level' event to initialize player states
-        socket.on('load level', function (event) {
+        socket.on(SocketEvents.LOAD_LEVEL, function (event) {
             const eventData = JSON.parse(event);
             console.log(eventData);
 
@@ -44,7 +44,7 @@ const PlayerStateListener = (function () {
         });
 
         // Listen for 'update' event to update player states and trigger appropriate animations
-        socket.on("update", (update) => {
+         socket.on(SocketEvents.UPDATE, (update) => {
             const updateObj = JSON.parse(update);
 
             Object.entries(updateObj.playerStates).forEach(([username, playerState]) => {

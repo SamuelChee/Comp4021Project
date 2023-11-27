@@ -8,6 +8,9 @@ const GameManager = require('./server/game_mechanics/GameManager');
 const Mutex = require('async-mutex').Mutex;
 const Semaphore = require('async-mutex').Semaphore;
 const withTimeout = require('async-mutex').withTimeout;
+const {
+    SocketEvents
+} = require('./shared/constants');
 // Create the Express app
 const app = express();
 // Use the 'public' folder to serve static files
@@ -300,7 +303,7 @@ io.on("connection", (socket) => {
     //io.emit("add user", JSON.stringify(account));
 
     // Removing a user on disconnect
-    // socket.on("disconnect", () => {
+    // socket.on(SocketEvents.DISCONNECT, () => {
     //     console.log("disconnection test");
     //     let account = JSON.parse(socket.request.session.user);
     //     playerToRemove = account.username;
@@ -321,7 +324,7 @@ io.on("connection", (socket) => {
     // });
 
     // Joining a queue
-    // socket.on("join queue", () => {
+    // socket.on(SocketEvents.JOIN_QUEUE, () => {
     //     let account = JSON.parse(socket.request.session.user);
 
     //     // acquire mutex for accessing the queue
@@ -345,7 +348,7 @@ io.on("connection", (socket) => {
     // });
 
     // // leave a queue
-    // socket.on("leave queue", () => {
+    // socket.on(SocketEvents.LEAVE_QUEUE, () => {
     //     let account = JSON.parse(socket.request.session.user);
     //     let playerToRemove = account.username;
 
@@ -365,7 +368,7 @@ io.on("connection", (socket) => {
     // });
 
     // sent by a client who is done loading a level
-    socket.on("ready", () => {
+    socket.on(SocketEvents.READY, () => {
 
         // find the game that the user belongs to and tell the corresponding gamemanager
         // that they are ready to start the game.
@@ -386,7 +389,7 @@ io.on("connection", (socket) => {
     });
 
     // Processes key down event
-    socket.on("on keydown", (key_event) => {
+    socket.on(SocketEvents.ON_KEY_DOWN, (key_event) => {
 
         // let account = JSON.parse(socket.request.session.user);
         // let username = account.username;
@@ -406,7 +409,7 @@ io.on("connection", (socket) => {
     });
 
     // Processes key up event
-    socket.on("on keyup", (key_event) => {
+    socket.on(SocketEvents.ON_KEY_UP, (key_event) => {
 
         // let account = JSON.parse(socket.request.session.user);
         // let username = account.username;
@@ -426,7 +429,7 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("on mousemove", (mouse_evt) => {
+    socket.on(SocketEvents.ON_MOUSE_MOVE, (mouse_evt) => {
 
         // let account = JSON.parse(socket.request.session.user);
         // let username = account.username;
@@ -447,7 +450,7 @@ io.on("connection", (socket) => {
     });
 
     // Make the player leave a game
-    socket.on("leave game", () => {
+    socket.on(SocketEvents.LEAVE_GAME, () => {
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
 
@@ -459,7 +462,7 @@ io.on("connection", (socket) => {
             release();
         });
 
-        socket.emit("left game");
+        socket.emit(SocketEvents.LEFT_GAME);
     });
 });
 

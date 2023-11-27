@@ -11,28 +11,28 @@ const Socket = (function() {
     const connect = function() {
         socket = io();
         // Wait for the socket to connect successfully
-        socket.on("connect", () => {
+        socket.on(SocketEvents.CONNECT, () => {
         });
-        socket.on("connect_error", (err) => {
+        socket.on(SocketEvents.CONNECT_ERROR, (err) => {
             console.log(`Connect error due to ${err.message}`);
         });
 
         // Acknowledgement from server that user joined queue, if they couldn't join a game.
-        socket.on("joined queue", (queue_position) => {
+         socket.on(SocketEvents.JOINED_QUEUE, (queue_position) => {
             // TODO: change UI to show that user has been queued up. Change the queue up button to leave queue button.
             // TODO: maybe add a mechanism to stop someone from spamming the queue button.
 
         });
 
         // Acknowledgement from server that user left queue.
-        socket.on("left queue", () => {
+         socket.on(SocketEvents.LEFT_QUEUE, () => {
             // TODO: change UI to show that user has left the queue. Change the leave queue button to join queue button.
             // TODO: maybe add a mechanism to stop someone from spamming the queue button.
 
         });
 
         // Acknowledgement from server telling that user has joined a game.
-        // socket.on("load level", (init) => {
+        //  socket.on(SocketEvents.LOAD_LEVEL, (init) => {
             /*
             init contains the following
             JSON.stringify({
@@ -57,33 +57,33 @@ const Socket = (function() {
         
 
         // Acknowledgement from server telling the user has left a game/match.
-        socket.on("left game", () => {
+         socket.on(SocketEvents.LEFT_GAME, () => {
             // TODO: handle user leaving the game, like going back to the lobby page or something
 
         })
         
         // Tells the client that the other player in the game has left.
         // see disconnectPlayer function in GameManager
-        socket.on("player left", (playerInfo) => {
+         socket.on(SocketEvents.PLAYER_LEFT, (playerInfo) => {
             // TODO: handle other player in game leaving.
 
         })
 
         // Tells the client that the game has started
-        socket.on("start", () => {
+        socket.on(SocketEvents.START_GAME_LOOP, () => {
             // TODO: handle start could be some sort of countdown or not.
             // If a countdown were to be used maybe disable key inputs during the countdown
 
         })
 
         // Handles update calls from the server
-        socket.on("update", (updateObject) => {
+         socket.on(SocketEvents.UPDATE, (updateObject) => {
             // TODO: update object could be anything like player state, projectiles, etc.
             updateObject = JSON.parse(updateObject);
         })
 
         // Handles game over calls
-        socket.on("gameOver", (statistics) => {
+         socket.on(SocketEvents.GAMEOVER, (statistics) => {
             // TODO: display gameover screen.
 
             // Statistics contain statistics about both players, and whether they are the winner
@@ -103,44 +103,44 @@ const Socket = (function() {
     // join queue
     const joinQueue = function(){
         console.log("joining queue");
-        socket.emit("join queue");
+        socket.emit(SocketEvents.JOIN_QUEUE);
     }
 
     // leave queue
     const leaveQueue = function(){
         console.log("leaving queue");
-        socket.emit("leave queue");
+        socket.emit(SocketEvents.LEAVE_QUEUE);
     }
 
     // Call this when the level is done loading, maybe call this via a promise.
     const ready = function(){
         console.log("Done loading")
-        socket.emit("ready");
+        socket.emit(SocketEvents.READY);
     }
 
     // Call this when the user leaves the game
     const leaveGame = function(){
         console.log("leaving game");
-        socket.emit("leave game");
+        socket.emit(SocketEvents.LEAVE_GAME);
     }
 
     // Call this when the player holds down a key in game
     // action could be the key that the player pressed or some sort of enum 
     const onKeyDown = function(action){
         // console.log("player pressed " + action);
-        socket.emit("on keydown", JSON.parse(action));
+        socket.emit(SocketEvents.ON_KEY_DOWN, JSON.parse(action));
     }
 
     // Call this when the player stops pressing a key in game
     // action could be the key that the player pressed or some sort of enum 
     const onKeyUp = function(action){
         // console.log("player stopped pressing " + action);
-        socket.emit("on keyup", JSON.parse(action));
+        socket.emit(SocketEvents.ON_KEY_UP, JSON.parse(action));
     }
 
     const onMouseMove = function(action){
         // console.log("player stopped pressing " + action);
-        socket.emit("on mousemove", JSON.parse(action));
+        socket.emit(SocketEvents.ON_MOUSE_MOVE, JSON.parse(action));
     }
 
     return { 

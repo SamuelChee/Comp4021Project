@@ -1,4 +1,3 @@
-
 /**
  * This function provides a listener for Player events.
  * It enables initializing player states, updating them, drawing them on the canvas, and accessing player information.
@@ -14,8 +13,8 @@ const PlayerStateListener = (function () {
 
 
     // Keep track of the previous actions and directions of each player
-    const prev_action = {};
-    const prev_direction = {};
+    const prevAction = {};
+    const prevDirection = {};
 
     /**
      * Initialize the listener with the given context and socket
@@ -27,17 +26,17 @@ const PlayerStateListener = (function () {
 
         // Listen for 'load level' event to initialize player states
         socket.on('load level', function (event) {
-            const event_data = JSON.parse(event);
-            console.log(event_data);
+            const eventData = JSON.parse(event);
+            console.log(eventData);
 
             // Map player states from the event data to the players object
-            players = Object.entries(event_data.playerStates).reduce((result, [username, playerState]) => {
+            players = Object.entries(eventData[LoadLevelProps.PLAYER_STATES]).reduce((result, [username, playerState]) => {
                 result[username] = Player(context, playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
                 console.log(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
                 result[username].setWeapon(playerState[PlayerStateProps.WEP_ID]);
 
-                prev_action[username] = null;
-                prev_direction[username] = null;
+                prevAction[username] = null;
+                prevDirection[username] = null;
                 return result;
             }, {});
 
@@ -55,15 +54,15 @@ const PlayerStateListener = (function () {
                 let action = playerState[PlayerStateProps.ACTION];
                 let direction = playerState[PlayerStateProps.DIRECTION];
                 // If the player's action or direction has changed, trigger the appropriate animation
-                if (action !== prev_action[username] || direction !== prev_direction[username]) {
+                if (action !== prevAction[username] || direction !== prevDirection[username]) {
                     if (action === Actions.IDLE) {
                         players[username].idle_animation(direction);
                     } else if (action === Actions.MOVE) {
                         players[username].move_animation(direction);
                     }
 
-                    prev_action[username] = action;
-                    prev_direction[username] = direction;
+                    prevAction[username] = action;
+                    prevDirection[username] = direction;
                 }
             });
         });

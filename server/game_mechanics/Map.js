@@ -1,4 +1,14 @@
-const Map = function(){
+const {
+    Directions,
+    Keys,
+    Actions,
+    PlayerStateProps,
+    PlatformDataProps,
+    LoadLevelProps,
+    ServerUpdateProps,
+    MapStateProps
+} = require('../../shared/constants');
+const Map = function () {
 
     let platforms = null;
     let items = null;
@@ -8,11 +18,11 @@ const Map = function(){
 
     // initializes the map, probably don't need this if we don't plan on randomly initializing 
     // items.
-    const initialize = function(account1, account2, mapInfo){
+    const initialize = function (account1, account2, mapState) {
         // mapinfo could contain boundingboxes for obstacles, position of the items and their 
         // spawn probabilities?
 
-        platforms = mapInfo.platforms;
+        platforms = mapState[MapStateProps.PLATFORMS];
         console.log(platforms);
         // TODO: initialize items 
         // if you don't want to randomly initialize items then just assign items from mapinfo to Map.items
@@ -43,8 +53,13 @@ const Map = function(){
         return [0, 0];
     }
     // Returns all information about the map that can be used for initialization.
-    const getMapInfo = function(){
-        return {platforms, items, initialPlayerLocations, initialPlayerDirections};
+    const getMapState = function () {
+        return {
+            [MapStateProps.PLATFORMS]: platforms,
+            [MapStateProps.ITEMS]: items,
+            [MapStateProps.INI_PLAYER_LOCS]: initialPlayerLocations,
+            [MapStateProps.INI_PLAYER_LOCS]: initialPlayerDirections
+        };
     }
 
     const getPlatforms = function(){
@@ -55,7 +70,7 @@ const Map = function(){
         return items;
     }
 
-    return {initialize, getMapInfo, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir};
+    return { initialize, getMapState, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir };
 };
 
 module.exports = Map;

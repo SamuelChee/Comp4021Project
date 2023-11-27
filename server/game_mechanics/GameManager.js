@@ -2,6 +2,17 @@ const InputStateManager = require("./InputStateManager");
 const Map = require("./Map");
 const PlayerStateManager = require("./PlayerStateManager");
 
+const {
+    Directions,
+    Keys,
+    Actions,
+    PlayerStateProps,
+    PlatformDataProps,
+    LoadLevelProps,
+    ServerUpdateProps,
+    KeyEventProps,
+    MouseEventProps
+} = require('../../shared/constants');
 
 const GameManager = function(id, io){
 
@@ -24,10 +35,10 @@ const GameManager = function(id, io){
     // Collision stuff
     
 
-    const initialize = function(account1, account2, mapInfo, player_socket){
+    const initialize = function(account1, account2, mapState, player_socket){
         // Initialize map
         let username = "username";
-        map.initialize(account1, account2, mapInfo);
+        map.initialize(account1, account2, mapState);
 
 
         playerStateManager.addPlayer(username, {x: 50, y: 430}, 0)
@@ -35,9 +46,9 @@ const GameManager = function(id, io){
 
         console.log("emitting load level");
         socket.emit("load level", JSON.stringify({
-            gameID, 
-            playerStates: playerStateManager.getAllPlayerStates(),
-            map: map.getMapInfo(),
+            [LoadLevelProps.GAME_ID]: gameID,
+            [LoadLevelProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
+            [LoadLevelProps.MAP_STATE]: map.getMapState(),
         }));
 
     };
@@ -106,13 +117,13 @@ const GameManager = function(id, io){
 
         
         playerStateManager.update(inputStateManager);
-        let updateObject = {playerStates: playerStateManager.getAllPlayerStates()};
+        let updateObject = {[ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates()};
 
         socket.emit("update", JSON.stringify(updateObject));
     };
 
     const getID = function(){
-        return matchID;d
+        return matchID;
     };
 
     const disconnectPlayer = function(username){
@@ -133,22 +144,17 @@ const GameManager = function(id, io){
         return {username: username, profile: players[username].profile};   
     };
 
-    // Consider this function to handle key down events
     const processKeyDown = function(keyEventObj){
-        // TODO: process key down event
-        inputStateManager.updateKeyDown(keyEventObj.username, keyEventObj.key);
-
+        inputStateManager.updateKeyDown(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
     };
 
     // Consider this function to handle key up events
     const processKeyUp = function(keyEventObj){
-        inputStateManager.updateKeyUp(keyEventObj.username, keyEventObj.key);
-
-        // TODO: process key up event 
+        inputStateManager.updateKeyUp(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
     };
 
     const processMouseMove = function(mouseEventObj){
-        inputStateManager.updateAimAngle(mouseEventObj.username, mouseEventObj.angle)
+        inputStateManager.updateAimAngle(mouseEventObj[MouseEventProps.USERNAME], mouseEventObj[MouseEventProps.Angle])
     };
 
     return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};

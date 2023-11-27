@@ -1,29 +1,71 @@
-const PlatformStateListener = (function() {
+
+/**
+ * This function provides a listener for Platform events.
+ * It enables initializing platform states, drawing them on the canvas, and accessing platform information.
+ */
+const PlatformStateListener = (function () {
+    // Define the context for drawing, the socket for communication, and the platforms array to hold platform states
     let context = null;
     let socket = null;
-    let platforms = null;
+    let platforms = [];
 
-    const init = function({context, socket}) {
+    // Flag to check if all platforms have been loaded
+    let isLoaded = false;
 
+    /**
+     * Initialize the listener with the given context and socket
+     * @param {Object} params - The context and socket to use
+     */
+    const init = function ({ context, socket }) {
         context = context;
         socket = socket;
 
+        // Listen for 'load level' event to initialize platform states
         socket.on('load level', function (event) {
             const eventData = JSON.parse(event);
-            platforms = eventData.map.platforms.map(platformData =>
-                Platform({ ctx: context, type: platformData.type, x: platformData.x, y: platformData.y, num_platforms: platformData.num_platforms })
+
+            // Map platform states from the event data to the platforms array
+            platforms = eventData[LoadLevelProps.MAP_STATE][MapStateProps.PLATFORMS].map(platformData =>
+                Platform({ 
+                    ctx: context, 
+                    type: platformData[PlatformDataProps.TYPE], 
+                    x: platformData[PlatformDataProps.X], 
+                    y: platformData[PlatformDataProps.Y], 
+                    num_platforms: platformData[PlatformDataProps.NUM_PLATFORMS]
+                })
             );
+
+            isLoaded = true; // Set flag to true after populating the platforms array
         });
     };
 
-    const draw = function(){
+    /**
+     * Draw each platform on the canvas
+     */
+    const draw = function () {
         if (platforms) {
             platforms.forEach(platform => platform.draw());
         }
     };
 
+    /**
+     * Get a platform's state by its index
+     * @param {number} index - The index of the platform
+     * @return {Object} The platform's state
+     */
+    const getPlatform = function (index) {
+        return platforms[index];
+    };
+
+    const getIsLoaded = function () {
+        return isLoaded; 
+    };
+
+    // Return the public methods
     return {
         init: init,
-        draw: draw
+        draw: draw,
+        getPlatform: getPlatform,
+        getIsLoaded: getIsLoaded
     };
 })();

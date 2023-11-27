@@ -14,6 +14,24 @@ const Actions = Object.freeze({
   MOVE: 'move_action'
 });
 
+const PlayerStateProps = Object.freeze({
+  X_INI: 'x_ini',
+  Y_INI: 'y_ini',
+  X: 'x',
+  Y: 'y',
+  X_VEL: 'xVel',
+  ACTION: 'action',
+  DIRECTION: 'direction',
+  AIM_ANGLE: 'aimAngle',
+  Y_VEL: 'yVel',
+  TERMINAL_Y_VEL: 'terminalYVel',
+  JUMP_VEL: 'jumpVel',
+  GRAVITATIONAL_ACC: 'gravitationalAcceleration',
+  IS_FALLING: 'isFalling',
+  X_DIRECTION_MULTIPLE: 'xDirectionMultiple',
+  WEP_ID: 'wepID'
+});
+
 if (typeof window !== 'undefined') {
   // Running in a browser
   window.Directions = Directions;
@@ -24,6 +42,7 @@ if (typeof window !== 'undefined') {
   module.exports = {
       Directions,
       Keys,
-      Actions  
+      Actions,
+      PlayerStateProps  
   };
 }

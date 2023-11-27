@@ -55,10 +55,10 @@
     <script src="renderer/item_ctrl.js"></script>
     <script src="renderer/background/generate_background.js"></script>
     <script src="renderer/player.js"></script>
-    <script src ="../shared/enums.js"></script>
+    <script src="../shared/constants.js"></script>
     <!-- Listener -->
-    <script src="listener/platform_listener.js"></script>
-    <script src="listener/player_listener.js"></script>
+    <script src="state_listeners/platform_state_listener.js"></script>
+    <script src="state_listeners/player_state_listener.js"></script>
 
 
     <!-- Server -->
@@ -81,65 +81,19 @@
     <script>
         $(document).ready(function () {
 
-            // Validate the signin
-            // Authentication.validate(
-            //     () => {
-            //         SignInForm.hide();
-            //         UserPanel.update(Authentication.getUser());
-            //         UserPanel.show();
-
-            //         Socket.connect();
-            //     },
-            //     () => { SignInForm.show(); }
-            // );
+         
             const cv = $("canvas").get(0);
             const context = cv.getContext("2d");
             let username = "username";
             BackgroundGenerator.generateBackground("#staticBackground");
             Socket.connect();
             socket = Socket.getSocket();
-            PlatformListener.init({ ctx: context, socket: socket });
-            PlayerListener.init({ ctx: context, socket: socket });
-            let wep0 = Weapon({ ctx: context, wep_id: 0, x: 0, y: 0, scale: 1.7, rotation: 0 });
-            // const player = Player(context, 50, 50); // The player
-            // wep0.setRotation(-);
-            // player.setWeapon(0);
+            PlatformStateListener.init({context, socket});
+            PlayerStateListener.init({context, socket});
             socket.emit('ready');
 
-            // let wep1 = Weapon({ ctx: context, wep_id: 1, x: 100, y: 50 });
-            // let wep2 = Weapon({ ctx: context, wep_id: 2, x: 150, y: 50 });
-            // let wep3 = Weapon({ ctx: context, wep_id: 3, x: 200, y: 50 });
-            // let wep4 = Weapon({ ctx: context, wep_id: 4, x: 250, y: 50 });
-            // let wep5 = Weapon({ ctx: context, wep_id: 5, x: 300, y: 50 });
-            // let wep6 = Weapon({ ctx: context, wep_id: 6, x: 350, y: 50 });
-            // let wep7 = Weapon({ ctx: context, wep_id: 7, x: 400, y: 50 });
-            // let weapons = [wep0, wep1, wep2, wep3, wep4, wep5, wep6, wep7];
 
 
-
-            // let items = [];
-            // items.push(Item({ ctx: context, wep_id: 0, x: 422.25, y: 200, lifetime: 5000 }));
-            // items.push(Item({ ctx: context, wep_id: 1, x: 500.25, y: 200, lifetime: 5000 }));
-
-
-            // let NUM_PLATFORM = 7;
-            // let PLATFORM_SPACING = 100;
-            // let platform_1 = Platform({ ctx: context, type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM });
-            // let platform_2 = Platform({ ctx: context, type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM });
-            // let platform_3 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM });
-            // let platform_4 = Platform({ ctx: context, type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-            // let platform_5 = Platform({ ctx: context, type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM });
-            // let platform_6 = Platform({ ctx: context, type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM });
-
-            // let platforms = [platform_1, platform_2, platform_3, platform_4, platform_5, platform_6];
-            // var socket = io.connect('http://localhost:8000');
-
-            /* inside game loop
-                 for (let platform of platforms) {
-                     platform.draw();
-                 }
-                 */
-            // let itemController = ItemCtrl({context: context, platforms: platforms});
             let startTime;
             let elapsedTime;
             let gameLoopStarted = false;
@@ -152,50 +106,15 @@
 
                 elapsedTime = timestamp - startTime;
                 context.clearRect(0, 0, cv.width, cv.height);
-                PlatformListener.draw();
-                PlayerListener.update(timestamp);
-                PlayerListener.draw();
-                // PlayerListener.move_ani();
-                // player.move_animation("right");
-                // player.update(timestamp);
-
-                // items = items.filter(item => !item.update());
-                // Render the game...
-                // Clear the canvas for the new frame
-                // for (let item of items) {
-                //     item.draw();
-                // }
-                // console.log
-                // Spawn item
-                // itemController.spawnItem(elapsedTime);
-
-                // Update the state of all items
-                // itemController.updateItems();
-
-                // Draw all items
-                // itemController.drawItems();
-
-                // for (let item of items){
-                //     item.draw();
-                // }
-                //     for (let weapon of weapons) {
-                //         weapon.draw();
-                //     }
-                //     for (let platform of platforms) {
-                //         platform.draw();
-                //     }
-
-                //     // Call the next game loop
-                // context.clearRect(0, 0, cv.width, cv.height);
-
+                PlatformStateListener.draw();
+                PlayerStateListener.update(timestamp);
+                PlayerStateListener.draw();
+                
                 if (gameLoopStarted) {
                     requestAnimationFrame(gameLoop);
                 }
             }
 
-
-            // Start the game loop
-            requestAnimationFrame(gameLoop);
 
             function startGameLoop() {
                 gameLoopStarted = true;
@@ -228,14 +147,14 @@
                     key = Keys.RIGHT;
                 }
                 else if (event.key === 'w' || event.key === 'W') {
-                    
+
                     key = Keys.JUMP;
                 }
                 else {
                     return;
                 }
 
-                Socket.onKeyDown(JSON.stringify({username, key}));
+                Socket.onKeyDown(JSON.stringify({ username, key }));
             });
 
             $(document).on("keyup", function (event) {
@@ -251,21 +170,25 @@
                 else {
                     return;
                 }
-                Socket.onKeyUp(JSON.stringify({ username, key}));
+                Socket.onKeyUp(JSON.stringify({ username, key }));
             });
 
             $(document).on('mousemove', function (evt) {
+
+                if (!PlayerStateListener.getIsLoaded()) {
+                    return; // If the players object has not been populated yet, do not handle the event
+                }
                 const rect = cv.getBoundingClientRect();
                 const mouseX = evt.pageX - rect.left;
                 const mouseY = evt.pageY - rect.top;
-                player_self = PlayerListener.getPlayer("username");
+                player_self = PlayerStateListener.getPlayer("username");
                 // // Assuming `player` is your Player object
                 const { x: playerX, y: playerY } = player_self.getXY();
 
                 // Calculate the angle between the player and the mouse
                 const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
-                
-                Socket.onMouseMove(JSON.stringify({ username, angle}));
+
+                Socket.onMouseMove(JSON.stringify({ username, angle }));
                 // // Set the rotation of the weapon
             });
 

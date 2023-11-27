@@ -1,13 +1,13 @@
 const InputStateManager = require("./InputStateManager");
 const Map = require("./Map");
-const PlayerState = require("./PlayerState");
+const PlayerStateManager = require("./PlayerStateManager");
 
 
 const GameManager = function(id, io){
 
     // Mainly server stuff
     let playerInfos = {}; // contains name, avatar and profile
-    let playerStates = {};
+    // let playerStates = {};
     let usernames = [];
     let sockets = {};
     let isReady = {};
@@ -18,6 +18,7 @@ const GameManager = function(id, io){
     
     let map = Map(); // Creates a new instance of `Map`
     let inputStateManager = InputStateManager();
+    let playerStateManager = PlayerStateManager();
     let gameID = id;
 
     // Collision stuff
@@ -28,65 +29,17 @@ const GameManager = function(id, io){
         let username = "username";
         map.initialize(account1, account2, mapInfo);
 
-        // initialize player information. Contains username, name, avatar and username of opponent.
-        // playerInfos[account1.username] = {
-        //     name: account1.name, 
-        //     avatar: account1.avatar, 
-        //     profile: account1.profile,
-        //     opponent: account2.username};
 
-        // playerInfos[account2.username] = {
-        //     name: account2.name, 
-        //     avatar: account2.avatar, 
-        //     profile: account2.profile,
-        //     opponent: account1.username};
+        playerStateManager.addPlayer(username, {x: 50, y: 430}, 0)
 
 
-        // Initialize usernames:
-        // usernames.push(account1.username);
-        // usernames.push(account2.username);
-        
-        // Initialize sockets
-        // sockets = playerSockets;
-
-        // Initialize is ready
-        // isReady[account1.username] = false;
-        // isReady[account2.username] = false;
-
-        // Init players
-        let player1 = PlayerState(
-            null, {x: 50, y: 430}
-        );
-
-        // let player2 = PlayerState(player2Info, map.getPlayerInitialPos(account2.username));
-        playerStates[username] = player1;
-        // players[account1.username] = player1;
-        // players[account2.username] = player2;
-
-        // contains information related to gameplay, e.g. health, position, direction
-        // playerStates[username] = players[username].getPlayerState();
-        // playerStates[account2.username] = players[account2.username].getPlayerState();
-
-        // Make players join a room
-        // Put player sockets in a room:
-        // account1.socket.join(JSON.stringify(gameID));
-        // account2.socket.join(JSON.stringify(gameID));
-        // player_socket.join(JSON.stringify(gameID))
-        let obj = {"username": {x : 50, y: 465, wepID: 0}};
-        // Tell all clients to start loading their levels
         console.log("emitting load level");
         socket.emit("load level", JSON.stringify({
             gameID, 
-            playerStates: obj,
+            playerStates: playerStateManager.getAllPlayerStates(),
             map: map.getMapInfo(),
         }));
-        // socket.to(JSON.stringify(gameID)).emit("load level", JSON.stringify({
-        //     gameID, 
-        //     // usernames, 
-        //     map: map.getMapInfo(),
-        //     // playerInfos,
-        //     // playerStates
-        // }));
+
     };
 
     // Check if user's client is done loading the level. Once both players are ready, start the game.
@@ -150,23 +103,11 @@ const GameManager = function(id, io){
 
     // Update function or gameloop
     const update = function(){
-        // TODO: run update repeatedly using a timer.
-        // console.log("updating repeatedly");
-        // object to send information to client about the game state.
 
-        // console.log(action);
         
-        playerStates["username"].update(inputStateManager)
-        let playerStateObj = playerStates["username"].getObj();
-        // console.log(playerStateObj);
-        let updateObject = {playerState: playerStateObj};
-        // pos = playerStates["username"].getPlayerPosition();
-        // dir = playerStates["username"].getPlayerDirection();
-        // console.log(dir);
-        // updateObject.playerStates = {"username": {x: pos.x, y: pos.y, direction: dir}};
-        // console.log(updateObject);
-        // emit object to all clients in the game.
-        // socket.to(JSON.stringify(gameID)).emit("update", JSON.stringify(updateObject));
+        playerStateManager.update(inputStateManager);
+        let updateObject = {playerStates: playerStateManager.getAllPlayerStates()};
+
         socket.emit("update", JSON.stringify(updateObject));
     };
 

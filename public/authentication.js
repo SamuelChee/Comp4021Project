@@ -70,15 +70,7 @@ const Authentication = (function() {
     //                 request fails in this form `onError(error)`
     const signout = function(onSuccess, onError) {
 
-        let prep_data = {username};
-        let prep_json = JSON.stringify(prep_data);
-
-        fetch("/signout", 
-        {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: prep_json
-        })
+        fetch("/signout")
         .then((res) => res.json())
         .then((json) => {
             if(json.status == "success"){
@@ -93,7 +85,7 @@ const Authentication = (function() {
         });
     };
 
-    const getProfile = function(onSuccess, onError){
+    const requestProfile = function(onSuccess, onError){
         fetch("/profile")
             .then((res) => res.json())
             .then((json) => {
@@ -110,5 +102,9 @@ const Authentication = (function() {
             });
     };
 
-    return { getUser, signin, validate, signout, getProfile };
+    const getProfile = function(){
+        return profile;
+    };
+
+    return { getUser, signin, validate, signout, requestProfile, getProfile};
 })();

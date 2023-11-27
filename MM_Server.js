@@ -2,23 +2,29 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const session = require("express-session");
-const disconnectableQueue = require('./util/disconnectableQueue');
 const path = require('path');
-const GameManager = require('./server/game_mechanics/GameManager');
-const Mutex = require('async-mutex').Mutex;
-const Semaphore = require('async-mutex').Semaphore;
-const withTimeout = require('async-mutex').withTimeout;
 const {
     SocketEvents
 } = require('./shared/constants');
+const Mutex = require('async-mutex').Mutex;
+
+// utility functions
+const { Util } = require("./util/Util");
+// queue
+const {disconnectableQueue} = require("./util/disconnectableQueue");
+// Gamemanager
+const  {GameManager} = require("./server/game_mechanics/game_manager");
+
 // Create the Express app
 const app = express();
 // Use the 'public' folder to serve static files
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/shared', express.static(path.join(__dirname, 'shared')));
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'metal_mayhem.html'));
 });// Use the json middleware to parse JSON data
+// Use the json middleware to parse JSON data
 app.use(express.json());
 
 // Use the session middleware to maintain sessions
@@ -49,7 +55,7 @@ const playerQueue = disconnectableQueue();
 const onGoingGames = {}
 // Track the games that online users are in. Key = username, value = game id
 const usersToGames = {}
-let game;
+
 // Max number of games
 const maxNumGames = 3;
 
@@ -61,8 +67,13 @@ const maxID = 1024;
 //const mapPool = JSON.parse(fs.readFileSync("data/maps.json"));
 
 // for only one map
-// TODO: add platforms, items, initial player position and directions here.
-const mapInfo = {}
+// TODO: add platforms, items (spawn location and spawn time after being picked up), initial player position and directions here.
+const mapInfo = {
+    platforms: [],
+    items: [{ spawnlocation: { x: 0, y: 0 }, time: 20 }],
+    initialPlayerLocations: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
+    initialPlayerDirections: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
+}
 
 // mutex for accessing queue
 const queue_mutex = new Mutex();
@@ -75,91 +86,74 @@ function containWordCharsOnly(text) {
 
 // Helper function for removing players from queue on signout or disconnect, or manually leaving the queue
 // playerToRemove = username of player to remove
-// function removeFromQueue(playerToRemove){
-//     playerQueue.removeFromQueue(playerToRemove);
-// }
+function removeFromQueue(playerToRemove) {
+    playerQueue.removeFromQueue(playerToRemove);
+}
 
 // Helper function to disconnect player from an on-going game when signout or disconnected or leaving the game
 // playerToRemove = username of player to remove
-// function removeFromGame(playerToRemove){
-//     // if player is in a game
-//     if(playerToRemove in usersToGames){
-//         let gameID = usersToGames[playerToRemove];
-//         let game = onGoingGames[gameID];
+function removeFromGame(playerToRemove) {
+    // if player is in a game
+    if (playerToRemove in usersToGames) {
+        let gameID = usersToGames[playerToRemove];
+        let game = onGoingGames[gameID];
 
-//         // returns the updated profile of the player
-//         let profile = game.disconnectPlayer(playerToRemove).profile;
-//         delete usersToGames[playerToRemove];
+        // returns the updated profile of the player
+        let profile = game.disconnectPlayer(playerToRemove).profile;
+        delete usersToGames[playerToRemove];
 
-//         // player's profile was updated during gameplay, save it into users file
-//         const users = JSON.parse(fs.readFileSync("data/users.json"));
-//         users[playerToRemove].profile = profile;
-//         fs.writeFileSync("data/users.json", JSON.stringify(users, null, "   "));
-//     }
-// }
+        // player's profile was updated during gameplay, save it into users file
+        const users = JSON.parse(fs.readFileSync("data/users.json"));
+        users[playerToRemove].profile = profile;
+        fs.writeFileSync("data/users.json", JSON.stringify(users, null, "   "));
+    }
+}
 
 // Helper function to check whether a new game can be created.
-// function canCreateGame(){
-//     return playerQueue.numOfQueuedPlayers() < maxNumGames && playerQueue.numOfQueuedPlayers() > 2;
-// }
+function canCreateGame() {
+    return Object.keys(onGoingGames) < maxNumGames && playerQueue.numOfQueuedPlayers() >= 2;
+}
 
 // Helper function for creating a gameID
 function createGameID() {
-    let gameID = Math.floor(maxID * Math.random());
-    // while(gameID in onGoingGames){
-    //     gameID = Math.floor(maxID * Math.random());
-    // }
-    return gameID;
+    return Util.generateID(onGoingGames);
 }
 
 // Helper function for creating a match between two players 
-function createGame(socket) {
+function createGame() {
     // create as many games as needed
-    // while(canCreateGame()){
+    while (canCreateGame()) {
+        console.log("creating game")
 
-    // dequeue the two users
-    // let account1 = playerQueue.dequeue();
-    // let account2 = playerQueue.dequeue();
+        // dequeue the two users
+        let account1 = playerQueue.dequeue();
+        let account2 = playerQueue.dequeue();
 
-    // get the sockets of the two users
-    // let socket1 = onlineUsers[account1.username].socket;
-    // let socket2 = onlineUsers[account2.username].socket;
+        // get the sockets of the two users
+        let socket1 = onlineUsers[account1.username].socket;
+        let socket2 = onlineUsers[account2.username].socket;
 
-    // let sockets = {};
-    // sockets[account1.username] = socket1;
-    // sockets[account2.username] = socket2;
+        let sockets = {};
+        sockets[account1.username] = socket1;
+        sockets[account2.username] = socket2;
 
-    /*
-    // for multiple maps
-    // select random map from map pool
-    let mapID = Math.floor(Object.keys(mapPool).length * Math.random());
-    let mapInfo = mapPool[mapID];
-    */
+        /*
+        // for multiple maps
+        // select random map from map pool
+        let mapID = Math.floor(Object.keys(mapPool).length * Math.random());
+        let mapInfo = mapPool[mapID];
+        */
 
-    // Initialize game
-    // let gameID = createGameID();
-    let gameId = 1;
-    game = GameManager(gameId, io);
-    let NUM_PLATFORM = 7;
-    let PLATFORM_SPACING = 100;
-    mapInfo.platforms = [
-            { type: "thick", x: 17, y: 400, num_platforms: NUM_PLATFORM },
-            { type: "thick", x: 635, y: 400, num_platforms: NUM_PLATFORM },
-            { type: "thick", x: 335, y: 400 - PLATFORM_SPACING, num_platforms: NUM_PLATFORM },
-            { type: "thick", x: 17, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM },
-            { type: "thick", x: 635, y: 400 - PLATFORM_SPACING * 2, num_platforms: NUM_PLATFORM },
-            { type: "thick", x: 335, y: 400 - PLATFORM_SPACING * 3, num_platforms: NUM_PLATFORM }
-        ];
+        // Initialize game
+        let gameID = createGameID();
+        let game = GameManager(gameID, io);
 
+        onGoingGames[gameID] = game;
+        usersToGames[account1.username] = gameID;
+        usersToGames[account2.username] = gameID;
 
-    game.initialize("account1", "account2", mapInfo, socket);
-
-
-        // Add games to on going games and users to userstogames
-        // onGoingGames[gameID] = game;
-        // usersToGames[account1.username] = gameID;
-        // usersToGames[account2.username] = gameID;
-    // }
+        game.initialize(account1, account2, mapInfo, sockets);
+    }
 }
 
 // Handle the /register endpoint
@@ -254,7 +248,8 @@ app.get("/validate", (req, res) => {
 });
 
 // Handle the /signout endpoint
-app.post("/signout", (req, res) => {
+app.get("/signout", (req, res) => {
+    console.log("sign out");
 
     // remove user in queue or any ongoing games.
     playerToRemove = JSON.parse(req.session.user).username;
@@ -286,166 +281,143 @@ app.get("/profile", (req, res) => {
 // Adding a user on connection
 io.on("connection", (socket) => {
     console.log("connection test");
-    createGame(socket)
-    // let account = JSON.parse(socket.request.session.user);
-    // onlineUsers["test"] = {
-    //     avatar: account.avatar, 
-    //     name: account.name, 
-    //     profile: account.profile, 
-    //     socket: socket};
-    // onlineUsers[account.username] = {
-    //     avatar: account.avatar, 
-    //     name: account.name, 
-    //     profile: account.profile, 
-    //     socket: socket};
+
+    let account = JSON.parse(socket.request.session.user);
+    console.log(socket.request.session.user);
+
+    onlineUsers[account.username] = {
+        avatar: account.avatar,
+        name: account.name,
+        profile: account.profile,
+        socket: socket
+    };
+
 
     // notify others that a user connected.
     //io.emit("add user", JSON.stringify(account));
 
     // Removing a user on disconnect
-    // socket.on(SocketEvents.DISCONNECT, () => {
-    //     console.log("disconnection test");
-    //     let account = JSON.parse(socket.request.session.user);
-    //     playerToRemove = account.username;
-    //     delete onlineUsers[account.username];
+    socket.on(SocketEvents.DISCONNECT, () => {
+        console.log("disconnection test");
+        let account = JSON.parse(socket.request.session.user);
+        playerToRemove = account.username;
+        delete onlineUsers[account.username];
 
-    //     // acquire mutex to access player queue
-    //     queue_mutex.acquire().then((release) => {
-    //         // remove player from queue if player is in queue
-    //         if(playerQueue.inQueue(playerToRemove)){
-    //             removeFromQueue(playerToRemove);
-    //         }
 
-    //         removeFromGame(playerToRemove);
+        // acquire mutex to access player queue
+        queue_mutex.acquire().then((release) => {
+            // remove player from queue if player is in queue
+            if (playerQueue.inQueue(playerToRemove)) {
+                removeFromQueue(playerToRemove);
+            }
 
-    //         // release mutex for accessing queue.
-    //         release();
-    //     });
-    // });
+            removeFromGame(playerToRemove);
+
+            // release mutex for accessing queue.
+            release();
+        });
+
+    });
 
     // Joining a queue
-    // socket.on(SocketEvents.JOIN_QUEUE, () => {
-    //     let account = JSON.parse(socket.request.session.user);
+    socket.on(SocketEvents.JOIN_QUEUE, () => {
+        console.log("joining queue " + socket.request.session.user);
+        let account = JSON.parse(socket.request.session.user);
 
-    //     // acquire mutex for accessing the queue
-    //     queue_mutex.acquire().then((release) => {
-    //         // queue player up if they can join a queue
-    //         if(!playerQueue.inQueue(account.username)){
-    //             playerQueue.enqueue(account);
+        // acquire mutex for accessing the queue
+        queue_mutex.acquire().then((release) => {
+            // queue player up if they can join a queue
+            if (!playerQueue.inQueue(account.username)) {
+                playerQueue.enqueue(account);
 
-    //             // check if a new match can be created, if so, create a new match and have the dequeued players join it.
-    //             createGame();
+                // check if a new match can be created, if so, create a new match and have the dequeued players join it.
+                createGame();
 
-    //             // if the player didn't make it into a game, send an event notifying the client that they are queued.
-    //             if(!(account.username in usersToGames)){
-    //                 socket.emit("joined queue", JSON.stringify(playerQueue.numOfQueuedPlayers()));
-    //             }
-    //         }
-    //         // release the mutex
-    //         release();
-    //     });
+                // if the player didn't make it into a game, send an event notifying the client that they are queued.
+                if (!(account.username in usersToGames)) {
+                    socket.emit(SocketEvents.JOINED_QUEUE, JSON.stringify(playerQueue.numOfQueuedPlayers()));
+                }
+            }
+            // release the mutex
+            release();
+        });
 
-    // });
+    });
 
-    // // leave a queue
-    // socket.on(SocketEvents.LEAVE_QUEUE, () => {
-    //     let account = JSON.parse(socket.request.session.user);
-    //     let playerToRemove = account.username;
+    // leave a queue
+    socket.on(SocketEvents.LEAVE_QUEUE, () => {
+        console.log("leaving queue " + socket.request.session.user);
+        let account = JSON.parse(socket.request.session.user);
+        let playerToRemove = account.username;
 
-    //     // acquire mutex for accessing queue
-    //     queue_mutex.acquire().then((release) => {
-    //         // remove player from queue if player is in queue
-    //         if(playerQueue.inQueue(playerToRemove)){
-    //             playerQueue.removeFromQueue();
-    //         }
+        // acquire mutex for accessing queue
+        queue_mutex.acquire().then((release) => {
+            // remove player from queue if player is in queue
+            if (playerQueue.inQueue(playerToRemove)) {
+                playerQueue.removeFromQueue();
+            }
 
-    //         // release mutex for accessing queue.
-    //         release();
-    //     });
+            // release mutex for accessing queue.
+            release();
+        });
 
-    //     socket.emit("left queue");
+        socket.emit(SocketEvents.LEFT_GAME);
 
-    // });
+    });
 
     // sent by a client who is done loading a level
     socket.on(SocketEvents.READY, () => {
 
         // find the game that the user belongs to and tell the corresponding gamemanager
         // that they are ready to start the game.
+        console.log("socket on ready");
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
 
-        // let account = JSON.parse(socket.request.session.user);
-        // let username = account.username;
+        if (username in usersToGames) {
+            let gameID = usersToGames[username];
+            let game = onGoingGames[gameID];
 
-        // if (username in usersToGames) {
-        //     let gameID = usersToGames[username];
-        //     let game = onGoingGames[gameID];
-
-        //     game.ready(username);
-        // }
-
-        console.log("ready");
-        game.ready("username");
+            game.ready(username);
+        }
 
     });
 
     // Processes key down event
-    socket.on(SocketEvents.ON_KEY_DOWN, (key_event) => {
+    socket.on(SocketEvents.ON_KEY_DOWN, (action) => {
 
-        // let account = JSON.parse(socket.request.session.user);
-        // let username = account.username;
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
 
         // if user is in a game
-        // if (username in usersToGames) {
+        if (username in usersToGames) {
 
             // find the game the user is in
-            // let gameID = usersToGames[username];
-            // let game = onGoingGames[gameID];
+            let gameID = usersToGames[username];
+            let game = onGoingGames[gameID];
 
             // ask the corresponding gamemanager to process the action from the user
-            // let keyEventObj = JSON.parse(key_event);
-            game.processKeyDown(key_event);
-        // }
+            game.processKeyDown(username, action);
+        }
 
     });
 
     // Processes key up event
-    socket.on(SocketEvents.ON_KEY_UP, (key_event) => {
+    socket.on(SocketEvents.ON_KEY_UP, (action) => {
 
-        // let account = JSON.parse(socket.request.session.user);
-        // let username = account.username;
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
 
-        // // if user is in a game
-        // if (username in usersToGames) {
+        // if user is in a game
+        if (username in usersToGames) {
 
-        //     // find the game the user is in
-        //     let gameID = usersToGames[username];
-        //     let game = onGoingGames[gameID];
+            // find the game the user is in
+            let gameID = usersToGames[username];
+            let game = onGoingGames[gameID];
 
-        //     // ask the corresponding gamemanager to process the action from the user
-        //     game.processKeyUp(username, action);
-        // }
-        // let keyEventObj = JSON.parse(key_event);
-        game.processKeyUp(key_event);
-
-    });
-
-    socket.on(SocketEvents.ON_MOUSE_MOVE, (mouse_evt) => {
-
-        // let account = JSON.parse(socket.request.session.user);
-        // let username = account.username;
-
-        // // if user is in a game
-        // if (username in usersToGames) {
-
-        //     // find the game the user is in
-        //     let gameID = usersToGames[username];
-        //     let game = onGoingGames[gameID];
-
-        //     // ask the corresponding gamemanager to process the action from the user
-        //     game.processKeyUp(username, action);
-        // }
-        // let keyEventObj = JSON.parse(key_event);
-        game.processMouseMove(mouse_evt);
+            // ask the corresponding gamemanager to process the action from the user
+            game.processKeyUp(username, action);
+        }
 
     });
 

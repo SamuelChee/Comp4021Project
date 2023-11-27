@@ -8,8 +8,11 @@ const {
     ServerUpdateProps,
     MapStateProps
 } = require('../../shared/constants');
-const Map = function () {
 
+const {BoundingBox} = require("./bounding_box");
+
+const Map = function () {
+    let area = BoundingBox(165, 60, 420, 800); // TODO: change this
     let platforms = null;
     let items = null;
 
@@ -34,7 +37,7 @@ const Map = function () {
         // initialPlayerLocations[account2.username] = mapInfo.initialPlayerLocations[1];
         // initialPlayerDirections[account1.username] = mapInfo.initialPlayerDirections[0];
         // initialPlayerDirections[account2.username] = mapInfo.initialPlayerDirections[1]; 
-    }
+    };
 
     const getPlayerInitialPos = function(username){
         if(username in initialPlayerLocations){
@@ -51,26 +54,28 @@ const Map = function () {
 
         console.log("Error! Player not found in map data!");
         return [0, 0];
-    }
+    };
     // Returns all information about the map that can be used for initialization.
     const getMapState = function () {
         return {
             [MapStateProps.PLATFORMS]: platforms,
             [MapStateProps.ITEMS]: items,
             [MapStateProps.INI_PLAYER_LOCS]: initialPlayerLocations,
-            [MapStateProps.INI_PLAYER_LOCS]: initialPlayerDirections
-        };
-    }
+            [MapStateProps.INI_PLAYER_DIRS]: initialPlayerDirections};};
 
     const getPlatforms = function(){
         return platforms;
-    }
+    };
 
     const getItems = function(){
         return items;
-    }
+    };
 
-    return { initialize, getMapState, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir };
+    const checkInGameArea = function(box, position){
+        box.isPointInBox(position.x, position.y);
+    };
+
+    return { initialize, getMapState, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir, checkInGameArea};
 };
 
-module.exports = Map;
+module.exports = {Map};

@@ -5,6 +5,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
     <style>
         #gameContainer {
             width: 845px;
@@ -37,11 +42,85 @@
 </head>
 
 <body>
+    <!--Lobby-->
+    <div id="container" class="col">
+        <div id="header" class="row">
+            <div id="title">METAL MEYHAM!!!
+                <span class="material-icons">chat</span>
+            </div>
+
+            <div class="spacer-grow"></div>
+
+            <div id="user-panel" class="row">
+                <div class="field-content row shadow">
+                    <span class="user-avatar"></span>
+                    <span class="user-name">-</span>
+                </div>
+                <button id="signout-button" class="icon"><span class="material-icons">logout</span></button>
+            </div>
+        </div>
+
+        <div id="main-panel" class="row">
+            <div id="lobby" class="row">
+                <button id="queue-button">QUEUE UP</button>
+                <button id="profile-button">SHOW PROFILE</button>
+                <p id="console" style=
+                "position:absolute; 
+                bottom:0; 
+                left:0;
+                padding-left:30px;
+                padding-right:30px;
+                color:red"></p>
+            </div>
+        </div>
+
+        <!-- profile -->
+        <div id="profile" class="overlay" style="background-color: rgba(0,0,0,0); padding-top: 50px">
+            <p id="profile title" style="font-size: 300%;"> Profile </p>
+
+            <button id="profile-back-button">BACK</button>
+        </div>
+
+    </div>
+
+    <!-- sign in and registration -->
+    <div id="signin-overlay" class="overlay row">
+        <div class="content shadow row">
+            <form id="signin-form" class="col">
+                <div class="caption">SIGN IN WITH YOUR ACCOUNT</div>
+                <div class="spacer-0"></div>
+                <input id="signin-username" placeholder="Enter your username"></input>
+                <input id="signin-password" type="password" placeholder="Enter your password"></input>
+                <div class="spacer-0"></div>
+                <button type="submit">Sign In</button>
+                <div id="signin-message" class="warning center"></div>
+                <div class="spacer-grow"></div>
+            </form>
+
+            <div class="spacer-0"></div>
+
+            <form id="register-form" class="col">
+                <div class="caption">OR, REGISTER IF YOU DO NOT HAVE ONE</div>
+                <div class="spacer-0"></div>
+                <input id="register-username" maxlength="10" placeholder="Enter your username"></input>
+                <select id="register-avatar">
+                    <option value="">Select your avatar</option>
+                </select>
+                <input id="register-name" maxlength="16" placeholder="Enter your name"></input>
+                <input id="register-password" type="password" placeholder="Enter your password"></input>
+                <input id="register-confirm" type="password" placeholder="Enter your password again"></input>
+                <div class="spacer-0"></div>
+                <button type="submit">Register</button>
+                <div id="register-message" class="warning center"></div>
+            </form>
+        </div>
+    </div>
     <!-- Your sprites will be appended here -->
     <div id="gameContainer">
         <div id="staticBackground"></div>
         <canvas id="gameCanvas" width="845px" height="480px"></canvas>
     </div>
+
 
     <!-- renderer -->
     <script src="renderer/background/background_sprite.js"></script>
@@ -56,6 +135,14 @@
     <script src="renderer/background/generate_background.js"></script>
     <script src="renderer/player.js"></script>
 
+    <!-- Server -->
+    <script src="/socket.io/socket.io.min.js"></script>
+    <script src="ui.js"></script>
+    <script src="authentication.js"></script>
+    <script src="avatar.js"></script>
+    <script src="registration.js"></script>
+    <script src="socket.js"></script>
+
     <!-- Constants -->
     <script src="../shared/constants.js"></script>
 
@@ -63,9 +150,8 @@
     <script src="state_listeners/platform_state_listener.js"></script>
     <script src="state_listeners/player_state_listener.js"></script>
 
-    <!-- Server -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="socket.js"></script>
+    <!-- State Manager -->
+    <script src="state_managers/input_state_manager.js"></script>
 
 
 
@@ -77,115 +163,76 @@
         $(document).ready(function () {
 
          
-            const cv = $("canvas").get(0);
-            const context = cv.getContext("2d");
-            let username = "username";
-            BackgroundGenerator.generateBackground("#staticBackground");
-            Socket.connect();
-            socket = Socket.getSocket();
-            PlatformStateListener.init({context, socket});
-            PlayerStateListener.init({context, socket});
-            socket.emit(SocketEvents.READY);
+            
+            UI.initialize();
+
+            // Validate the signin
+            Authentication.validate(
+                () => {
+                    SignInForm.hide();
+                    UserPanel.update(Authentication.getUser());
+                    UserPanel.show();
+
+                    Socket.connect();
+                },
+                () => { SignInForm.show(); }
+            );
+
+            
 
 
+            // $(document).on('keydown', function (event) {
+            //     let key;
+            //     if (event.key === 'a' || event.key === 'A') {
+            //         key = Keys.LEFT;
+            //     } else if (event.key === 'd' || event.key === 'D') {
+            //         key = Keys.RIGHT;
+            //     }
+            //     else if (event.key === 'w' || event.key === 'W') {
 
-            let startTime;
-            let elapsedTime;
-            let gameLoopStarted = false;
+            //         key = Keys.JUMP;
+            //     }
+            //     else {
+            //         return;
+            //     }
 
-            function gameLoop(timestamp) {
+            //     Socket.onKeyDown(JSON.stringify({ username, key }));
+            // });
 
-                if (!startTime) {
-                    startTime = timestamp;
-                }
+            // $(document).on("keyup", function (event) {
+            //     let key;
+            //     if (event.key === 'a' || event.key === 'A') {
+            //         key = Keys.LEFT;
+            //     } else if (event.key === 'd' || event.key === 'D') {
+            //         key = Keys.RIGHT;
+            //     }
+            //     else if (event.key === 'w' || event.key === 'W') {
+            //         key = Keys.JUMP;
+            //     }
+            //     else {
+            //         return;
+            //     }
+            //     Socket.onKeyUp(JSON.stringify({ username, key }));
+            // });
 
-                elapsedTime = timestamp - startTime;
-                context.clearRect(0, 0, cv.width, cv.height);
-                PlatformStateListener.draw();
-                PlayerStateListener.update(timestamp);
-                PlayerStateListener.draw();
-                
-                if (gameLoopStarted) {
-                    requestAnimationFrame(gameLoop);
-                }
-            }
+            // $(document).on('mousemove', function (evt) {
 
+            //     if (!PlayerStateListener.getIsLoaded()) {
+            //         return; // If the players object has not been populated yet, do not handle the event
+            //     }
+            //     const rect = cv.getBoundingClientRect();
+            //     const mouseX = evt.pageX - rect.left;
+            //     const mouseY = evt.pageY - rect.top;
+            //     player_self = PlayerStateListener.getPlayer("username");
+            //     // // Assuming `player` is your Player object
+            //     const { x: playerX, y: playerY } = player_self.getXY();
 
-            function startGameLoop() {
-                gameLoopStarted = true;
-                requestAnimationFrame(gameLoop);
-            }
+            //     // Calculate the angle between the player and the mouse
+            //     const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
 
-            function stopGameLoop() {
-                gameLoopStarted = false;
-            }
-
-            socket.on(SocketEvents.START_GAME_LOOP, () => {
-                startGameLoop();
-            });
-
-             socket.on(SocketEvents.STOP_GAME_LOOP, () => {
-                stopGameLoop();
-            });
-
-
-            const DIR_LEFT = 1;
-            const DIR_RIGHT = 2;
-            const DIR_JUMP = 3;
-
-
-            $(document).on('keydown', function (event) {
-                let key;
-                if (event.key === 'a' || event.key === 'A') {
-                    key = Keys.LEFT;
-                } else if (event.key === 'd' || event.key === 'D') {
-                    key = Keys.RIGHT;
-                }
-                else if (event.key === 'w' || event.key === 'W') {
-
-                    key = Keys.JUMP;
-                }
-                else {
-                    return;
-                }
-
-                Socket.onKeyDown(JSON.stringify({ username, key }));
-            });
-
-            $(document).on("keyup", function (event) {
-                let key;
-                if (event.key === 'a' || event.key === 'A') {
-                    key = Keys.LEFT;
-                } else if (event.key === 'd' || event.key === 'D') {
-                    key = Keys.RIGHT;
-                }
-                else if (event.key === 'w' || event.key === 'W') {
-                    key = Keys.JUMP;
-                }
-                else {
-                    return;
-                }
-                Socket.onKeyUp(JSON.stringify({ username, key }));
-            });
-
-            $(document).on('mousemove', function (evt) {
-
-                if (!PlayerStateListener.getIsLoaded()) {
-                    return; // If the players object has not been populated yet, do not handle the event
-                }
-                const rect = cv.getBoundingClientRect();
-                const mouseX = evt.pageX - rect.left;
-                const mouseY = evt.pageY - rect.top;
-                player_self = PlayerStateListener.getPlayer("username");
-                // // Assuming `player` is your Player object
-                const { x: playerX, y: playerY } = player_self.getXY();
-
-                // Calculate the angle between the player and the mouse
-                const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
-
-                Socket.onMouseMove(JSON.stringify({ username, angle }));
-                // // Set the rotation of the weapon
-            });
+            //     Socket.onMouseMove(JSON.stringify({ username, angle }));
+            //     // // Set the rotation of the weapon
+            // });
 
 
 

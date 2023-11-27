@@ -1,6 +1,6 @@
-const InputStateManager = require("./InputStateManager");
-const Map = require("./Map");
-const PlayerStateManager = require("./PlayerStateManager");
+const {InputStateListener} = require("./input_state_listener");
+const {Map} = require("./map");
+const {PlayerStateManager} = require("./player_state_manager");
 
 const {
     Directions,
@@ -12,7 +12,8 @@ const {
     ServerUpdateProps,
     KeyEventProps,
     MouseEventProps,
-    SocketEvents
+    SocketEvents,
+    PlayerConsts
 } = require('../../shared/constants');
 
 const GameManager = function(id, io){
@@ -21,32 +22,58 @@ const GameManager = function(id, io){
     let playerInfos = {}; // contains name, avatar and profile
     // let playerStates = {};
     let usernames = [];
-    let sockets = {};
+    let player_sockets = {};
     let isReady = {};
-    let socket = io;
+    let server_socket = io;
 
     // Gameplay stuff
     let players = {};
     
     let map = Map(); // Creates a new instance of `Map`
-    let inputStateManager = InputStateManager();
+    let inputStateListener = InputStateListener();
     let playerStateManager = PlayerStateManager();
     let gameID = id;
 
-    // Collision stuff
+    // Projectile stuff
+    // Each projectile is represented by the following
+    // {ID, boundingBox, position, direction, speed, damage, width, height}
+    let projectiles = {};
     
 
-    const initialize = function(account1, account2, mapState, player_socket){
+    const initialize = function(account1, account2, mapState, sockets){
         // Initialize map
         let username = "username";
         map.initialize(account1, account2, mapState);
 
+        // initialize player information. Contains username, name, avatar and username of opponent.
+        playerInfos[account1.username] = {
+            name: account1.name, 
+            avatar: account1.avatar, 
+            profile: account1.profile,
+            opponent: account2.username};
 
-        playerStateManager.addPlayer(username, {x: 50, y: 430}, 0)
+        playerInfos[account2.username] = {
+            name: account2.name, 
+            avatar: account2.avatar, 
+            profile: account2.profile,
+            opponent: account1.username};
+
+        // initialize projectiles
+        projectiles[account1.username] = {};
+        projectiles[account2.username] = {};
+
+        playerStateManager.addPlayer(username, {x: PlayerConsts.PLAYER_1_INI_X, y: PlayerConsts.PLAYER_1_INI_Y}, PlayerConsts.PLAYER_1_INI_WEP_ID)
+        
+        player_sockets = sockets;
+        // Make players join a room
+        // Put player sockets in a room:
+        player_sockets[account1.username].join(JSON.stringify(gameID));
+        player_sockets[account2.username].join(JSON.stringify(gameID));
+
 
 
         console.log("emitting load level");
-        socket.emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
             [LoadLevelProps.GAME_ID]: gameID,
             [LoadLevelProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
             [LoadLevelProps.MAP_STATE]: map.getMapState(),
@@ -57,31 +84,30 @@ const GameManager = function(id, io){
     // Check if user's client is done loading the level. Once both players are ready, start the game.
     const ready = function(username){
         // Just double checking, not necessary
-        // if(username in players){
-        //     isReady[username] = true;
-        //     let canStart = true;
+        if(username in players){
+            isReady[username] = true;
+            let canStart = true;
 
-        //     for(let i = 0; i < usernames.length; i++){
-        //         let username = usernames[i];
-        //         if(!isReady[username]){
-        //             canStart = false;
-        //             break;
-        //         }
-        //     }
-        //     if(canStart){
-        //         start();
-        //     }
-        // }
-
-        start();
+            for(let i = 0; i < usernames.length; i++){
+                let username = usernames[i];
+                if(!isReady[username]){
+                    canStart = false;
+                    break;
+                }
+            }
+            if(canStart){
+                console.log("can start");
+                start();
+            }
+        }
     };
 
     // The function to start the game, maybe run this after everything is done loading in the client side.
     const start = function(){
         // Tell the clients that the game can start
-        // socket.to(JSON.stringify(gameID)).emit("start");
+        // server_socket.to(JSON.stringify(gameID)).emit("start");
         console.log("emit start")
-        socket.emit(SocketEvents.START_GAME_LOOP);
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.START_GAME_LOOP);
 
         // TODO: Start GameLoop, or put this in a timer if we need a countdown before starting the game.
         // Start the game loop
@@ -109,7 +135,7 @@ const GameManager = function(id, io){
 
 
         // winner is the username of the winner
-        socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
     }
 
 
@@ -117,10 +143,10 @@ const GameManager = function(id, io){
     const update = function(){
 
         
-        playerStateManager.update(inputStateManager);
+        playerStateManager.update(inputStateListener);
         let updateObject = {[ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates()};
 
-        socket.emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
     };
 
     const getID = function(){
@@ -130,10 +156,10 @@ const GameManager = function(id, io){
     const disconnectPlayer = function(username){
         // TODO: disconnect the player 
 
-        sockets[username].broadcast.to(JSON.stringify(gameID)).emit(SocketEvents.PLAYER_LEFT, JSON.stringify(playerInfos[username]));
+        player_sockets[username].broadcast.to(JSON.stringify(gameID)).emit(SocketEvents.PLAYER_LEFT, JSON.stringify(playerInfos[username]));
 
         // kick the player out of the room
-        sockets[username].leave(JSON.stringify(gameID));
+        player_sockets[username].leave(JSON.stringify(gameID));
 
         // if a player leaves mid game, handle game over mechanics, otherwise just send player
         // back to lobby.
@@ -142,23 +168,24 @@ const GameManager = function(id, io){
         }
 
 
-        return {username: username, profile: players[username].profile};   
+        return {username: username, profile: playerInfos[username].profile};     
     };
 
     const processKeyDown = function(keyEventObj){
-        inputStateManager.updateKeyDown(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
+        inputStateListener.updateKeyDown(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
     };
 
     // Consider this function to handle key up events
     const processKeyUp = function(keyEventObj){
-        inputStateManager.updateKeyUp(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
+        inputStateListener.updateKeyUp(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
     };
 
     const processMouseMove = function(mouseEventObj){
-        inputStateManager.updateAimAngle(mouseEventObj[MouseEventProps.USERNAME], mouseEventObj[MouseEventProps.Angle])
+        inputStateListener.updateAimAngle(mouseEventObj[MouseEventProps.USERNAME], mouseEventObj[MouseEventProps.ANGLE])
     };
 
     return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};
 };
 
-module.exports = GameManager;
+if(typeof(module) === "object")
+    module.exports = {GameManager};

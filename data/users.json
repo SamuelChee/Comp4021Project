@@ -1,0 +1,50 @@
+{
+   "player1": {
+      "avatar": "Badger",
+      "name": "number1",
+      "password": "$2b$10$0QW4QwIPGo6jwK0YVbGyOu7xYBJdTrvW2Xa.KgjkuFKWQbkI0sEGW",
+      "profile": {
+         "Wins": 0,
+         "Losses": 0,
+         "Kills": 0,
+         "Deaths": 0,
+         "GamesPlayed": 0
+      }
+   },
+   "player2": {
+      "avatar": "Rooster",
+      "name": "number2",
+      "password": "$2b$10$8h7fhFM9iysXMH4HSczml.G/WRX53NwyGOfq0VovXB1L917GC8Jx2",
+      "profile": {
+         "Wins": 0,
+         "Losses": 0,
+         "Kills": 0,
+         "Deaths": 0,
+         "GamesPlayed": 0
+      }
+   },
+   "a": {
+      "avatar": "Hamster",
+      "name": "a",
+      "password": "$2b$10$GjPgnBZB9GL/3B4PEmYGIuxHG3C9UrwkFLGHo96oardqzOwi2qITe",
+      "profile": {
+         "Wins": 0,
+         "Losses": 0,
+         "Kills": 0,
+         "Deaths": 0,
+         "GamesPlayed": 0
+      }
+   },
+   "b": {
+      "avatar": "Rabbit Face",
+      "name": "b",
+      "password": "$2b$10$LPCG9rSwhMsUZA4Xq82tVevYz7jbz4mri1sg2qvAEGwQb0SEMG9fa",
+      "profile": {
+         "Wins": 0,
+         "Losses": 0,
+         "Kills": 0,
+         "Deaths": 0,
+         "GamesPlayed": 0
+      }
+   }
+}

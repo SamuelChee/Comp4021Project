@@ -6,16 +6,28 @@ const {
     PlayerStateProps,
     PlatformDataProps,
     LoadLevelProps,
-    ServerUpdateProps
+    ServerUpdateProps,
+    PlayerConsts
 } = require('../../shared/constants');
+
+const {BoundingBox} = require('./bounding_box');
 // A constructor function for managing player states
 const PlayerStateManager = function () {
 
     // Object to store all players' states
     let players = {};
 
+    let bounding_box = null;
     // Function to add a player and initialize their state
     const addPlayer = function (username, initPosition, wepID) {
+
+        bounding_box = BoundingBox(
+            initPosition.y - PlayerConsts.SPRITE_HEIGHT / 2, 
+            initPosition.x - PlayerConsts.SPRITE_WIDTH / 2, 
+            initPosition.y + PlayerConsts.SPRITE_HEIGHT / 2,
+            initPosition.x + PlayerConsts.SPRITE_WIDTH / 2);  //top left bottom right
+
+        
         players[username] = {
             [PlayerStateProps.X_INI]: initPosition.x, // Initial X position
             [PlayerStateProps.Y_INI]: initPosition.y, // Initial Y position
@@ -38,8 +50,21 @@ const PlayerStateManager = function () {
         };
     }
 
+    // Checks for collisions between bounding boxes
+    const detectCollision = function(box){
+        return box.isPointInBox(position.x, position.y);
+    }
+
+    const takeDamage = function(damage){
+        health -= damage;
+    }
+
+    const isDead = function(){
+        return health <= 0;
+    }
+
     // Function to update players' states based on their inputs
-    const update = function (inputStateManager) {
+    const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
 
@@ -58,18 +83,18 @@ const PlayerStateManager = function () {
                 player[PlayerStateProps.Y] += player[PlayerStateProps.Y_VEL];
             }
             // If jump key is pressed, set Y velocity to jump velocity and set falling to true
-            else if (inputStateManager.getKeyPressed(username, Keys.JUMP)) {
+            else if (inputStateListener.getKeyPressed(username, Keys.JUMP)) {
                 player[PlayerStateProps.Y_VEL] = player[PlayerStateProps.JUMP_VEL];
                 player[PlayerStateProps.IS_FALLING] = true;
             }
 
             // If left or right key is pressed, update direction, action, and X position
-            if (inputStateManager.getKeyPressed(username, Keys.LEFT)) {
+            if (inputStateListener.getKeyPressed(username, Keys.LEFT)) {
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
             }
-            else if (inputStateManager.getKeyPressed(username, Keys.RIGHT)) {
+            else if (inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
                 player[PlayerStateProps.DIRECTION] = Directions.RIGHT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
@@ -80,7 +105,7 @@ const PlayerStateManager = function () {
             }
 
             // Update aim angle based on input state manager
-            player[PlayerStateProps.AIM_ANGLE] = inputStateManager.getAimAngle(username);
+            player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }
     }
 
@@ -114,9 +139,12 @@ const PlayerStateManager = function () {
         getPlayerPosition,
         getPlayerDirection,
         getPlayerState,
-        getAllPlayerStates
+        getAllPlayerStates,
+        detectCollision,
+        takeDamage,
+        isDead
     };
 };
 
 // Export the PlayerStateManager constructor function
-module.exports = PlayerStateManager;
+module.exports = {PlayerStateManager};

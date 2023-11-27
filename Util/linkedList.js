@@ -3,10 +3,8 @@ const LinkedListNode = function(){
     let next = null;
     let prev = null;
 
-    const initialize = function(e, nextNode=null, prevNode=null){
+    const initialize = function(e){
         element = e;
-        next = nextNode;
-        prev = prevNode;
     };
 
     const getElement = function(){
@@ -79,7 +77,7 @@ const LinkedList = function(){
                 prev.setNext(next);
             }
             if(next != null){
-                prev.setPrev(prev);
+                next.setPrev(prev);
             }
             
             // iterator is at tail
@@ -149,7 +147,8 @@ const LinkedList = function(){
     return {initialize, addNode, removeNode, removeElement, getCount, peak};
 };
 
+if(typeof(module) === "object")
+    module.exports = {LinkedListNode, LinkedList};
 
-module.exports = LinkedListNode;
-module.exports = LinkedList;
+
 

@@ -66,9 +66,28 @@ const KeyEventProps = {
 
 const MouseEventProps = {
   USERNAME: 'username',
-  Angle: 'angle'                      
+  ANGLE: 'angle'                      
 };
 
+const PlayerConsts = {
+  SPRITE_WIDTH: 32,
+  SPRITE_HEIGHT: 32,
+  PLAYER_1_INI_X: 50,
+  PLAYER_1_INI_Y: 430,
+  PLAYER_2_INI_X: 100,
+  PLAYER_2_INI_Y: 100,
+  PLAYER_1_INI_DIR: Directions.RIGHT,
+  PLAYER_2_INI_DIR: Directions.LEFT,
+  PLAYER_1_INI_WEP_ID: 0,
+  PLAYER_2_INI_WEP_ID: 0
+};
+
+const MapConsts = {
+  MAP_WIDTH: 32,
+  MAP_HEIGHT: 32,
+  PLATFORM_WIDTH: 0,
+  PLATFORM_HEIGHT: 0
+};
 
 
 const SocketEvents = {
@@ -93,7 +112,6 @@ const SocketEvents = {
   START_GAME_LOOP: "start_game_loop",
   STOP_GAME_LOOP: "stop_game_loop",
 
-
 }
 
 
@@ -114,6 +132,8 @@ if (typeof window !== 'undefined') {
   window.MouseEventProps = MouseEventProps;
   window.MapStateProps = MapStateProps;
   window.SocketEvents = SocketEvents;
+  window.PlayerConsts = PlayerConsts;
+  window.MapConsts = MapConsts;
 
 } else {
   // Running in Node.js
@@ -129,6 +149,8 @@ if (typeof window !== 'undefined') {
     KeyEventProps,
     MouseEventProps,
     MapStateProps,
-    SocketEvents
+    SocketEvents,
+    PlayerConsts,
+    MapConsts
   };
 }

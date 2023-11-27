@@ -1,4 +1,4 @@
-const LinkedList = require('./linkedList'); // adjust the path to match your file structure
+const {LinkedList, LinkedListNode} = require("./linkedList");
 
 const disconnectableQueue = function(){
     const queue = LinkedList();
@@ -8,28 +8,26 @@ const disconnectableQueue = function(){
         // account should have the username, avatar, name, profile
         if(!(account.username in queuedPlayers)){
             queuedPlayers[account.username] = {
-                name: account.name,
+                name: account.name, 
                 avatar: account.avatar,
-                profile: account.profile
-            };
+                profile: account.profile};
 
-            let newNode = LinkedListNode;
-            newNode.initialize(account.username);
-            queue.addNode(newNode);
-        }
+            queue.addNode(account.username);
+        }    
     };
 
     const dequeue = function(){
         // remove player from queue
-        let user = queue.removeNode();
+        user = queue.removeNode();
+        console.log(user);
+        console.log(typeof(user));
         // Get account information back
         let account = {
-            username: user,
-            name: queuedPlayers[user].name,
-            avatar: queuedPlayers[user].avatar,
-            profile: queuedPlayers[user].profile
-        };
-
+            username: user, 
+            name: queuedPlayers[user].name, 
+            avatar: queuedPlayers[user].avatar, 
+            profile: queuedPlayers[user].profile};
+            
         // remove from queuedplayer list
         delete queuedPlayers[user];
 
@@ -59,4 +57,5 @@ const disconnectableQueue = function(){
     return {enqueue, dequeue, removeFromQueue, peak, numOfQueuedPlayers, inQueue};
 };
 
-module.exports = disconnectableQueue;
+if(typeof(module) === "object")
+    module.exports = {disconnectableQueue};

@@ -23,9 +23,12 @@ const PlayerStateListener = (function () {
     const init = function ({ context, socket}) {
         context = context;
         socket = socket;
-
+        
+  
         // Listen for 'load level' event to initialize player states
+        
         socket.on(SocketEvents.LOAD_LEVEL, function (event) {
+            
             const eventData = JSON.parse(event);
             console.log(eventData);
 

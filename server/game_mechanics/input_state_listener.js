@@ -1,4 +1,4 @@
-const InputStateManager = function() {
+const InputStateListener = function() {
 
     const playerKeyStates = {};
     const playerAimAngles = {};
@@ -73,4 +73,4 @@ const InputStateManager = function() {
   
   };
   
-  module.exports = InputStateManager;
+  module.exports = {InputStateListener};

@@ -37,8 +37,8 @@ const disconnectableQueue = function(){
     // handle cases when the player decides to leave the queue or disconnected while in queue
     const removeFromQueue = function(playerToRemove){
         if(playerToRemove in queuedPlayers){
-            queue.removeElement(user);
-            delete queuedPlayers[user];
+            queue.removeElement(playerToRemove);
+            delete queuedPlayers[playerToRemove];
         }
     };
 

@@ -220,7 +220,7 @@ const GameManager = function(id, io){
         }
 
 
-        return {username: username, profile: players[username].profile};   
+        return {username: username, profile: playerInfos[username].profile};   
     };
 
     // Const use this function to spawn a projectile,

@@ -191,7 +191,6 @@ const Lobby = (function(){
 })();
 
 const Profile = (function(){
-    const components = [];
 
     const initialize = function(){
         $("#profile").hide();
@@ -210,6 +209,13 @@ const Profile = (function(){
         $("#profile").hide();
     };
 
+    const update = function(){
+        Authentication.getProfile(()=>{
+            let profile = Authentication.getProfile();
+            
+        });
+    };
+
     return {initialize, show, hide};
 })();
 
@@ -224,7 +230,7 @@ const UI = (function() {
     };
 
     // The components of the UI are put here
-    const components = [SignInForm, UserPanel, Lobby];
+    const components = [SignInForm, UserPanel, Lobby, Profile];
 
     // This function initializes the UI
     const initialize = function() {

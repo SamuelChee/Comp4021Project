@@ -4,16 +4,16 @@ const fs = require("fs");
 const session = require("express-session");
 const path = require('path');
 const {
-    SocketEvents
+    SocketEvents, KeyEventProps
 } = require('./shared/constants');
 const Mutex = require('async-mutex').Mutex;
 
 // utility functions
 const { Util } = require("./util/Util");
 // queue
-const {disconnectableQueue} = require("./util/disconnectableQueue");
+const { disconnectableQueue } = require("./util/disconnectableQueue");
 // Gamemanager
-const  {GameManager} = require("./server/game_mechanics/game_manager");
+const { GameManager } = require("./server/game_mechanics/game_manager");
 
 // Create the Express app
 const app = express();
@@ -362,7 +362,7 @@ io.on("connection", (socket) => {
             release();
         });
 
-        socket.emit(SocketEvents.LEFT_GAME);
+        socket.emit(SocketEvents.LEFT_QUEUE);
 
     });
 
@@ -387,25 +387,27 @@ io.on("connection", (socket) => {
 
             release();
         });
-        
+
 
     });
 
     // Processes key down event
     socket.on(SocketEvents.ON_KEY_DOWN, (action) => {
-
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
-
         // if user is in a game
-        if (username in usersToGames) {
+        if (action[KeyEventProps.USERNAME] == action.username) {
 
-            // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+            if (username in usersToGames) {
 
-            // ask the corresponding gamemanager to process the action from the user
-            game.processKeyDown(username, action);
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processKeyDown(action);
+            }
+
         }
 
     });
@@ -415,35 +417,36 @@ io.on("connection", (socket) => {
 
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username){
+            // if user is in a game
+            if (username in usersToGames) {
 
-        // if user is in a game
-        if (username in usersToGames) {
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
 
-            // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
-
-            // ask the corresponding gamemanager to process the action from the user
-            game.processKeyUp(username, action);
+                // ask the corresponding gamemanager to process the action from the user
+                game.processKeyUp(action);
+            }
         }
 
     });
 
-    // Make the player leave a game
-    socket.on(SocketEvents.LEAVE_GAME, () => {
-        let account = JSON.parse(socket.request.session.user);
-        let username = account.username;
+// Make the player leave a game
+socket.on(SocketEvents.LEAVE_GAME, () => {
+    let account = JSON.parse(socket.request.session.user);
+    let username = account.username;
 
-        // acquire mutex to access player queue
-        queue_mutex.acquire().then((release) => {
-            removeFromGame(playerToRemove);
+    // acquire mutex to access player queue
+    queue_mutex.acquire().then((release) => {
+        removeFromGame(playerToRemove);
 
-            // release mutex for accessing queue.
-            release();
-        });
-
-        socket.emit(SocketEvents.LEFT_GAME);
+        // release mutex for accessing queue.
+        release();
     });
+
+    socket.emit(SocketEvents.LEFT_GAME);
+});
 });
 
 

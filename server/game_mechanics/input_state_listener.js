@@ -14,7 +14,7 @@ const InputStateListener = function() {
     }
   
     const updateKeyUp = (username, key) => {
-      key = key.toLowerCase();
+      // key = key.toLowerCase();
       
       if(!playerKeyStates[username]) {
         initUserKeystate(username);
@@ -24,7 +24,13 @@ const InputStateListener = function() {
     }
   
     const updateKeyDown = (username, key) => {
-      key = key.toLowerCase();
+      console.log("update key down:", username, "  ", key);
+    //   if (typeof key === 'string') {
+    //     // key = key.toLowerCase();
+    // } else {
+    //     console.error("TypeError: key is not a string. Actual type: ", typeof key);
+    // }
+    // console.log("After toLowerCase key: ", key);
       
       if(!playerKeyStates[username]) {
         initUserKeystate(username);
@@ -42,8 +48,8 @@ const InputStateListener = function() {
     }
   
     const getKeyPressed = (username, key) => {
-      key = key.toLowerCase();
-      
+      // key = key.toLowerCase();
+      console.log("here");
       if(!playerKeyStates[username] || !playerKeyStates[username].curKeyState) {
         return false;
       }

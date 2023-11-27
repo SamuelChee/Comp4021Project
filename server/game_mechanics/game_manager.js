@@ -74,7 +74,6 @@ const GameManager = function(id, io){
         isReady[account2.username] = false;
 
 
-
         console.log("emitting load level");
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
             [LoadLevelProps.GAME_ID]: gameID,
@@ -88,12 +87,15 @@ const GameManager = function(id, io){
     const ready = function(username){
         console.log("game manager ready");
         // Just double checking, not necessary
-        if(username in players){
+        if(username in playerInfos){
             isReady[username] = true;
             let canStart = true;
-
+    
+            console.log('Checking readiness for all players...'); // Add this line
+    
             for(let i = 0; i < usernames.length; i++){
                 let username = usernames[i];
+                console.log('Checking readiness for', username, ':', isReady[username]); // And this line
                 if(!isReady[username]){
                     canStart = false;
                     break;
@@ -102,6 +104,8 @@ const GameManager = function(id, io){
             if(canStart){
                 console.log("can start");
                 start();
+            } else {
+                console.log("Not all players are ready"); // And this line
             }
         }
     };
@@ -176,7 +180,8 @@ const GameManager = function(id, io){
     };
 
     const processKeyDown = function(keyEventObj){
-        inputStateListener.updateKeyDown(keyEventObj[KeyEventProps.USERNAME], keyEventObj[KeyEventProps.KEY]);
+        let parsedKeyEventObj = JSON.parse(keyEventObj);
+        inputStateListener.updateKeyDown(parsedKeyEventObj[KeyEventProps.USERNAME], parsedKeyEventObj[KeyEventProps.KEY]);
     };
 
     // Consider this function to handle key up events

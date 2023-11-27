@@ -248,7 +248,7 @@ const UI = (function() {
 // ScoreBoard Here
 // For displaying ScoreBoard
 // FetchScoreBoardData() will call this funciton
-/*const populateScoreboard =function(data){
+/*const populateScoreboard =function((data){
     const scoreboard = document.getElementById('scoreboard');
   
   const tbody = scoreboard.querySelector('tbody');
@@ -269,21 +269,21 @@ const UI = (function() {
   data.forEach((player, index) => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${player.name}</td>
-      <td>${player.statistics.kills}</td>
-      <td>${player.statistics.hpRemaining}</td>
-      <td>${player.statistics.survivalTime}</td>
-      <td>${player.statistics.shotsFired}</td>
-      <td>${player.statistics.numberOfItemsPickedUp}</td>
+        <td>${index + 1}</td>
+        <td>${player.name}</td>
+        <td>${player.profile.Kills}</td>
+        <td>${player.profile["HP Remaining"]}</td>
+        <td>${player.profile["Survival Time"]}</td>
+        <td>${player.profile["Shots Fired"]}</td>
+        <td>${player.profile["Number of Items Picked Up"]}</td>
     `;
     tbody.appendChild(row);
   });
-}
+})();
 
 const FetchScoreBoardData =(function(){
     // The scoreboard from server, Please replace it here
-  fetch('/scoreboard')
+  fetch('user.json')
   .then(response => response.json())
   .then(data => {
     // The function written at the bottom for populating the scoreboard

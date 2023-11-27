@@ -29,17 +29,18 @@ const InputStateManager = (function () {
         socket = _socket;
         cv = _cv;
         username = _username;
-
+        console.log(username);
         $(document).on('keydown', function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
-            socket.emit(SocketEvents.ON_KEY_DOWN, JSON.stringify({ username, key }));
+            console.log(key);
+            socket.emit(SocketEvents.ON_KEY_DOWN, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
         $(document).on("keyup", function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
-            socket.emit(SocketEvents.ON_KEY_UP, JSON.stringify({ username, key }));
+            socket.emit(SocketEvents.ON_KEY_UP, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
         $(document).on('mousemove', function (evt) {

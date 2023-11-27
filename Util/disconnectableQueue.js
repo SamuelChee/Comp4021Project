@@ -14,6 +14,7 @@ const disconnectableQueue = function(){
 
             queue.addNode(account.username);
         }    
+        console.log(numOfQueuedPlayers());
     };
 
     const dequeue = function(){
@@ -31,15 +32,23 @@ const disconnectableQueue = function(){
         // remove from queuedplayer list
         delete queuedPlayers[user];
 
+        console.log(numOfQueuedPlayers());
+
         return account;
     };
 
     // handle cases when the player decides to leave the queue or disconnected while in queue
     const removeFromQueue = function(playerToRemove){
+        console.log("remove from queue called");
+        console.log("Queued players " + Object.keys(queuedPlayers));
+        console.log("Player to remove: " + playerToRemove);
+
         if(playerToRemove in queuedPlayers){
+            console.log("Removing queue");
             queue.removeElement(playerToRemove);
             delete queuedPlayers[playerToRemove];
         }
+        console.log(numOfQueuedPlayers());
     };
 
     const peak = function(){

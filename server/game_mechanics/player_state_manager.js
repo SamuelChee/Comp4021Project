@@ -90,6 +90,7 @@ const PlayerStateManager = function () {
 
             // If left or right key is pressed, update direction, action, and X position
             if (inputStateListener.getKeyPressed(username, Keys.LEFT)) {
+                console.log("here");
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];

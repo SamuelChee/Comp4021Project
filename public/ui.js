@@ -309,3 +309,47 @@ const FetchScoreBoardData =(function(){
     console.log('Error:', error); 
   });
 })();*/
+
+const FetchScoreBoardData =(function() {
+  // Fetch user.json file
+  fetch('user.json')
+    .then(response => response.json())
+    .then(data => {
+      populateScoreboard(data);
+    })
+    .catch(error => {
+      console.log('Error fetching scoreboard data:', error);
+    });
+}
+
+function populateScoreboard(data) {
+  const scoreboard = document.getElementById('scoreboard');
+  const tbody = scoreboard.querySelector('tbody');
+  tbody.innerHTML = '';
+
+  const players = Object.values(data);
+
+  players.sort((a, b) => {
+    if (a.profile.Kills !== b.profile.Kills) {
+      return b.profile.Kills - a.profile.Kills; // Sort by kills in descending order
+    } else if (a.profile["HP Remaining"] !== b.profile["HP Remaining"]) {
+      return b.profile["HP Remaining"] - a.profile["HP Remaining"];
+    } else {
+      return a.profile["Survival Time"] - b.profile["Survival Time"]; 
+    }
+  });
+
+  players.forEach((player, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${player.name}</td>
+      <td>${player.profile.Kills}</td>
+      <td>${player.profile["HP Remaining"]}</td>
+      <td>${player.profile["Survival Time"]}</td>
+      <td>${player.profile["Shots Fired"]}</td>
+      <td>${player.profile["Number of Items Picked Up"]}</td>
+    `;
+    tbody.appendChild(row);
+  });
+})();

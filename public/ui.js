@@ -249,24 +249,82 @@ const Profile = (function(){
 const ScoreBoard = (function(){
     const initialize = function(){
         $("#Rematch").on("click", () => {
-
+            Socket.requestRematch();
+            $("#Rematch").text("waiting");
         });
 
         $("#Return").on("click", () => {
-
+            Socket.leaveGame();
         });
 
         hide();
     };
+
+    const reset = function(){
+        $("#Rematch").text("Request Rematch");
+    }
+
+    const update = function(output){
+        // statistics contain: 
+        /*
+        statistics[account2.username] = {
+            total_damage: 0,
+            shots_fired: 0,
+            total_healing: 0,
+            name: account2.name,
+            profile: account2.profile,
+            opponent: account1.username
+        }
+        */
+       /*
+       <tr>
+                <th id="rank2">1</th>
+                <th id="name2">0</th>
+                <th id="dmg2">0</th>
+                <th id="heal2">0</th>
+                <th id="shots2">0</th>
+                <th id="time2">0</th>
+            </tr>
+        */
+
+        let statistics = output.statistics;
+
+        let time = output.time;
+        let outcome = output.outcome;
+        let winner = output.winner;
+
+        console.log(statistics);
+        console.log(winner);
+        console.log(statistics[winner]);
+        console.log(statistics[winner].opponent);
+
+        let loser = statistics[winner].opponent;
+
+        $("#game_over_title").text("GAME OVER!!! " + outcome);
+
+        $("#name1").text(statistics[winner].name);
+        $("#dmg1").text(statistics[winner].total_damage);
+        $("#heal1").text(statistics[winner].total_healing);
+        $("#shots1").text(statistics[winner].shots_fired);
+        $("#time1").text(time);
+
+        $("#name2").text(statistics[loser].name);
+        $("#dmg2").text(statistics[loser].total_damage);
+        $("#heal2").text(statistics[loser].total_healing);
+        $("#shots2").text(statistics[loser].shots_fired);
+        $("#time2").text(time);
+    }
+
     const hide = function(){
         $("#scoreboard_container").hide();
     };
 
     const show = function(){
+        reset();
         $("#scoreboard_container").show();
     }
 
-    return {initialize, hide, show};
+    return {initialize, hide, show, reset, update};
 })();
 
 const UI = (function() {

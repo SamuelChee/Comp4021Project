@@ -60,6 +60,10 @@ const GameManager = function(id, io){
     let startTime = 0;
 
     let callback = null;
+
+    let acc1 = null;
+    let acc2 = null;
+    let mapS = null;
     
 
     const initialize = function(account1, account2, mapState, sockets, instance, gameOverCallback){
@@ -71,6 +75,9 @@ const GameManager = function(id, io){
 
         // A way for the manager to refer to itself;
         self = instance;
+        acc1 = account1;
+        acc2 = account2;
+        mapS = mapState;
 
         usernames.push(account1.username);
         usernames.push(account2.username);
@@ -110,10 +117,8 @@ const GameManager = function(id, io){
             total_healing: 0,
             name: account2.name,
             profile: account2.profile,
-            opponent: account2.username
+            opponent: account1.username
         }
-
-        statistics["time survived"] = 0;
 
 
         // initialize projectiles
@@ -214,7 +219,13 @@ const GameManager = function(id, io){
         clearInterval(updateInterval);
 
         // update time survived.
-        statistics["time survived"] = performance.now() - startTime;
+        let time = performance.now() - startTime;
+
+        // outcome
+        let outcome = null;
+
+        // for ranking purposes.
+        let winner = usernames[0];
 
         // update profiles
         // draw
@@ -224,6 +235,8 @@ const GameManager = function(id, io){
 
             playerInfos[usernames[1]].profile.Deaths += 1;
             playerInfos[usernames[1]].profile.Kills += 1;
+
+            outcome = "Draw!";
         }
         // wins
         else{
@@ -233,6 +246,8 @@ const GameManager = function(id, io){
 
                 playerInfos[usernames[1]].profile.Loses += 1;
                 playerInfos[usernames[1]].profile.Deaths += 1;
+
+                outcome = playerInfos[usernames[0]].name + " (" + usernames[0] + ") Wins!";
             }
             else{
                 playerInfos[usernames[1]].profile.Kills += 1;
@@ -241,14 +256,19 @@ const GameManager = function(id, io){
                 playerInfos[usernames[0]].profile.Loses += 1;
                 playerInfos[usernames[0]].profile.Deaths += 1;
 
+                winner = usernames[1];
+
+                outcome = playerInfos[usernames[1]].name + " (" + usernames[1] + ") Wins!";
             }
         }
         console.log("Emit game over signal");
 
+        // call manager callback
         callback();
+
         console.log(JSON.stringify(statistics));
         // tell everyone that the game is over and the outcome of the game.
-        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify({statistics, time, outcome, winner}));
 
 
         
@@ -293,19 +313,17 @@ const GameManager = function(id, io){
     const disconnectPlayer = function(username){
         // TODO: disconnect the player 
 
+        // tell the player has left
         player_sockets[username].broadcast.to(JSON.stringify(gameID)).emit(SocketEvents.PLAYER_LEFT, JSON.stringify(playerInfos[username]));
 
         // kick the player out of the room
         player_sockets[username].leave(JSON.stringify(gameID));
+        player_sockets[playerInfos[username].opponent].leave(JSON.stringify(gameID));
 
-        // if a player leaves mid game, handle game over mechanics, otherwise just send player
-        // back to lobby.
-        if(!checkWinCondition()){
-            gameOver(playerInfos[username].opponent);
-        }
-
-
-        return {username: username, profile: playerInfos[username].profile};     
+        // kick the other player out of the room
+        player_sockets[playerInfos[username].opponent].leave(JSON.stringify(gameID));
+        
+        return playerInfos[username].opponent;
     };
 
     const processKeyDown = function(keyEventObj){
@@ -369,7 +387,23 @@ const GameManager = function(id, io){
     const requestRematch = function(username){
         rematch[username] = true;
 
-        
+        let canRematch = true;
+    
+        console.log('Checking readiness for all players...'); // Add this line
+    
+        for(let i = 0; i < usernames.length; i++){
+            let username = usernames[i];
+            console.log('Checking readiness for', username, ':', isReady[username]); // And this line
+            if(!rematch[username]){
+                canRematch = false;
+                break;
+            }
+        }
+
+        if(canRematch){
+            initialize(acc1, acc2, mapS, player_sockets, self, callback);
+        }
+
     }
 
 

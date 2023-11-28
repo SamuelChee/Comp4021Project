@@ -56,6 +56,8 @@ const Socket = (function () {
             
                 // reset the queue button
                 Lobby.update(true);
+                ScoreBoard.hide();
+
                 // Hide UI
                 $("#container").hide();
             
@@ -79,13 +81,21 @@ const Socket = (function () {
         // Acknowledgement from server telling the user has left a game/match.
         socket.on(SocketEvents.LEFT_GAME, () => {
             // TODO: handle user leaving the game, like going back to the lobby page or something
+            // in case player left mid game.
+            gameLoopStarted = false;
 
+            ScoreBoard.hide();
+            $("#container").show();
         })
 
         // Tells the client that the other player in the game has left.
         // see disconnectPlayer function in GameManager
         socket.on(SocketEvents.PLAYER_LEFT, (playerInfo) => {
             // TODO: handle other player in game leaving.
+            gameLoopStarted = false;
+
+            ScoreBoard.hide();
+            $("#container").show();
 
         })
 
@@ -128,7 +138,7 @@ const Socket = (function () {
         })
 
         // Handles game over calls
-        socket.on(SocketEvents.GAME_OVER, (statistics) => {
+        socket.on(SocketEvents.GAME_OVER, (output) => {
             // TODO: display gameover screen.
 
             // Statistics contain statistics about both players, and whether they are the winner
@@ -137,10 +147,10 @@ const Socket = (function () {
             // Statistics (kills, shots_fired, etc.), winner (true if corresponding user is winner)
 
             console.log("Game over called!");
-            statistics = JSON.parse(statistics);
+            output = JSON.parse(output);
 
             // update profile
-            Authentication.setProfile(statistics[Authentication.getUser().username].profile);
+            Authentication.setProfile(output.statistics[Authentication.getUser().username].profile);
             Profile.update();
 
             // stop game loop
@@ -148,6 +158,7 @@ const Socket = (function () {
 
             // update score board
             //ScoreBoard.update(statistics);
+            ScoreBoard.update(output)
             ScoreBoard.show();
             //$("#scoreboard_container").show();
 
@@ -189,6 +200,10 @@ const Socket = (function () {
         socket.emit(SocketEvents.LEAVE_GAME);
     }
 
+    const requestRematch = function(){
+        socket.emit(SocketEvents.REMATCH);
+    }
+
     return {
         getSocket,
         connect,
@@ -196,6 +211,7 @@ const Socket = (function () {
         joinQueue,
         leaveQueue,
         ready,
-        leaveGame
+        leaveGame,
+        requestRematch
     };
 })();

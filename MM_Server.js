@@ -101,19 +101,21 @@ function removeFromGame(playerToRemove) {
         let game = onGoingGames[gameID];
 
         // returns the updated profile of the player
-        let profile = game.disconnectPlayer(playerToRemove).profile;
+        let opponent = game.disconnectPlayer(playerToRemove);
         delete usersToGames[playerToRemove];
+        delete usersToGames[opponent];
 
         // player's profile was updated during gameplay, save it into users file
+        /*
         const users = JSON.parse(fs.readFileSync("data/users.json"));
-        users[playerToRemove].profile = profile;
         fs.writeFileSync("data/users.json", JSON.stringify(users, null, "   "));
+        */
     }
 }
 
 // Helper function to check whether a new game can be created.
 function canCreateGame() {
-    return Object.keys(onGoingGames) < maxNumGames && playerQueue.numOfQueuedPlayers() >= 2;
+    return Object.keys(onGoingGames).length < maxNumGames && playerQueue.numOfQueuedPlayers() >= 2;
 }
 
 // Helper function for creating a gameID
@@ -124,6 +126,7 @@ function createGameID() {
 // Helper function for creating a match between two players 
 function createGame() {
     // create as many games as needed
+    console.log("canCreateGame: " + canCreateGame());
     while (canCreateGame()) {
         console.log("creating game")
 
@@ -509,8 +512,7 @@ io.on("connection", (socket) => {
 
         // acquire mutex to access player queue
         queue_mutex.acquire().then((release) => {
-            removeFromGame(playerToRemove);
-
+            removeFromGame(username);
             // release mutex for accessing queue.
             release();
         });

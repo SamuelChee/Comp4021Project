@@ -146,6 +146,7 @@ const PlayerStateManager = function (manager) {
             const currentTime = Date.now(); // get the current time
             if (inputStateListener.getKeyPressed(username, Keys.CHEAT)){
                 player[PlayerStateProps.HEALTH] = PlayerConsts.INI_HP;
+                player[PlayerStateProps.AMMO] = WepProps[player[PlayerStateProps.WEP_ID]].INI_AMMO;
             }
             if (inputStateListener.getKeyPressed(username, Keys.CHEAT) && inputStateListener.getKeyPressed(username, Keys.CHANGE_WEP)) {
                 // Check if enough time has passed since the last weapon change

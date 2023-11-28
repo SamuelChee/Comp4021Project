@@ -212,8 +212,6 @@ const Profile = (function(){
 
                 $("#append").append('<p id="' + newElementId + '">' +
                 key + ': ' + profile[key] + '</p>');
-
-                head = $("#" + newElementId);
             }
 
             updated = true;
@@ -225,7 +223,27 @@ const Profile = (function(){
         $("#profile").hide();
     };
 
-    return {initialize, show, hide};
+    const update = function(){
+        let profile = Authentication.getUser().profile;
+        let keys = Object.keys(profile);
+
+        for(let i = 0; i < keys.length; i++){
+            let key = keys[i];
+            let newElementId = "profile " + key;
+
+            if(!updated){
+                $("#append").append('<p id="' + newElementId + '">' +
+                key + ': ' + profile[key] + '</p>');
+            }
+            else{
+                $("#" + newElementId).text = key + + ': ' + profile[key];
+            }
+
+        }
+        updated = true;
+    }
+
+    return {initialize, show, hide, update};
 })();
 
 const ScoreBoard = (function(){
@@ -237,12 +255,18 @@ const ScoreBoard = (function(){
         $("#Return").on("click", () => {
 
         });
+
+        hide();
     };
     const hide = function(){
         $("#scoreboard_container").hide();
     };
 
-    return {initialize, hide};
+    const show = function(){
+        $("#scoreboard_container").show();
+    }
+
+    return {initialize, hide, show};
 })();
 
 const UI = (function() {
@@ -255,7 +279,7 @@ const UI = (function() {
     };
 
     // The components of the UI are put here
-    const components = [SignInForm, UserPanel, Lobby, Profile];
+    const components = [SignInForm, UserPanel, Lobby, Profile, ScoreBoard];
 
     // This function initializes the UI
     const initialize = function() {

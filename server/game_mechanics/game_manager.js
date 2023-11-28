@@ -31,6 +31,7 @@ const GameManager = function(id, io){
     let usernames = [];
     let player_sockets = {};
     let isReady = {};
+    let rematch = {};
     let server_socket = io;
     let self = null;
 
@@ -57,11 +58,16 @@ const GameManager = function(id, io){
     let updateInterval = null;
 
     let startTime = 0;
+
+    let callback = null;
     
 
-    const initialize = function(account1, account2, mapState, sockets, instance){
+    const initialize = function(account1, account2, mapState, sockets, instance, gameOverCallback){
         // Initialize map
         map.initialize(account1, account2, mapState);
+
+        // init callback
+        callback = gameOverCallback;
 
         // A way for the manager to refer to itself;
         self = instance;
@@ -93,6 +99,8 @@ const GameManager = function(id, io){
             total_damage: 0,
             shots_fired: 0,
             total_healing: 0,
+            name: account1.name,
+            profile: account1.profile,
             opponent: account2.username
         }
 
@@ -100,10 +108,13 @@ const GameManager = function(id, io){
             total_damage: 0,
             shots_fired: 0,
             total_healing: 0,
+            name: account2.name,
+            profile: account2.profile,
             opponent: account2.username
         }
 
         statistics["time survived"] = 0;
+
 
         // initialize projectiles
         projectiles[account1.username] = {};
@@ -120,6 +131,9 @@ const GameManager = function(id, io){
 
         isReady[account1.username] = false;
         isReady[account2.username] = false;
+
+        rematch[account1.username] = false;
+        rematch[account2.username] = false;
 
         console.log("emitting load level");
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
@@ -230,6 +244,8 @@ const GameManager = function(id, io){
             }
         }
         console.log("Emit game over signal");
+
+        callback();
         console.log(JSON.stringify(statistics));
         // tell everyone that the game is over and the outcome of the game.
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
@@ -355,6 +371,12 @@ const GameManager = function(id, io){
         statistics[username].shots_fired += 1;
     }
 
+    const requestRematch = function(username){
+        rematch[username] = true;
+
+        
+    }
+
 
     return {
         initialize, 
@@ -375,7 +397,8 @@ const GameManager = function(id, io){
         processMouseUp,
         registerDamageStatistic,
         registerHealingStatistic,
-        registerShotsFiredStatistics};
+        registerShotsFiredStatistics,
+        requestRematch};
 };
 
 if(typeof(module) === "object")

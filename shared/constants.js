@@ -341,7 +341,7 @@ const SocketEvents = {
   LOAD_LEVEL: "load_level",
   START_GAME_LOOP: "start_game_loop",
   STOP_GAME_LOOP: "stop_game_loop",
-
+  REMATCH: "rematch"
 }
 
 

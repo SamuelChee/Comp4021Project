@@ -20,18 +20,20 @@ const GameManager = function(id, io){
 
     // Mainly server stuff
     let playerInfos = {}; // contains name, avatar and profile
+
     // let playerStates = {};
     let usernames = [];
     let player_sockets = {};
     let isReady = {};
     let server_socket = io;
+    let self = null;
 
     // Gameplay stuff
     let players = {};
     
     let map = Map(); // Creates a new instance of `Map`
-    let inputStateListener = InputStateListener();
-    let playerStateManager = PlayerStateManager();
+    let inputStateListener = null;
+    let playerStateManager = null;
     let gameID = id;
 
     // Projectile stuff
@@ -40,10 +42,17 @@ const GameManager = function(id, io){
     let projectiles = {};
     
 
-    const initialize = function(account1, account2, mapState, sockets){
+    const initialize = function(account1, account2, mapState, sockets, instance){
         // Initialize map
         let username = "username";
         map.initialize(account1, account2, mapState);
+
+        // A way for the manager to refer to itself;
+        self = instance;
+
+        // Init managers
+        playerStateManager = PlayerStateManager(self);
+        inputStateListener = InputStateListener(self);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
         playerInfos[account1.username] = {
@@ -192,7 +201,26 @@ const GameManager = function(id, io){
         inputStateListener.updateAimAngle(parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE])
     };
 
-    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};
+    const getGameArea = function(){
+        return map.getGameArea();
+    }
+
+    const getMap = function(){
+        return map;
+    }
+
+    return {
+        initialize, 
+        getID, 
+        disconnectPlayer, 
+        start, 
+        update, 
+        ready, 
+        processKeyDown, 
+        processKeyUp, 
+        processMouseMove,
+        getGameArea,
+        getMap};
 };
 
 if(typeof(module) === "object")

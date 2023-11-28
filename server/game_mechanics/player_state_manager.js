@@ -11,11 +11,15 @@ const {
 } = require('../../shared/constants');
 
 const {BoundingBox} = require('./bounding_box');
+
 // A constructor function for managing player states
-const PlayerStateManager = function () {
+const PlayerStateManager = function (manager) {
 
     // Object to store all players' states
     let players = {};
+
+    // A way for player state manager to communicate with manager
+    let gameManager = manager;
 
     // Function to add a player and initialize their state
     const addPlayer = function (username, initPosition, wepID) {
@@ -38,16 +42,19 @@ const PlayerStateManager = function () {
             [PlayerStateProps.AIM_ANGLE]: 0, // Current aim angle
             [PlayerStateProps.Y_VEL]: 0, // Y velocity
             [PlayerStateProps.TERMINAL_Y_VEL]: 20, // Terminal Y velocity
-            [PlayerStateProps.JUMP_VEL]: -20, // Jump velocity
-            [PlayerStateProps.GRAVITATIONAL_ACC]: 2, // Gravitational acceleration
-            [PlayerStateProps.IS_FALLING]: false, // Is player currently falling? (initially false)
+            [PlayerStateProps.JUMP_VEL]: -25, // Jump velocity
+            [PlayerStateProps.GRAVITATIONAL_ACC]: 1.5, // Gravitational acceleration
+            [PlayerStateProps.IS_FALLING]: true, // Is player currently falling? (initially false)
             [PlayerStateProps.X_DIRECTION_MULTIPLE]: { // Direction multipliers for X velocity
                 [Directions.LEFT]: -1,
                 [Directions.RIGHT]: 1
             },
             [PlayerStateProps.WEP_ID]: wepID, // Player's weapon ID
-            [PlayerStateProps.BOX]: box
+            [PlayerStateProps.BOX]: box,
+            [PlayerStateProps.PLATFORM_IDX]: -1
         };
+
+        players[username][PlayerStateProps.BOX].printBox()
     }
 
     // Checks for collisions between bounding boxes
@@ -67,6 +74,11 @@ const PlayerStateManager = function () {
     const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
+
+            // save the player's previous position
+            let originalPos = {};
+            originalPos[PlayerStateProps.X] = player[PlayerStateProps.X];
+            originalPos[PlayerStateProps.Y] = player[PlayerStateProps.Y];
 
             // If player is falling, update Y velocity and position
             if (player[PlayerStateProps.IS_FALLING]) {
@@ -96,10 +108,31 @@ const PlayerStateManager = function () {
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
+            // Check in game area
+            if(!checkInGameArea(username)){
+                // if not in game area, find minimum transformation to move player back into game area
+                const gameArea = gameManager.getGameArea();
+
+                let transform = gameArea.minimumTransform(
+                    player[PlayerStateProps.X], 
+                    player[PlayerStateProps.Y] + PlayerConsts.SPRITE_HEIGHT / 2); // foot of the player
+
+                // set player position
+                player[PlayerStateProps.X] = player[PlayerStateProps.X] + transform.x;
+                player[PlayerStateProps.Y] = player[PlayerStateProps.Y] + transform.y;
+
+                // check if player is at the bottom of the gameArea, if so, stop falling
+                if(transform.y < 0){
+                    player[PlayerStateProps.Y_VEL] = 0;
+                    player[PlayerStateProps.IS_FALLING] = false;
+                }
+
+            }
+            // make adjustments based on platforms
+            checkPlatformCollisions(username, originalPos);
 
             // Update bounding box
             updateBoundingBox(username);
-
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }
@@ -112,6 +145,88 @@ const PlayerStateManager = function () {
             y: players[username][PlayerStateProps.Y]
         };
     }
+
+    const checkInGameArea = function(username){
+        let player = players[username];
+        const gameArea = gameManager.getGameArea();
+
+        return gameArea.isPointInBox(player[PlayerStateProps.X], player[PlayerStateProps.Y]);
+    }
+    
+    const checkPlatformCollisions = function(username, originalPos){
+        let player = players[username];
+        let y_vel = player[PlayerStateProps.Y_VEL];
+        const platforms = gameManager.getMap().getPlatformBoxes();
+
+        // if player is on a platform, check if they are still on it
+        
+        if(player[PlayerStateProps.PLATFORM_IDX] != -1){
+            let mapped_platform = platforms[player[PlayerStateProps.PLATFORM_IDX]];
+            if(player[PlayerStateProps.X] < mapped_platform.getLeft() || 
+            player[PlayerStateProps.X] > mapped_platform.getRight() ||
+            player[PlayerStateProps.Y_VEL] < 0 ){
+
+                player[PlayerStateProps.IS_FALLING] = true;
+                player[PlayerStateProps.PLATFORM_IDX] = -1;
+            }
+        }
+        if(y_vel > 0){
+            // approximate player movement as linear function (raycast);
+            let deltaX = player[PlayerStateProps.X] - originalPos[PlayerStateProps.X];
+            let deltaY = player[PlayerStateProps.Y] - originalPos[PlayerStateProps.Y];
+
+            if(deltaY > 0){
+                for(let i = 0; i < platforms.length; i++){
+                    // get intersection 
+                    const platform = platforms[i];
+                    let t = (platform.getTop() - originalPos[PlayerStateProps.Y]) / deltaY;
+
+                    if(t >= 0 && t <= 1){
+                        let x_intersect =  originalPos[PlayerStateProps.X] + t * deltaX;
+                        // if player's foot intersects with the box, move their foot there
+                        if(x_intersect >= platform.getLeft() && x_intersect <= platform.getRight()){
+                            // stop falling
+                            player[PlayerStateProps.IS_FALLING] = false;
+                            player[PlayerStateProps.Y_VEL] = 0;
+    
+                            // move player
+                            player[PlayerStateProps.X] = x_intersect;
+                            player[PlayerStateProps.Y] = platform.getTop() - (PlayerConsts.SPRITE_HEIGHT / 2);
+    
+                            // The player is now mapped to this platform
+                            player[PlayerStateProps.PLATFORM_IDX] = i;
+                            break;
+                        }
+                    }
+                } 
+            }
+
+            
+        }
+    }
+    
+   /*
+   const checkPlatformCollisions = function(username, originalPos){
+        let player = players[username];
+        let y_vel = player[PlayerStateProps.Y_VEL];
+        const platforms = gameManager.getMap().getPlatformBoxes();
+
+        for(let i = 0; i < platforms.length; i++){
+            // get intersection 
+            const platform = platforms[i];
+            
+            console.log("Player point: " + player[PlayerStateProps.X] + " " + player[PlayerStateProps.Y])
+            platform.printBox();
+            console.log("Point in box? " + platform.isPointInBox(player[PlayerStateProps.X], player[PlayerStateProps.Y]));
+            
+
+            if(platform.isPointInBox(player[PlayerStateProps.X], player[PlayerStateProps.Y])){
+                console.log("Intersect with box! " + i);
+                break;
+            }
+        } 
+    }
+    */
 
     const updateBoundingBox = function(username){
         

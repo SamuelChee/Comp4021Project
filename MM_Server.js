@@ -154,7 +154,7 @@ function createGame() {
         usersToGames[account1.username] = gameID;
         usersToGames[account2.username] = gameID;
 
-        game.initialize(account1, account2, mapInfo, sockets);
+        game.initialize(account1, account2, mapInfo, sockets, game);
     }
 }
 

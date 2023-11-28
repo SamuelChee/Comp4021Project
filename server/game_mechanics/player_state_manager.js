@@ -15,8 +15,8 @@ const {
 const { BoundingBox } = require('./bounding_box');
 
 
-const gunshotSound = new Audio('Comp4021Project/public/res/gunshot.mp3');
-const stepSound = new Audio('Comp4021Project/public/res/step.mp3');
+const gunshotSound = new Audio('../res/gunshot.mp3');
+const stepSound = new Audio('../res/step.mp3');
 
 // A constructor function for managing player states
 const PlayerStateManager = function (manager) {

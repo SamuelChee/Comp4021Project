@@ -37,6 +37,14 @@
         body {
             margin: 0;
         }
+
+        #Description {
+        font-family: Apple Chancery, cursive
+        }
+
+        #HowToPlay {
+        font-family: Jazz LET, fantasy;
+        }
     </style>
 
 </head>
@@ -59,28 +67,29 @@
             </div>
         </div>
 
-        <div id="main-panel" class="row">
+        <div id="main-panel" class="row" >
             <div id="lobby" class="row">
                 <button id="queue-button">QUEUE UP</button>
                 <button id="profile-button">SHOW PROFILE</button>
-                <div id = "Intro">
+                <div id="Intro">
+                    <span class="game-icon"  style="width: 450px; height: 280px; position: absolute; top: 100px; left: 40%; "></span>
                     <p id="Description">
-                        Welcome to Metal Mayhem! In this game you will be engaging in a gunfight with another player.
-                        Salvage whatever ammo you can find in the map and use them to eliminate your opponent with
-                        your trusty rifle. Recover from wounds by salvaging health packs randomly spawned in the map.
+                        Welcome to Metal Mayhem! In this game, you will be engaging in a gunfight with another player.
+                        Salvage whatever ammo you can find on the map and use them to eliminate your opponent with
+                        your trusty rifle. Recover from wounds by salvaging health packs randomly spawned on the map.
                     </p>
-
-                    <div id="How to play">
-                        <p>How to play:</p>
-                        <p style="text-indent: 50px;"> Use the A and D key to move the player left and right respectively.</p>
-                        <p style="text-indent: 50px;"> Press the W key to make the player jump.</p>
-                        <p style="text-indent: 50px;"> Pick up ammo or a new gun from the chest. Pick up health packs to heal.</p>
-                        <p style="text-indent: 50px;"> Use your mouse to aim. Left click to fire your weapon and OBLITERATE YOUR ENEMIES!!!</p>
-                        <p style="text-indent: 50px;"> Press the c key to enable god mode and increased damage!!!</p>
-                        <p style="text-indent: 50px;"> Press the c and = keys to try all the weapns!!!</p>
-                    </div>
-                </div>
                 
+                    <div id="HowToPlay">
+                        <p>How to play:</p>
+                        <ul>
+                            <li style="font-family: Andale Mono, monospace;">Use the A and D keys to move the player left and right, respectively.</li>
+                            <li style="font-family: Andale Mono, monospace;">Press the W key to make the player jump.</li>
+                            <li style="font-family: Andale Mono, monospace;">Pick up ammo for your gun. Pick up health packs to heal.</li>
+                            <li style="font-family: Andale Mono, monospace;">Use your mouse to aim. Left-click to fire your weapon and OBLITERATE YOUR ENEMIES!!!</li>
+                            <li style="font-family: Trebuchet MS, sans-serif;">Press the ` key to enable GOD MODE!!!</li>
+                        </ul>
+                    </div>
+                </div>       
                 
             
             </div>
@@ -105,35 +114,38 @@
     </div>
 
     <!-- sign in and registration -->
-    <div id="signin-overlay" class="overlay row">
-        <div class="content shadow row">
-            <form id="signin-form" class="col">
-                <div class="caption">SIGN IN WITH YOUR ACCOUNT</div>
-                <div class="spacer-0"></div>
-                <input id="signin-username" placeholder="Enter your username"></input>
-                <input id="signin-password" type="password" placeholder="Enter your password"></input>
-                <div class="spacer-0"></div>
-                <button type="submit">Sign In</button>
-                <div id="signin-message" class="warning center"></div>
-                <div class="spacer-grow"></div>
-            </form>
-
-            <div class="spacer-0"></div>
-
-            <form id="register-form" class="col">
-                <div class="caption">OR, REGISTER IF YOU DO NOT HAVE ONE</div>
-                <div class="spacer-0"></div>
-                <input id="register-username" maxlength="10" placeholder="Enter your username"></input>
-                <select id="register-avatar">
-                    <option value="">Select your avatar</option>
-                </select>
-                <input id="register-name" maxlength="16" placeholder="Enter your name"></input>
-                <input id="register-password" type="password" placeholder="Enter your password"></input>
-                <input id="register-confirm" type="password" placeholder="Enter your password again"></input>
-                <div class="spacer-0"></div>
-                <button type="submit">Register</button>
-                <div id="register-message" class="warning center"></div>
-            </form>
+   <div id="signin-overlay" class="overlay row">
+        <div class="content shadow row">            
+    
+            <div class="form-container">
+                <form id="signin-form" class="col">
+                    <span class="game-icon"  style="width: 380px; height: 240px;"></span>
+                    <div class="caption">SIGN IN WITH YOUR ACCOUNT</div>
+                    
+                    <div class="spacer-0"></div>
+                    <input id="signin-username" placeholder="Enter your username"></input>
+                    <input id="signin-password" type="password" placeholder="Enter your password"></input>
+                    <div class="spacer-0"></div>
+                    <button type="submit">Sign In</button>
+                    <div id="signin-message" class="warning center"></div>
+                    <div class="spacer-grow"></div>
+                </form>
+        
+                <form id="register-form" class="col">
+                    <div class="caption">OR, REGISTER IF YOU DO NOT HAVE ONE</div>
+                    <div class="spacer-0"></div>
+                    <input id="register-username" maxlength="10" placeholder="Enter your username"></input>
+                    <select id="register-avatar">
+                        <option value="">Select your avatar</option>
+                    </select>
+                    <input id="register-name" maxlength="16" placeholder="Enter your name"></input>
+                    <input id="register-password" type="password" placeholder="Enter your password"></input>
+                    <input id="register-confirm" type="password" placeholder="Enter your password again"></input>
+                    <div class="spacer-0"></div>
+                    <button type="submit">Register</button>
+                    <div id="register-message" class="warning center"></div>
+                </form>
+            </div>
         </div>
     </div>
     

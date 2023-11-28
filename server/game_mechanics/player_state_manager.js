@@ -63,9 +63,11 @@ const PlayerStateManager = function (manager) {
     const playerIncreaseHealth = function (username, healing_amount) {
         let player = players[username];
         player[PlayerStateProps.HEALTH] += healing_amount;
+        manager.registerHealingStatistic(username, healing_amount);
         player[PlayerStateProps.HEALTH] = Math.min(player[PlayerStateProps.HEALTH], PlayerConsts.INI_HP);
         console.log(`Player: ${username} got healed, remaining health: ${player[PlayerStateProps.HEALTH]}`);
     }
+       
 
     const playerIncreaseAmmo = function (username, ammo) {
         let player = players[username];
@@ -82,7 +84,8 @@ const PlayerStateManager = function (manager) {
     }
     const playerTakeDamage = function (username, damage) {
 
-        players[username][PlayerStateProps.HEALTH] -= damage;
+        players[username][PlayerStateProps.HEALTH]-=damage;
+        manager.registerDamageStatistic(username, damage);
         console.log("Player: ", username, " took damage, remaining health: ", players[username][PlayerStateProps.HEALTH]);
     }
 
@@ -94,9 +97,10 @@ const PlayerStateManager = function (manager) {
     // A method to shoot a bullet which decrements the bullet count
     const shootBullet = function (username) {
         if (players[username][PlayerStateProps.AMMO] > 0) {
-            players[username][PlayerStateProps.AMMO]--;
-            return true;
-        }
+            manager.registerShotsFiredStatistics(username);
+        players[username][PlayerStateProps.AMMO]--;
+        return true;
+        } 
         return false;
     }
     const getPrevPlayerPos = function (username) {

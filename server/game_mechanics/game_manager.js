@@ -34,6 +34,9 @@ const GameManager = function(id, io){
     let server_socket = io;
     let self = null;
 
+    // statistics to keep track of the game
+    let statistics = {};
+
     // Gameplay stuff
     let players = {};
     
@@ -49,6 +52,11 @@ const GameManager = function(id, io){
     // Each projectile is represented by the following
     // {ID, boundingBox, position, direction, speed, damage, width, height}
     let projectiles = {};
+
+    // update interval
+    let updateInterval = null;
+
+    let startTime = 0;
     
 
     const initialize = function(account1, account2, mapState, sockets, instance){
@@ -57,6 +65,9 @@ const GameManager = function(id, io){
 
         // A way for the manager to refer to itself;
         self = instance;
+
+        usernames.push(account1.username);
+        usernames.push(account2.username);
 
         // Init managers
         bulletStateManager = BulletStateManager(self);
@@ -76,6 +87,23 @@ const GameManager = function(id, io){
             avatar: account2.avatar, 
             profile: account2.profile,
             opponent: account1.username};
+        
+        // initialize statistics
+        statistics[account1.username] = {
+            total_damage: 0,
+            shots_fired: 0,
+            total_healing: 0,
+            opponent: account2.username
+        }
+
+        statistics[account2.username] = {
+            total_damage: 0,
+            shots_fired: 0,
+            total_healing: 0,
+            opponent: account2.username
+        }
+
+        statistics["time survived"] = 0;
 
         // initialize projectiles
         projectiles[account1.username] = {};
@@ -134,23 +162,81 @@ const GameManager = function(id, io){
         // Tell the clients that the game can start
         // server_socket.to(JSON.stringify(gameID)).emit("start");
         console.log("emit start")
+
+        // Store current time
+        startTime = performance.now();
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.START_GAME_LOOP);
 
         // TODO: Start GameLoop, or put this in a timer if we need a countdown before starting the game.
         // Start the game loop
-        setInterval(update, 1000 / 60); // Call update() every ~16.67 ms to achieve ~60 updates per second
-    };
+        updateInterval = setInterval(update, 1000 / 60); // Call update() every ~16.67 ms to achieve ~60 updates per second
+    }
+    
 
     // TODO: Check win condition, if a user wins the game, notify players.
-    function checkWinCondition(){
+    const checkWinCondition = function(){
+        let isAlive = {};
+        let isGameOver = false;
+        //let usernames = Object.keys(playerInfos);
 
+        for(let i = 0; i < usernames.length; i++){
+            let username = usernames[i];
+            
+            if(playerStateManager.playerGetHealth(username) <= 0){
+                isGameOver = true;
+                isAlive[username] = false;
+            }
+            else{
+                isAlive[username] = true;
+            }
+        }
+        return {isAlive, isGameOver};
     }
 
     // TODO: run this if a win condition has been met.
-    function gameOver(winner){
+    const gameOver = function(isAlive){
+        console.log("Game over!!!");
         // TODO: Stop the gameloop timers
+        clearInterval(updateInterval);
+
+        // update time survived.
+        statistics["time survived"] = performance.now() - startTime;
+
+        // update profiles
+        // draw
+        if(!isAlive[usernames[0]] && !isAlive[usernames[1]]){
+            playerInfos[usernames[0]].profile.Deaths += 1;
+            playerInfos[usernames[0]].profile.Kills += 1;
+
+            playerInfos[usernames[1]].profile.Deaths += 1;
+            playerInfos[usernames[1]].profile.Kills += 1;
+        }
+        // wins
+        else{
+            if(isAlive[usernames[0]]){
+                playerInfos[usernames[0]].profile.Kills += 1;
+                playerInfos[usernames[0]].profile.Wins += 1;
+
+                playerInfos[usernames[1]].profile.Loses += 1;
+                playerInfos[usernames[1]].profile.Deaths += 1;
+            }
+            else{
+                playerInfos[usernames[1]].profile.Kills += 1;
+                playerInfos[usernames[1]].profile.Wins += 1;
+
+                playerInfos[usernames[0]].profile.Loses += 1;
+                playerInfos[usernames[0]].profile.Deaths += 1;
+
+            }
+        }
+        console.log("Emit game over signal");
+        console.log(JSON.stringify(statistics));
+        // tell everyone that the game is over and the outcome of the game.
+        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
 
 
+        
+        /*
         // send the winner along with the player statistics
         let statistics = {};
         for(let i = 0; i < usernames.length; i++){
@@ -159,11 +245,8 @@ const GameManager = function(id, io){
 
             statistics[username] = {playerState: player.getPlayerState(),Statistics: player.getPlayerStatistics(), winner: winner == username};
         }
-
-
-        // winner is the username of the winner
-        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.GAME_OVER, JSON.stringify(statistics));
-    }
+        */
+    };
 
 
     // Update function or gameloop
@@ -178,7 +261,14 @@ const GameManager = function(id, io){
             [ServerUpdateProps.ITEM_STATES]: map.getItemSpawners()
         };
 
-        server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
+        let winCondition = checkWinCondition();
+        if(!winCondition.isGameOver){
+            server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
+        }
+        else{
+            gameOver(winCondition.isAlive);
+        }
+        
     };
 
     const getID = function(){
@@ -230,26 +320,41 @@ const GameManager = function(id, io){
     const processMouseUp = function(mouseEventObj){
         let parsedmouseEventObj = JSON.parse(mouseEventObj);
         inputStateListener.updateKeyUp(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
-    }
+    };
 
     const getGameArea = function(){
         return map.getGameArea();
-    }
+    };
 
     const getMap = function(){
         return map;
-    }
+    };
+
     const getPlayerStateManager = function(){
         return playerStateManager;
-    }
+    };
 
     const getBulletStateManager = function(){
         return bulletStateManager;
+    };
+
+    const registerHealingStatistic = function(username, amount){
+        statistics[username].total_healing += amount;
+    };
+
+    const registerDamageStatistic = function(username, amount){
+        let opponent = playerInfos[username].opponent;
+        statistics[opponent].total_damage += amount;
     }
 
     const getInputStateListener = function(){
         return inputStateListener;
     }
+
+    const registerShotsFiredStatistics = function(username){
+        statistics[username].shots_fired += 1;
+    }
+
 
     return {
         initialize, 
@@ -267,7 +372,10 @@ const GameManager = function(id, io){
         getPlayerStateManager,
         getBulletStateManager,
         getInputStateListener,
-        processMouseUp};
+        processMouseUp,
+        registerDamageStatistic,
+        registerHealingStatistic,
+        registerShotsFiredStatistics};
 };
 
 if(typeof(module) === "object")

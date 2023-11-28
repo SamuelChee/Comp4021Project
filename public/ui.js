@@ -228,6 +228,22 @@ const Profile = (function(){
     return {initialize, show, hide};
 })();
 
+const ScoreBoard = (function(){
+    const initialize = function(){
+        $("#Rematch").on("click", () => {
+
+        });
+
+        $("#Return").on("click", () => {
+
+        });
+    };
+    const hide = function(){
+        $("#scoreboard_container").hide();
+    };
+
+    return {initialize, hide};
+})();
 
 const UI = (function() {
     // This function gets the user display
@@ -259,6 +275,7 @@ const UI = (function() {
 
     return { getUserDisplay, initialize };
 })();
+
 
 
 // ScoreBoard Here

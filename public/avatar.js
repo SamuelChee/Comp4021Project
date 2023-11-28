@@ -69,6 +69,7 @@ const Avatar = (function() {
     const populate = function(select) {
         for (const category in avatars) {
             const optgroup = $("<optgroup label='" + category + "'></optgroup");
+            optgroup.css("color", "black");
             for (const name in avatars[category]) {
                 optgroup.append(
                     $("<option value='" + name + "'>" +

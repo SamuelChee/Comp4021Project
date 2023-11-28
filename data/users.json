@@ -28,11 +28,12 @@
       "name": "a",
       "password": "$2b$10$GjPgnBZB9GL/3B4PEmYGIuxHG3C9UrwkFLGHo96oardqzOwi2qITe",
       "profile": {
-         "Wins": 13,
+         "Wins": 4,
          "Losses": 0,
-         "Kills": 13,
-         "Deaths": 0,
-         "GamesPlayed": 0
+         "Kills": 4,
+         "Deaths": 1,
+         "GamesPlayed": 0,
+         "Loses": null
       }
    },
    "b": {
@@ -40,12 +41,12 @@
       "name": "b",
       "password": "$2b$10$LPCG9rSwhMsUZA4Xq82tVevYz7jbz4mri1sg2qvAEGwQb0SEMG9fa",
       "profile": {
-         "Wins": 0,
+         "Wins": 1,
          "Losses": 0,
-         "Kills": 0,
-         "Deaths": 13,
+         "Kills": 1,
+         "Deaths": 4,
          "GamesPlayed": 0,
-         "Loses": 12
+         "Loses": 4
       }
    }
 }

@@ -139,11 +139,18 @@ const Socket = (function () {
             console.log("Game over called!");
             statistics = JSON.parse(statistics);
 
+            // update profile
+            Authentication.setProfile(statistics[Authentication.getUser().username].profile);
+            Profile.update();
+
             // stop game loop
             gameLoopStarted = false;
 
+            // update score board
+            //ScoreBoard.update(statistics);
+            //ScoreBoard.show();
             $("#scoreboard_container").show();
-            
+
 
             // testing ui
             // Hide UI

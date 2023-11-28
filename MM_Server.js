@@ -154,7 +154,15 @@ function createGame() {
         usersToGames[account1.username] = gameID;
         usersToGames[account2.username] = gameID;
 
-        game.initialize(account1, account2, mapInfo, sockets, game);
+        game.initialize(account1, account2, mapInfo, sockets, game, () => {
+            // call back function on gameover.
+            const users = JSON.parse(fs.readFileSync("data/users.json"));
+
+            users[account1.username].profile = account1.profile;
+            users[account2.username].profile = account2.profile;
+
+            fs.writeFileSync("data/users.json", JSON.stringify(users, null, "   "));
+        });
     }
 }
 
@@ -509,7 +517,31 @@ io.on("connection", (socket) => {
 
         socket.emit(SocketEvents.LEFT_GAME);
     });
+
+    // Rematch
+    socket.on(SocketEvents.REMATCH, () => {
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username; 
+
+        // acquire mutex to access player queue
+        queue_mutex.acquire().then((release) => {
+            let account = JSON.parse(socket.request.session.user);
+            let username = account.username;
+
+
+            if (username in usersToGames) {
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                game.requestRematch(username);
+            }
+
+            release();
+        });
+    });
 });
+
+
 
 
 // Use a web server to listen at port 8000

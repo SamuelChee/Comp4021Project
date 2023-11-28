@@ -106,5 +106,9 @@ const Authentication = (function() {
         return profile;
     };
 
-    return { getUser, signin, validate, signout, requestProfile, getProfile};
+    const setProfile = function(p){
+        profile = p;
+    }
+
+    return { getUser, signin, validate, signout, requestProfile, getProfile, setProfile};
 })();

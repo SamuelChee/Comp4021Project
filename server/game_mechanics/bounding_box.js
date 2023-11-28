@@ -50,7 +50,7 @@ const BoundingBox = function(top, left, bottom, right) {
     }
 
     const setLeft = function(l){
-        left = t;
+        left = l;
     }
 
     const setRight = function(r){

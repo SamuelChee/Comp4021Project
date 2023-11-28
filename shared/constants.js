@@ -33,7 +33,8 @@ const PlayerStateProps = Object.freeze({
   GRAVITATIONAL_ACC: 'gravitationalAcceleration',  // Gravitational Acceleration
   IS_FALLING: 'isFalling',              // Flag for falling state
   X_DIRECTION_MULTIPLE: 'xDirectionMultiple',  // X Direction Multiple
-  WEP_ID: 'wepID'                       // Weapon ID
+  WEP_ID: 'wepID',
+  BOX: "box"                       // Weapon ID
 });
 const MapStateProps = {
   PLATFORMS: 'platforms',                         

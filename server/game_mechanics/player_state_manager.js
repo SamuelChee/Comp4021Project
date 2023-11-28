@@ -17,17 +17,16 @@ const PlayerStateManager = function () {
     // Object to store all players' states
     let players = {};
 
-    let bounding_box = null;
     // Function to add a player and initialize their state
     const addPlayer = function (username, initPosition, wepID) {
-
-        bounding_box = BoundingBox(
-            initPosition.y - PlayerConsts.SPRITE_HEIGHT / 2, 
-            initPosition.x - PlayerConsts.SPRITE_WIDTH / 2, 
+        // init bounding box for player
+        let box = BoundingBox(
+            initPosition.y - PlayerConsts.SPRITE_HEIGHT / 2,
+            initPosition.x - PlayerConsts.SPRITE_WIDTH / 2,
             initPosition.y + PlayerConsts.SPRITE_HEIGHT / 2,
-            initPosition.x + PlayerConsts.SPRITE_WIDTH / 2);  //top left bottom right
+            initPosition.x + PlayerConsts.SPRITE_WIDTH / 2
+        );
 
-        
         players[username] = {
             [PlayerStateProps.X_INI]: initPosition.x, // Initial X position
             [PlayerStateProps.Y_INI]: initPosition.y, // Initial Y position
@@ -46,13 +45,14 @@ const PlayerStateManager = function () {
                 [Directions.LEFT]: -1,
                 [Directions.RIGHT]: 1
             },
-            [PlayerStateProps.WEP_ID]: wepID // Player's weapon ID
+            [PlayerStateProps.WEP_ID]: wepID, // Player's weapon ID
+            [PlayerStateProps.BOX]: box
         };
     }
 
     // Checks for collisions between bounding boxes
-    const detectCollision = function(box){
-        return box.isPointInBox(position.x, position.y);
+    const detectCollision = function(username, box){
+        return box.isPointInBox(players[username][PlayerStateProps.X], players[username][PlayerStateProps.Y]);
     }
 
     const takeDamage = function(damage){
@@ -67,13 +67,6 @@ const PlayerStateManager = function () {
     const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
-
-            // If player's Y position is greater than initial, reset Y position and velocity, and set falling to false
-            if (player[PlayerStateProps.Y] > player[PlayerStateProps.Y_INI]) {
-                player[PlayerStateProps.Y] = player[PlayerStateProps.Y_INI];
-                player[PlayerStateProps.Y_VEL] = 0;
-                player[PlayerStateProps.IS_FALLING] = false;
-            }
 
             // If player is falling, update Y velocity and position
             if (player[PlayerStateProps.IS_FALLING]) {
@@ -104,6 +97,9 @@ const PlayerStateManager = function () {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
 
+            // Update bounding box
+            updateBoundingBox(username);
+
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }
@@ -115,6 +111,16 @@ const PlayerStateManager = function () {
             x: players[username][PlayerStateProps.X],
             y: players[username][PlayerStateProps.Y]
         };
+    }
+
+    const updateBoundingBox = function(username){
+        
+        let player = players[username];
+        player[PlayerStateProps.BOX].setTop(player[PlayerStateProps.Y] - PlayerConsts.SPRITE_HEIGHT / 2);
+        player[PlayerStateProps.BOX].setLeft(player[PlayerStateProps.X] - PlayerConsts.SPRITE_WIDTH / 2);
+        player[PlayerStateProps.BOX].setBottom(player[PlayerStateProps.Y] + PlayerConsts.SPRITE_HEIGHT / 2);
+        player[PlayerStateProps.BOX].setRight(player[PlayerStateProps.X] + PlayerConsts.SPRITE_WIDTH / 2);
+        
     }
 
     // Function to get a player's direction
@@ -132,6 +138,33 @@ const PlayerStateManager = function () {
         return players;
     }
 
+    // function to get all collisions given a set of bounding boxes.
+    // boxes is a dictionary where the key are the usernames and the values are {id, box}
+    const getCollisions = function(boxes){
+        // The output collision objects key: username, value array of [id, player y velocity]
+        let collisions = {};
+        for(const username in usernames){
+            let boxesToCheck = boxes[username];
+            let y_vel = players[username][PlayerStateProps.Y_VEL];
+            let collisionForUser = [];
+
+            for(const box in boxesToCheck){
+                // if collision is detected
+                if(detectCollision(username, box.box)){
+                    let detection = {};
+                    detection[id] = box.id;
+                    detection[PlayerStateProps.Y_VEL] = y_vel;
+
+                    collisionForUser.push(detection);
+                }
+            }
+
+            collisions[username] = collisionForUser;
+        }
+
+        return collisions;
+    }
+
     // Expose public methods
     return {
         addPlayer,
@@ -142,7 +175,9 @@ const PlayerStateManager = function () {
         getAllPlayerStates,
         detectCollision,
         takeDamage,
-        isDead
+        isDead,
+        updateBoundingBox,
+        getCollisions
     };
 };
 

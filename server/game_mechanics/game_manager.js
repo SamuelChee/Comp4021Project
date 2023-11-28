@@ -166,13 +166,13 @@ const GameManager = function(id, io){
     // Update function or gameloop
     const update = function(){
 
-        
         playerStateManager.update(inputStateListener);
         bulletStateManager.update(playerStateManager, inputStateListener);
 
         let updateObject = {
             [ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
-            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates()
+            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates(),
+            [ServerUpdateProps.ITEM_STATES]: map.getItemSpawners()
         };
 
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));

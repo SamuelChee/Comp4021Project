@@ -8,7 +8,8 @@ const {
     LoadLevelProps,
     ServerUpdateProps,
     WepProps,
-    PlayerConsts
+    PlayerConsts,
+    MapConsts
 } = require('../../shared/constants');
 
 const {BoundingBox} = require('./bounding_box');
@@ -145,6 +146,10 @@ const PlayerStateManager = function (manager) {
 
             // Update bounding box
             updateBoundingBox(username);
+
+            // check item collision
+            checkItemCollisions(username);
+
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }
@@ -215,7 +220,48 @@ const PlayerStateManager = function (manager) {
 
             
         }
+    };
+    // TODO: add ammo
+    const addAmmo = function(username){
+        console.log("Add ammo!");
     }
+
+    // TODO: add health
+    const addHealth = function(username){
+        console.log("Add health!");
+    }
+
+
+    // check collisions with items
+    const checkItemCollisions = function(username){
+        // get spawners
+        const map = gameManager.getMap();
+        const item_spawners = map.getItemSpawners();
+
+        // get player
+        let player = players[username];
+
+        for(let i = 0; i < item_spawners.length; i++){
+            const spawner = item_spawners[i];
+            const box = spawner.box;
+
+            console.log(i + "spawner: " + spawner);
+            box.printBox();
+
+            // if player collided with an item spawner try picking up the item
+            if(spawner.spawned && detectCollision(username, box)){
+                let type = spawner.type;
+                if(type == MapConsts.AMMO){
+                    addAmmo(username);
+                }
+                else{
+                    addHealth(username);
+                }
+                // notify that the item had been picked up.
+                map.takeItem(i);
+            }
+        }
+    };
     
    /*
    const checkPlatformCollisions = function(username, originalPos){
@@ -305,7 +351,8 @@ const PlayerStateManager = function (manager) {
         shootBullet,
         isDead,
         updateBoundingBox,
-        getCollisions
+        getCollisions,
+        checkItemCollisions
     };
 };
 

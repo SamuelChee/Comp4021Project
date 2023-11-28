@@ -7,7 +7,8 @@ const {
     LoadLevelProps,
     ServerUpdateProps,
     MapStateProps,
-    MapConsts
+    MapConsts,
+    ItemSpawnerDataProps
 } = require('../../shared/constants');
 
 const {BoundingBox} = require("./bounding_box");
@@ -57,19 +58,20 @@ const Map = function () {
             let item = items[i];
 
             let box = BoundingBox(
-                platform.y - MapConsts.PLATFORM_HEIGHT / 2,
-                platform.x - MapConsts.PLATFORM_WIDTH / 2 + offset,
-                platform.y + MapConsts.PLATFORM_HEIGHT / 2,
-                platform.x + MapConsts.PLATFORM_WIDTH / 2 + offset
+                item.y - MapConsts.PLATFORM_HEIGHT / 2,
+                item.x - MapConsts.PLATFORM_WIDTH / 2 + offset,
+                item.y + MapConsts.PLATFORM_HEIGHT / 2,
+                item.x + MapConsts.PLATFORM_WIDTH / 2 + offset
             )
+
             item_spawners.push({
-                box: box, 
-                x: item.x, 
-                y: item.y, 
-                p: item.probability, 
-                t: item.spawnTime, 
-                spawned: true,
-                type: randomItemType(item.probability)
+                [ItemSpawnerDataProps.BOX] : box, 
+                [ItemSpawnerDataProps.X]: item.x, 
+                [ItemSpawnerDataProps.Y]: item.y, 
+                [ItemSpawnerDataProps.PROBABILITY]: item.probability, 
+                [ItemSpawnerDataProps.TIME]: item.spawnTime, 
+                [ItemSpawnerDataProps.SPAWNED]: true,
+                [ItemSpawnerDataProps.TYPE]: randomItemType(item.probability)
             });
             box.printBox();
         }
@@ -107,7 +109,7 @@ const Map = function () {
     const getMapState = function () {
         return {
             [MapStateProps.PLATFORMS]: platforms,
-            [MapStateProps.ITEMS]: items,
+            [MapStateProps.ITEMS]: item_spawners,
             [MapStateProps.INI_PLAYER_LOCS]: initialPlayerLocations,
             [MapStateProps.INI_PLAYER_DIRS]: initialPlayerDirections};};
 
@@ -140,13 +142,15 @@ const Map = function () {
 
     // resets the spawner and deletes the corresponding timer that called this.
     const resetSpawner = function(id, idx){
+        item_spawners[idx].spawned = true;
+        timers.delete[id];
 
     }
 
     // Registers when a player takes an item. 
     const takeItem = function(idx){
-        item_spawners[idx].spawned = false;
-        item_spawners[idx].type = randomItemType(item_spawners[idx].p);
+        item_spawners[idx][ItemSpawnerDataProps.SPAWNED] = false;
+        item_spawners[idx][ItemSpawnerDataProps.TYPE] = randomItemType(item_spawners[idx][ItemSpawnerDataProps.PROBABILITY]);
 
         // generate random id for timer, the id isn't really necessary, its just so
         // we could use a dictionary so that we don't have to shift every element
@@ -157,13 +161,6 @@ const Map = function () {
                 resetSpawner(id, idx);
             }
         ), idx: idx});
-        
-
-
-    }
-
-    const update = function(){
-
     }
 
     return { initialize, 
@@ -173,7 +170,9 @@ const Map = function () {
         getPlayerInitialPos, 
         getPlayerInitialDir, 
         getGameArea,
-        getPlatformBoxes};
+        getPlatformBoxes,
+        getItemSpawners,
+        takeItem};
 };
 
 module.exports = {Map};

@@ -12,6 +12,8 @@
  *
  * @returns {object} An object representing the Item with various methods for manipulating, drawing, and updating its state.
  */
+
+
 const Item = function({ctx, wep_id, x, y, lifetime}) {
     console.log(`Creating new item with lifetime ${lifetime}`);
 
@@ -50,39 +52,10 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
     
     // checkLifetimeAndStartBlinking()
     return {
-        /**
-         * Gets the current position of the item.
-         *
-         * @return {object} An object containing the x and y coordinates of the item.
-         */
         getXY: item.getXY,
-
-        /**
-         * Sets the position of the item.
-         *
-         * @param {number} x - The new x position.
-         * @param {number} y - The new y position.
-         */
         setXY: item.setXY,
-
-        /**
-         * Gets the bounding box of the item, which can be used for collision detection.
-         *
-         * @return {object} An object representing the bounding box of the item.
-         */
         getBoundingBox: item.getBoundingBox,
 
-        /**
-         * Removes the item from the game field. The item becomes invisible and stops blinking.
-         */
-        // remove: function() {
-        //     isVisible = false;
-        //     clearInterval(blinkInterval);
-        // },
-
-        /**
-         * Draws the item on the canvas with its current opacity. The item will not be drawn if it's not visible.
-         */
         draw: function() {
             if(isVisible){
                 ctx.save();
@@ -91,12 +64,6 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
                 ctx.restore();
             }
         },
-
-        /**
-         * Updates the item's state by calling the update method of the underlying Weapon object. It also checks if the item should be destroyed based on its visibility.
-         *
-         * @return {boolean} Whether the item should be destroyed (true if the item is not visible, false otherwise).
-         */
         update: function() {
             // item.update();
             return isVisible;
@@ -104,3 +71,4 @@ const Item = function({ctx, wep_id, x, y, lifetime}) {
 
     };
 };
+

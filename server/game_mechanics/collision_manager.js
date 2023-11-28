@@ -248,7 +248,7 @@ const CollisionManager = function (manager) {
                     if (t >= 0 && t <= 1) {
                         let x_intersect = prevPos[PlayerStateProps.X] + t * deltaX;
                         // if player's foot intersects with the box, move their foot there
-                        if (x_intersect >= platform.getLeft() && x_intersect <= platform.getRight()) {
+                        if (x_intersect >= platform.getLeft()-16 && x_intersect <= platform.getRight()+16) {
                             // stop falling
                             player[PlayerStateProps.IS_FALLING] = false;
                             player[PlayerStateProps.Y_VEL] = 0;

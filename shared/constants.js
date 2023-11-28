@@ -89,6 +89,10 @@ const MapConsts = {
   MAP_HEIGHT: 32,
   PLATFORM_WIDTH: 210,
   PLATFORM_HEIGHT: 32,
+  AMMO: "ammo",
+  HEALTH: "health",
+  ITEM_WIDTH: 32,
+  ITEM_HEIGHT: 32,
   PLATFORMS: [
     { type: "thick", x: 17, y: 400, num_platforms: 7 },
     { type: "thick", x: 635, y: 400, num_platforms: 7 },
@@ -96,6 +100,13 @@ const MapConsts = {
     { type: "thick", x: 17, y: 400 - 100 * 2, num_platforms: 7 },
     { type: "thick", x: 635, y: 400 - 100 * 2, num_platforms: 7 },
     { type: "thick", x: 335, y: 400 - 100 * 3, num_platforms: 7 }
+  ],
+  ITEMS: [
+    {probability: 0.25, x: 17, y: 464, spawnTime: 8},
+    {probability: 0.5, x: 17, y: 464, spawnTime: 10},
+    {probability: 0.8, x: 17, y: 464, spawnTime: 12},
+    {probability: 0.7, x: 17, y: 464, spawnTime: 10},
+    {probability: 0.3, x: 17, y: 464, spawnTime: 6}
   ]
 };
 

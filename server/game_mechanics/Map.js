@@ -20,9 +20,13 @@ const Map = function () {
     let offset = 100;
 
     let platform_boxes = [];
+    let item_spawners = [];
+
+    let timers = {};
 
     let initialPlayerLocations = {};
     let initialPlayerDirections = {};
+
 
     // initializes the map, probably don't need this if we don't plan on randomly initializing 
     // items.
@@ -46,6 +50,31 @@ const Map = function () {
             box.printBox();
         }
         console.log(platforms);
+
+        // Initialize item spawners
+        items = MapConsts.ITEMS;
+        for(let i = 0; i < items.length; i++){
+            let item = items[i];
+
+            let box = BoundingBox(
+                platform.y - MapConsts.PLATFORM_HEIGHT / 2,
+                platform.x - MapConsts.PLATFORM_WIDTH / 2 + offset,
+                platform.y + MapConsts.PLATFORM_HEIGHT / 2,
+                platform.x + MapConsts.PLATFORM_WIDTH / 2 + offset
+            )
+            item_spawners.push({
+                box: box, 
+                x: item.x, 
+                y: item.y, 
+                p: item.probability, 
+                t: item.spawnTime, 
+                spawned: true,
+                type: randomItemType(item.probability)
+            });
+            box.printBox();
+        }
+
+
         // TODO: initialize items 
         // if you don't want to randomly initialize items then just assign items from mapinfo to Map.items
         // items 
@@ -97,6 +126,45 @@ const Map = function () {
     const getGameArea = function(){
         return area;
     };
+
+    // Generates random item based on probabilities.
+    const randomItemType = function(p){
+        let type = Math.random() < p;
+        return type ? MapConsts.HEALTH: MapConsts.AMMO;
+    }
+
+    // Get item spawners
+    const getItemSpawners = function(){
+        return item_spawners;
+    }
+
+    // resets the spawner and deletes the corresponding timer that called this.
+    const resetSpawner = function(id, idx){
+
+    }
+
+    // Registers when a player takes an item. 
+    const takeItem = function(idx){
+        item_spawners[idx].spawned = false;
+        item_spawners[idx].type = randomItemType(item_spawners[idx].p);
+
+        // generate random id for timer, the id isn't really necessary, its just so
+        // we could use a dictionary so that we don't have to shift every element
+        // whenever we remove an element
+        let id = Util.generateID(timers, 1024);
+        timers[id] = ({timer: setTimeout(
+            () => {
+                resetSpawner(id, idx);
+            }
+        ), idx: idx});
+        
+
+
+    }
+
+    const update = function(){
+
+    }
 
     return { initialize, 
         getMapState, 

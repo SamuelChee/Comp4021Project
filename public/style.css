@@ -9,15 +9,15 @@
     --overlay-caption-color: #ffffff;
     --overlay-content-background: linear-gradient(rgb(0, 174, 255), #000000);
 
-    --header-background: linear-gradient(to right, #eb4a40, #f59e72);
-    --main-panel-background: linear-gradient(white, #fde0c5);
-    --online-users-panel-background: linear-gradient(to right, #fde0c5, #facba6);
+    --header-background: linear-gradient(to right, #6a8b8d, #8d817b);
+    --main-panel-background: linear-gradient(rgb(153, 199, 238), #52535c);
+    --online-users-panel-background: linear-gradient(to right, #24211e, #facba6);
     --chat-panel-background: none;
 
     --title-color: white;
     --caption-color: white;
 
-    --font-color: black;
+    --font-color: rgb(255, 255, 255);
     --date-color: gray;
 
     --register-form-background: linear-gradient(#043b83, #1d1815);

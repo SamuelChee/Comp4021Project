@@ -70,6 +70,7 @@ const PlayerStateManager = function () {
             // console.log("player state update: ", username);
 
             // If player's Y position is greater than initial, reset Y position and velocity, and set falling to false
+            //TODO replace this 
             if (player[PlayerStateProps.Y] > player[PlayerStateProps.Y_INI]) {
                 player[PlayerStateProps.Y] = player[PlayerStateProps.Y_INI];
                 player[PlayerStateProps.Y_VEL] = 0;

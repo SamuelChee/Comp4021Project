@@ -96,7 +96,7 @@ const MapConsts = {
     { type: "thick", x: 335, y: 400 - 100 * 3, num_platforms: 7 }
   ]
 };
-
+// { type: "thick", x: 17, y: 400, num_platforms: 7 }
 
 const SocketEvents = {
   CONNECT: "connect",

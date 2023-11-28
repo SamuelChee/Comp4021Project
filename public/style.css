@@ -261,7 +261,7 @@ button.icon:active {
     display: inline-block;
     width: 70px;
     height: 48px;
-    background-image: url("gameicon.png");
+    background-image: url("res/gameicon.png");
     background-size: cover;
     /* Add any additional styling as needed */
   }

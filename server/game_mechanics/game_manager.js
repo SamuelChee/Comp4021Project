@@ -1,6 +1,7 @@
 const {InputStateListener} = require("./input_state_listener");
 const {Map} = require("./map");
 const {PlayerStateManager} = require("./player_state_manager");
+const {BulletStateManager} = require("./bullet_state_manager");
 
 const {
     Directions,
@@ -13,7 +14,11 @@ const {
     KeyEventProps,
     MouseEventProps,
     SocketEvents,
-    PlayerConsts
+    PlayerConsts,
+    BulletStateProps,
+    BulletProps,
+    BulletTypes,
+    
 } = require('../../shared/constants');
 
 const GameManager = function(id, io){
@@ -32,6 +37,7 @@ const GameManager = function(id, io){
     let map = Map(); // Creates a new instance of `Map`
     let inputStateListener = InputStateListener();
     let playerStateManager = PlayerStateManager();
+    let bulletStateManager = BulletStateManager();
     let gameID = id;
 
     // Projectile stuff
@@ -152,7 +158,12 @@ const GameManager = function(id, io){
 
         
         playerStateManager.update(inputStateListener);
-        let updateObject = {[ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates()};
+        bulletStateManager.update(playerStateManager, inputStateListener);
+
+        let updateObject = {
+            [ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
+            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates()
+        };
 
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
     };
@@ -195,7 +206,36 @@ const GameManager = function(id, io){
         inputStateListener.updateAimAngle(parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE])
     };
 
-    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove};
+
+    const processMouseDown = function(mouseEventObj){
+
+        let parsedmouseEventObj = JSON.parse(mouseEventObj);
+        inputStateListener.updateKeyDown(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
+
+        // console.log("Mouse Down Game Manager:   ", parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE]);
+    
+        // let username = parsedmouseEventObj[MouseEventProps.USERNAME];
+        // let playerState = playerStateManager.getPlayerState(username);
+        
+        // let initPosition = {
+        //     x: playerState[PlayerStateProps.X],
+        //     y: playerState[PlayerStateProps.Y]
+        // };
+        
+        // let weaponId = playerState[PlayerStateProps.WEP_ID];
+        // let bulletType = WeaponIdToBulletType[weaponId];
+        
+        // let direction = parsedmouseEventObj[MouseEventProps.ANGLE];
+        
+        // bulletStateManager.addBullet(username, bulletType, initPosition, direction);
+    };
+
+    const processMouseUp = function(mouseEventObj){
+        let parsedmouseEventObj = JSON.parse(mouseEventObj);
+        inputStateListener.updateKeyUp(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
+    }
+
+    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove, processMouseDown, processMouseUp};
 };
 
 if(typeof(module) === "object")

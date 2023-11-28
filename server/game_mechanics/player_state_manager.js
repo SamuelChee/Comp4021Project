@@ -7,6 +7,7 @@ const {
     PlatformDataProps,
     LoadLevelProps,
     ServerUpdateProps,
+    WepProps,
     PlayerConsts
 } = require('../../shared/constants');
 
@@ -46,7 +47,8 @@ const PlayerStateManager = function () {
                 [Directions.LEFT]: -1,
                 [Directions.RIGHT]: 1
             },
-            [PlayerStateProps.WEP_ID]: wepID // Player's weapon ID
+            [PlayerStateProps.WEP_ID]: wepID, // Player's weapon ID
+            [PlayerStateProps.AMMO]: WepProps[wepID].INI_AMMO
         };
     }
 
@@ -62,7 +64,14 @@ const PlayerStateManager = function () {
     const isDead = function(){
         return health <= 0;
     }
-
+    // A method to shoot a bullet which decrements the bullet count
+    const shootBullet = function (username) {
+        if (players[username][PlayerStateProps.AMMO] > 0) {
+        players[username][PlayerStateProps.AMMO]--;
+        return true;
+        } 
+        return false;
+    }
     // Function to update players' states based on their inputs
     const update = function (inputStateListener) {
         for (let username in players) {
@@ -146,6 +155,7 @@ const PlayerStateManager = function () {
         getAllPlayerStates,
         detectCollision,
         takeDamage,
+        shootBullet,
         isDead
     };
 };

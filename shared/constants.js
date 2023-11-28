@@ -8,7 +8,8 @@ const Directions = Object.freeze({
 const Keys = Object.freeze({
   LEFT: 'left_key',   // Indicates the key for moving left
   RIGHT: 'right_key', // Indicates the key for moving right
-  JUMP: 'jump_key'    // Indicates the key for jumping
+  JUMP: 'jump_key',    // Indicates the key for jumping
+  SHOOT: 'mouse_key'
 });
 
 // Enum for the possible actions a player can perform
@@ -33,7 +34,8 @@ const PlayerStateProps = Object.freeze({
   GRAVITATIONAL_ACC: 'gravitationalAcceleration',  // Gravitational Acceleration
   IS_FALLING: 'isFalling',              // Flag for falling state
   X_DIRECTION_MULTIPLE: 'xDirectionMultiple',  // X Direction Multiple
-  WEP_ID: 'wepID'                       // Weapon ID
+  WEP_ID: 'wepID',                       // Weapon ID
+  AMMO: 'ammo'                          // ammo left
 });
 const MapStateProps = {
   PLATFORMS: 'platforms',
@@ -56,7 +58,8 @@ const LoadLevelProps = {
 };
 
 const ServerUpdateProps = {
-  PLAYER_STATES: 'playerStates'
+  PLAYER_STATES: 'playerStates',
+  BULLET_STATES: 'bulletStates'
 };
 
 const KeyEventProps = {
@@ -79,48 +82,76 @@ const WepIds = {
   WEP_7: 7
 };
 
+const BulletTypes = {
+  PURPLE: "purple",
+  YELLOW: "yellow",
+  BLUE: "blue",
+  RED: "red",
+  RECT_RED: "rectangular_red",
+  THIN_GREEN: "thin_green",
+  CIRC_PINK: "circular_pink",
+  THIN_BLUE: "thin_blue",
+  CIRC_ORANGE: "circular_orange"
+};
 const WepProps = {
   [WepIds.WEP_0]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 100,
-    DAMAGE: 10
+    INI_AMMO: 10,
+    DAMAGE: 10,
+    FIRE_RATE: 1000 / 5, // converted to milliseconds
+    BULLET_TYPE: BulletTypes.PURPLE
   },
   [WepIds.WEP_1]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 200,
-    DAMAGE: 20
+    INI_AMMO: 10,
+    DAMAGE: 20,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.YELLOW
   },
   [WepIds.WEP_2]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 300,
-    DAMAGE: 30
+    INI_AMMO: 10,
+    DAMAGE: 30,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.BLUE
   },
   [WepIds.WEP_3]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 400,
-    DAMAGE: 40
+    INI_AMMO: 10,
+    DAMAGE: 40,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.RED
   },
   [WepIds.WEP_4]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 500,
-    DAMAGE: 50
+    INI_AMMO: 10,
+    DAMAGE: 50,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.RECT_RED
   },
   [WepIds.WEP_5]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 600,
-    DAMAGE: 60
+    INI_AMMO: 10,
+    DAMAGE: 60,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.THIN_GREEN
   },
   [WepIds.WEP_6]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 700,
-    DAMAGE: 70
+    INI_AMMO: 10,
+    DAMAGE: 70,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.CIRC_PINK
   },
   [WepIds.WEP_7]: {
     SPRITE_SCALE: 1.7,
-    AMMO: 800,
-    DAMAGE: 80
+    INI_AMMO: 10,
+    DAMAGE: 80,
+    FIRE_RATE: 1000 / 5,
+    BULLET_TYPE: BulletTypes.THIN_BLUE
   }
 };
+
 const PlayerConsts = {
   SPRITE_WIDTH: 32,
   SPRITE_HEIGHT: 32,
@@ -130,62 +161,84 @@ const PlayerConsts = {
   PLAYER_2_INI_Y: 100,
   PLAYER_1_INI_DIR: Directions.RIGHT,
   PLAYER_2_INI_DIR: Directions.LEFT,
-  PLAYER_1_INI_WEP_ID: WepIds.WEP_0,
+  PLAYER_1_INI_WEP_ID: WepIds.WEP_1,
   PLAYER_2_INI_WEP_ID: WepIds.WEP_0
 };
 
 
 
-const BulletTypes = {
-  PURPLE: "purple",
-  YELLOW: "yellow",
-  BLUE: "blue",
-  RED: "red",
-  RECT_RED: "rectangular red",
-  THIN_GREEN: "thin green",
-  CIRC_PINK: "circular pink",
-  THIN_BLUE: "thin blue",
-  CIRC_ORANGE: "circular orange"
+const BulletStateProps = {
+  ID: 'id',
+  BULLET_TYPE: "bullet_type",
+  USERNAME: 'username',
+  X: 'x',
+  Y: 'y',
+  DIRECTION: 'direction',
+  SPEED: 'speed',
+  IS_ACTIVE: 'is_actiuve'
 };
+
 
 const BulletProps = {
   [BulletTypes.PURPLE]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 10
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.YELLOW]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 20
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.BLUE]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 30
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.RED]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 40
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.RECT_RED]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 50
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.THIN_GREEN]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 60
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.CIRC_PINK]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 70
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.THIN_BLUE]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 80
+    SPEED: 10,
+    OFFSET: 30
   },
   [BulletTypes.CIRC_ORANGE]: {
     SPRITE_SCALE: 1.3,
-    SPEED: 90
+    SPEED: 10,
+    OFFSET: 30
   }
 };
+
+// const WeaponIdToBulletType = {
+//   0: BulletTypes.PURPLE,
+//   1: BulletTypes.YELLOW,
+//   2: BulletTypes.BLUE,
+//   3: BulletTypes.RED,
+//   4: BulletTypes.RECT_RED,
+//   5: BulletTypes.THIN_GREEN,
+//   6: BulletTypes.CIRC_PINK,
+//   7: BulletTypes.THIN_BLUE
+//   // 9: BulletTypes.CIRC_ORANGE,
+//   // Add more mappings as required
+// };
 
 const MapConsts = {
   MAP_WIDTH: 32,
@@ -216,6 +269,8 @@ const SocketEvents = {
   ON_KEY_UP: "on_key_up",
   ON_KEY_UP: "on_key_up",
   ON_MOUSE_MOVE: "on_mouse_move",
+  ON_MOUSE_DOWN: "on_mouse_down",
+  ON_MOUSE_UP: "on_mouse_up",
   LEAVE_GAME: "leave_game",
   LEFT_GAME: "left_game",
   PLAYER_LEFT: "player_left",
@@ -223,7 +278,7 @@ const SocketEvents = {
   UPDATE: "update",
   LOAD_LEVEL: "load_level",
   START_GAME_LOOP: "start_game_loop",
-  STOP_GAME_LOOP: "stop_game_loop",
+  STOP_GAME_LOOP: "stop_game_loop"
 
 }
 
@@ -248,10 +303,10 @@ if (typeof window !== 'undefined') {
   window.PlayerConsts = PlayerConsts;
   window.MapConsts = MapConsts;
   window.WepIds = WepIds;
+  window.WepProps = WepProps;
   window.BulletTypes = BulletTypes;
   window.BulletProps = BulletProps;
-  window.WepProps = WepProps;
-
+  window.BulletStateProps = BulletStateProps;
 } else {
   // Running in Node.js
   // Export the Enums for use in other modules
@@ -270,8 +325,9 @@ if (typeof window !== 'undefined') {
     PlayerConsts,
     MapConsts,
     WepIds,
+    WepProps,
     BulletTypes,
     BulletProps,
-    WepProps
+    BulletStateProps,
   };
 }

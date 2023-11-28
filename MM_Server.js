@@ -451,6 +451,44 @@ io.on("connection", (socket) => {
 
     });
 
+    socket.on(SocketEvents.ON_MOUSE_DOWN, (action) => {
+
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username) {
+            // if user is in a game
+            if (username in usersToGames) {
+
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processMouseDown(action);
+            }
+        }
+
+    });
+
+    socket.on(SocketEvents.ON_MOUSE_UP, (action) => {
+
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username) {
+            // if user is in a game
+            if (username in usersToGames) {
+
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processMouseUp(action);
+            }
+        }
+
+    });
+
     // Make the player leave a game
     socket.on(SocketEvents.LEAVE_GAME, () => {
         let account = JSON.parse(socket.request.session.user);

@@ -14,6 +14,10 @@ const {
 
 const { BoundingBox } = require('./bounding_box');
 
+
+const gunshotSound = new Audio('Comp4021Project/public/res/gunshot.mp3');
+const stepSound = new Audio('Comp4021Project/public/res/step.mp3');
+
 // A constructor function for managing player states
 const PlayerStateManager = function (manager) {
 
@@ -99,6 +103,7 @@ const PlayerStateManager = function (manager) {
         if (players[username][PlayerStateProps.AMMO] > 0) {
             manager.registerShotsFiredStatistics(username);
         players[username][PlayerStateProps.AMMO]--;
+        gunshotSound.play();
         return true;
         } 
         return false;
@@ -136,16 +141,28 @@ const PlayerStateManager = function (manager) {
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
+                if (stepSound.paused) {
+                    stepSound.play();
+                }
             }
             else if (inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
                 // console.log("key pressed right");
                 player[PlayerStateProps.DIRECTION] = Directions.RIGHT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
+                if (stepSound.paused) {
+                    stepSound.play();
+                }
             }
             // If neither left nor right key is pressed, set action to idle
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
+            }
+            // Handling the footstep sound looping
+            if (!inputStateListener.getKeyPressed(username, Keys.LEFT) && !inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
+                // Stop the step sound since the key is no longer pressed
+                stepSound.pause();
+                stepSound.currentTime = 0;
             }
             const currentTime = Date.now(); // get the current time
             if (inputStateListener.getKeyPressed(username, Keys.CHEAT)){

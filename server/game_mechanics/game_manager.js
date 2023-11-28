@@ -1,6 +1,7 @@
 const {InputStateListener} = require("./input_state_listener");
 const {Map} = require("./map");
 const {PlayerStateManager} = require("./player_state_manager");
+const {BulletStateManager} = require("./bullet_state_manager");
 
 const {
     Directions,
@@ -13,7 +14,11 @@ const {
     KeyEventProps,
     MouseEventProps,
     SocketEvents,
-    PlayerConsts
+    PlayerConsts,
+    BulletStateProps,
+    BulletProps,
+    BulletTypes,
+    
 } = require('../../shared/constants');
 
 const GameManager = function(id, io){
@@ -32,6 +37,8 @@ const GameManager = function(id, io){
     let players = {};
     
     let map = Map(); // Creates a new instance of `Map`
+
+    let bulletStateManager = null;
     let inputStateListener = null;
     let playerStateManager = null;
     let gameID = id;
@@ -44,13 +51,13 @@ const GameManager = function(id, io){
 
     const initialize = function(account1, account2, mapState, sockets, instance){
         // Initialize map
-        let username = "username";
         map.initialize(account1, account2, mapState);
 
         // A way for the manager to refer to itself;
         self = instance;
 
         // Init managers
+        bulletStateManager = BulletStateManager(self);
         playerStateManager = PlayerStateManager(self);
         inputStateListener = InputStateListener(self);
 
@@ -99,9 +106,12 @@ const GameManager = function(id, io){
         if(username in playerInfos){
             isReady[username] = true;
             let canStart = true;
-
+    
+            console.log('Checking readiness for all players...'); // Add this line
+    
             for(let i = 0; i < usernames.length; i++){
                 let username = usernames[i];
+                console.log('Checking readiness for', username, ':', isReady[username]); // And this line
                 if(!isReady[username]){
                     canStart = false;
                     break;
@@ -110,7 +120,7 @@ const GameManager = function(id, io){
             if(canStart){
                 console.log("can start");
                 start();
-            }else {
+            } else {
                 console.log("Not all players are ready"); // And this line
             }
         }
@@ -158,7 +168,12 @@ const GameManager = function(id, io){
 
         
         playerStateManager.update(inputStateListener);
-        let updateObject = {[ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates()};
+        bulletStateManager.update(playerStateManager, inputStateListener);
+
+        let updateObject = {
+            [ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
+            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates()
+        };
 
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
     };
@@ -201,6 +216,19 @@ const GameManager = function(id, io){
         inputStateListener.updateAimAngle(parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE])
     };
 
+
+    const processMouseDown = function(mouseEventObj){
+
+        let parsedmouseEventObj = JSON.parse(mouseEventObj);
+        inputStateListener.updateKeyDown(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
+
+    };
+
+    const processMouseUp = function(mouseEventObj){
+        let parsedmouseEventObj = JSON.parse(mouseEventObj);
+        inputStateListener.updateKeyUp(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
+    }
+
     const getGameArea = function(){
         return map.getGameArea();
     }
@@ -220,7 +248,9 @@ const GameManager = function(id, io){
         processKeyUp, 
         processMouseMove,
         getGameArea,
-        getMap};
+        getMap, 
+        processMouseDown, 
+        processMouseUp};
 };
 
 if(typeof(module) === "object")

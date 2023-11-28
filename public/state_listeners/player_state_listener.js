@@ -53,7 +53,6 @@ const PlayerStateListener = (function () {
         // Listen for 'update' event to update player states and trigger appropriate animations
          socket.on(SocketEvents.UPDATE, (update) => {
             const updateObj = JSON.parse(update);
-
             Object.entries(updateObj.playerStates).forEach(([username, playerState]) => {
                 // Update player's coordinates and weapon rotation
                 players[username].setXY(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);

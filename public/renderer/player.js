@@ -2,8 +2,6 @@
 // - `ctx` - A canvas context for drawing
 // - `x` - The initial x position of the player
 // - `y` - The initial y position of the player
-
-
 // - `gameArea` - The bounding box of the game area
 const Player = function (ctx, x, y) {
 
@@ -39,7 +37,7 @@ const Player = function (ctx, x, y) {
     const weaponOffset = { x: 0, y: 6 }; // Adjust this to position the weapon correctly
 
     const setWeapon = function (wepID) {
-        weapon = Weapon({ ctx: ctx, wep_id: 0, x: 0, y: 0, scale: 1.7, rotation: 0 });
+        weapon = Weapon({ ctx: ctx, wep_id: wepID, x: 0, y: 0, scale: WepProps[wepID].SPRITE_SCALE, rotation: 0 });
     };
     const setWeaponRotation = function (rot) {
         if (weapon) {

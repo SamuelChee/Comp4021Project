@@ -7,6 +7,7 @@ const {
     PlatformDataProps,
     LoadLevelProps,
     ServerUpdateProps,
+    WepProps,
     PlayerConsts
 } = require('../../shared/constants');
 
@@ -50,6 +51,7 @@ const PlayerStateManager = function (manager) {
                 [Directions.RIGHT]: 1
             },
             [PlayerStateProps.WEP_ID]: wepID, // Player's weapon ID
+            [PlayerStateProps.AMMO]: WepProps[wepID].INI_AMMO,
             [PlayerStateProps.BOX]: box,
             [PlayerStateProps.PLATFORM_IDX]: -1
         };
@@ -69,11 +71,19 @@ const PlayerStateManager = function (manager) {
     const isDead = function(){
         return health <= 0;
     }
-
+    // A method to shoot a bullet which decrements the bullet count
+    const shootBullet = function (username) {
+        if (players[username][PlayerStateProps.AMMO] > 0) {
+        players[username][PlayerStateProps.AMMO]--;
+        return true;
+        } 
+        return false;
+    }
     // Function to update players' states based on their inputs
     const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
+            // console.log("player state update: ", username);
 
             // save the player's previous position
             let originalPos = {};
@@ -95,11 +105,13 @@ const PlayerStateManager = function (manager) {
 
             // If left or right key is pressed, update direction, action, and X position
             if (inputStateListener.getKeyPressed(username, Keys.LEFT)) {
+                // console.log("key pressed left");
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
             }
             else if (inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
+                // console.log("key pressed right");
                 player[PlayerStateProps.DIRECTION] = Directions.RIGHT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
@@ -290,6 +302,7 @@ const PlayerStateManager = function (manager) {
         getAllPlayerStates,
         detectCollision,
         takeDamage,
+        shootBullet,
         isDead,
         updateBoundingBox,
         getCollisions

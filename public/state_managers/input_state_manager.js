@@ -29,7 +29,6 @@ const InputStateManager = (function () {
         socket = _socket;
         cv = _cv;
         username = _username;
-
         $(document).on('keydown', function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
@@ -42,21 +41,30 @@ const InputStateManager = (function () {
             socket.emit(SocketEvents.ON_KEY_UP, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
-        $(document).on('mousemove', function (evt) {
-            if (!PlayerStateListener.getIsLoaded()) {
-                return; // If the players object has not been populated yet, do not handle the event
-            }
+        const handleMouseEvent = function(evt, eventName) {
             const rect = cv.getBoundingClientRect();
             const mouseX = evt.pageX - rect.left;
             const mouseY = evt.pageY - rect.top;
             const player_self = PlayerStateListener.getPlayer(username);
-
+    
             const { x: playerX, y: playerY } = player_self.getXY();
-
+    
             // Calculate the angle between the player and the mouse
             const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
+    
+            socket.emit(eventName, JSON.stringify({ username, angle }));
+        };
+    
+        $(document).on('mousemove', function (evt) {
+            handleMouseEvent(evt, SocketEvents.ON_MOUSE_MOVE);
+        });
+    
+        $(document).on('mousedown', function (evt) {
+            handleMouseEvent(evt, SocketEvents.ON_MOUSE_DOWN);
+        });
 
-            socket.emit(SocketEvents.ON_MOUSE_MOVE, JSON.stringify({ username, angle }));
+        $(document).on('mouseup', function (evt) {
+            handleMouseEvent(evt, SocketEvents.ON_MOUSE_UP);
         });
     };
 

@@ -11,7 +11,7 @@ const Mutex = require('async-mutex').Mutex;
 // utility functions
 const { Util } = require("./util/Util");
 // queue
-const { disconnectableQueue } = require("./util/disconnectableQueue")
+const { disconnectableQueue } = require("./util/disconnectableQueue");
 // Gamemanager
 const { GameManager } = require("./server/game_mechanics/game_manager");
 
@@ -392,16 +392,15 @@ io.on("connection", (socket) => {
 
             release();
         });
-        
+
 
     });
 
     // Processes key down event
     socket.on(SocketEvents.ON_KEY_DOWN, (action) => {
-
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
-
+        // if user is in a game
         if (action[KeyEventProps.USERNAME] == action.username) {
 
             if (username in usersToGames) {
@@ -413,6 +412,7 @@ io.on("connection", (socket) => {
                 // ask the corresponding gamemanager to process the action from the user
                 game.processKeyDown(action);
             }
+
         }
 
     });
@@ -422,10 +422,8 @@ io.on("connection", (socket) => {
 
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
-
-        // if user is in a game
         if (action[KeyEventProps.USERNAME] == action.username) {
-
+            // if user is in a game
             if (username in usersToGames) {
 
                 // find the game the user is in
@@ -453,6 +451,44 @@ io.on("connection", (socket) => {
 
                 // ask the corresponding gamemanager to process the action from the user
                 game.processMouseMove(action);
+            }
+        }
+
+    });
+
+    socket.on(SocketEvents.ON_MOUSE_DOWN, (action) => {
+
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username) {
+            // if user is in a game
+            if (username in usersToGames) {
+
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processMouseDown(action);
+            }
+        }
+
+    });
+
+    socket.on(SocketEvents.ON_MOUSE_UP, (action) => {
+
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username) {
+            // if user is in a game
+            if (username in usersToGames) {
+
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processMouseUp(action);
             }
         }
 

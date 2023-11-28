@@ -318,15 +318,20 @@ const HorizontalSpriteGroup = function (ctx, x, y, offset) {
 
   // This function gets the bounding box of the sprite group.
   const getBoundingBox = function () {
-    /* Get the display size of the sprite group */
-    const size = getDisplaySize();
-
-    /* Find the box coordinates */
-    const top = y - size.height / 2;
-    const left = x - size.width / 2;
-    const bottom = y + size.height / 2;
-    const right = x + size.width / 2;
-
+    if (sprites.length === 0) {
+      return BoundingBox(ctx, y, x, y, x);
+    }
+  
+    /* Get the display size of the first and last sprite in the group */
+    const firstSpriteSize = sprites[0].getDisplaySize();
+    const lastSpriteSize = sprites[sprites.length - 1].getDisplaySize();
+  
+    /* Find the box coordinates based on the first and last sprite */
+    const top = y - firstSpriteSize.height / 2;
+    const left = sprites[0].getXY().x-lastSpriteSize.width/2;
+    const bottom = y + firstSpriteSize.height / 2;
+    const right = sprites[sprites.length - 1].getXY().x + lastSpriteSize.width/2;
+  
     return BoundingBox(ctx, top, left, bottom, right);
   };
 

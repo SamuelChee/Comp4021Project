@@ -37,7 +37,8 @@ const PlayerStateProps = Object.freeze({
   WEP_ID: 'wepID',                       // Weapon ID
   AMMO: 'ammo',                          // ammo left
   BOX: "box",
-  PLATFORM_IDX: "platform_idx"                       // Weapon ID
+  PLATFORM_IDX: "platform_idx",
+  HEALTH: "health"                       
 });
 const MapStateProps = {
   PLATFORMS: 'platforms',
@@ -98,57 +99,49 @@ const BulletTypes = {
 const WepProps = {
   [WepIds.WEP_0]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 10,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5, // converted to milliseconds
     BULLET_TYPE: BulletTypes.PURPLE
   },
   [WepIds.WEP_1]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 20,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.YELLOW
   },
   [WepIds.WEP_2]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 30,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.BLUE
   },
   [WepIds.WEP_3]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 40,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.RED
   },
   [WepIds.WEP_4]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 50,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.RECT_RED
   },
   [WepIds.WEP_5]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 60,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.THIN_GREEN
   },
   [WepIds.WEP_6]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 70,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.CIRC_PINK
   },
   [WepIds.WEP_7]: {
     SPRITE_SCALE: 1.7,
-    INI_AMMO: 10,
-    DAMAGE: 80,
+    INI_AMMO: 100,
     FIRE_RATE: 1000 / 5,
     BULLET_TYPE: BulletTypes.THIN_BLUE
   }
@@ -157,6 +150,7 @@ const WepProps = {
 const PlayerConsts = {
   SPRITE_WIDTH: 32,
   SPRITE_HEIGHT: 32,
+  INI_HP: 100,
   PLAYER_1_INI_X: 50,
   PLAYER_1_INI_Y: 430,
   PLAYER_2_INI_X: 100,
@@ -180,52 +174,78 @@ const BulletStateProps = {
   IS_ACTIVE: 'is_actiuve'
 };
 
-
 const BulletProps = {
   [BulletTypes.PURPLE]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 20,
+    HEIGHT: 12
   },
   [BulletTypes.YELLOW]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 20,
+    HEIGHT: 12
   },
   [BulletTypes.BLUE]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 20,
+    HEIGHT: 12
   },
   [BulletTypes.RED]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 20,
+    HEIGHT: 12
   },
   [BulletTypes.RECT_RED]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 20,
+    HEIGHT: 14
   },
   [BulletTypes.THIN_GREEN]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 14,
+    HEIGHT: 6
   },
   [BulletTypes.CIRC_PINK]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 10,
+    HEIGHT: 10
   },
   [BulletTypes.THIN_BLUE]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 14,
+    HEIGHT: 5
   },
   [BulletTypes.CIRC_ORANGE]: {
+    DAMAGE: 5,
     SPRITE_SCALE: 1.3,
     SPEED: 10,
-    OFFSET: 30
+    OFFSET: 30,
+    WIDTH: 10,
+    HEIGHT: 10
   }
 };
 

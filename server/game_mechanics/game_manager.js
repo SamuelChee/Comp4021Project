@@ -242,6 +242,10 @@ const GameManager = function(id, io){
         return playerStateManager;
     }
 
+    const getBulletStateManager = function(){
+        return bulletStateManager;
+    }
+
     return {
         initialize, 
         getID, 
@@ -256,6 +260,7 @@ const GameManager = function(id, io){
         getMap, 
         processMouseDown, 
         getPlayerStateManager,
+        getBulletStateManager,
         processMouseUp};
 };
 

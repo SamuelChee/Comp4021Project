@@ -8,18 +8,109 @@ const {
     LoadLevelProps,
     ServerUpdateProps,
     WepProps,
-    PlayerConsts
+    PlayerConsts,
+    BulletProps,
+    BulletStateProps
 } = require('../../shared/constants');
+const {BoundingBox} = require('./bounding_box');
 
 
 const CollisionManager = function (manager) {
     
     let gameManager = manager;
     let playerStateManager = gameManager.getPlayerStateManager();
+    let bulletStateManager  = gameManager.getBulletStateManager();
+
 
     function update() {
         playerPlatformCollisions();
+        bulletPlayerCollisions();
+        bulletPlatformCollisions();
     }
+
+    /*------------- START OF BULLET PLAYER  COLLISIONS ------------- */
+    const bulletPlayerCollisions = function() {
+        let players = playerStateManager.getAllPlayerStates();
+        let bullets = bulletStateManager.getAllBulletStates();
+    
+        for (let bulletId in bullets) {
+            let bullet = bullets[bulletId];
+            let bulletType = bullet[BulletStateProps.BULLET_TYPE];
+            let bulletBox = new BoundingBox(
+                bullet[BulletStateProps.Y] - BulletProps[bulletType].HEIGHT / 2,
+                bullet[BulletStateProps.X] - BulletProps[bulletType].WIDTH / 2,
+                bullet[BulletStateProps.Y] + BulletProps[bulletType].HEIGHT / 2,
+                bullet[BulletStateProps.X] + BulletProps[bulletType].WIDTH / 2
+            );
+    
+            for (let username in players) {
+                let player = players[username];
+                let playerBox = new BoundingBox(
+                    player[PlayerStateProps.Y] - PlayerConsts.SPRITE_HEIGHT / 2,
+                    player[PlayerStateProps.X] - PlayerConsts.SPRITE_WIDTH / 2,
+                    player[PlayerStateProps.Y] + PlayerConsts.SPRITE_HEIGHT / 2,
+                    player[PlayerStateProps.X] + PlayerConsts.SPRITE_WIDTH / 2
+                );
+    
+                if (bulletBox.intersect(playerBox) && (bullet[BulletStateProps.USERNAME] != username)) {
+                    handleBulletPlayerCollision(username, bullet);
+                    delete playerBox;
+                    break;
+                }
+            }
+        }
+    }
+
+    const handleBulletPlayerCollision = function (username, bullet){
+        let bulletType = bullet[BulletStateProps.BULLET_TYPE];
+        let bulletDamage = BulletProps[bulletType].DAMAGE;
+        playerStateManager.playerTakeDamage(username, bulletDamage);
+
+        bulletStateManager.deleteBullet(bullet[BulletStateProps.ID]);
+    }
+
+
+    /*------------- END OF BULLET PLAYER COLLISIONS ------------- */
+/*------------- START OF BULLET PLATFORM COLLISIONS ------------- */
+const bulletPlatformCollisions = function() {
+    let bullets = bulletStateManager.getAllBulletStates();
+    const platforms = gameManager.getMap().getPlatformBoxes();
+
+    for (let bulletId in bullets) {
+        let bullet = bullets[bulletId];
+        let bulletType = bullet[BulletStateProps.BULLET_TYPE];
+        let bulletBox = new BoundingBox(
+            bullet[BulletStateProps.Y] - BulletProps[bulletType].HEIGHT / 2,
+            bullet[BulletStateProps.X] - BulletProps[bulletType].WIDTH / 2,
+            bullet[BulletStateProps.Y] + BulletProps[bulletType].HEIGHT / 2,
+            bullet[BulletStateProps.X] + BulletProps[bulletType].WIDTH / 2
+        );
+
+        for (let i = 0; i < platforms.length; i++) {
+            // create a new BoundingBox instance with the same properties
+            let platformCopy = new BoundingBox(
+                platforms[i].getTop(),
+                platforms[i].getLeft(),
+                platforms[i].getBottom(),
+                platforms[i].getRight()
+            );
+            platformCopy.decreaseWidth(10);
+            platformCopy.decreaseHeight(10);
+            if (bulletBox.intersect(platformCopy)) {
+                handleBulletPlatformCollision(bullet);
+                delete platformCopy;
+                break;
+            }
+        }
+    }
+}
+
+const handleBulletPlatformCollision = function (bullet){
+    bulletStateManager.deleteBullet(bullet[BulletStateProps.ID]);
+}
+/*------------- END OF BULLET PLATFORM COLLISIONS ------------- */
+
+    /*------------- START OF PLAYER PLATFORM COLLISIONS ------------- */
 
     const playerPlatformCollisions = function () {
         players = playerStateManager.getAllPlayerStates();
@@ -106,6 +197,13 @@ const CollisionManager = function (manager) {
         }
     }
 
+    /*------------- END OF PLAYER PLATFORM COLLISIONS ------------- */
+
+
+
+
+    /*------------- HELPER FUNCTIONS ------------- */
+
     const checkInGameArea = function (object, xProp, yProp) {
         const gameArea = gameManager.getGameArea();
         return gameArea.isPointInBox(object[xProp], object[yProp]);
@@ -119,12 +217,7 @@ const CollisionManager = function (manager) {
     }
     return {
         update: update
-        // checkInGameArea: checkInGameArea,
-        // CheckPlayerPlatformCollisions: CheckPlayerPlatformCollisions,
-        // updateBoundingBox: updateBoundingBox,
-        // getCollisions: getCollisions,
-        // needsToFall: needsToFall,
-        // isOnPlatform: isOnPlatform,
+
     }
 };
 

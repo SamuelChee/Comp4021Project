@@ -57,6 +57,17 @@ const BoundingBox = function(top, left, bottom, right) {
         right = r;
     }
 
+    const decreaseWidth = function(num){
+        left += num;
+        right -=num;
+    }
+
+    const decreaseHeight = function(num){
+        top += num;
+        bottom -=num;
+    }
+
+
     // This function gets the four corner points of the bounding box.
     const getPoints = function() {
         return {
@@ -146,9 +157,10 @@ const BoundingBox = function(top, left, bottom, right) {
         setLeft: setLeft,
         setRight: setRight,
         minimumTransform: minimumTransform,
+        decreaseWidth,
+        decreaseHeight,
         printBox: printBox
     };
 };
 
-if(typeof(module) === "object")
-    module.exports = {BoundingBox};
+module.exports = {BoundingBox};

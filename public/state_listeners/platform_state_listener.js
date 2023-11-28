@@ -51,7 +51,7 @@ const PlatformStateListener = (function () {
     const draw = function () {
         if (platforms) {
             platforms.forEach(platform => platform.draw());
-            platforms.forEach(platform => platform.drawBoundingBox());
+            // platforms.forEach(platform => platform.drawBoundingBox());
         }
     };
 

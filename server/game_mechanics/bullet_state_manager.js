@@ -65,8 +65,12 @@ const BulletStateManager = function (manager) {
     function deleteBulletIfOutsideScreen(id, bullet) {
         if (bullet[BulletStateProps.X] < 0 || bullet[BulletStateProps.Y] < 0 ||
             bullet[BulletStateProps.X] > 845 || bullet[BulletStateProps.Y] > 480) {
-            delete bullets[id];
+            deleteBullet(id);
         }
+    }
+
+    const deleteBullet = function (id) {
+        delete bullets[id];
     }
     
     // Function to fire bullets for players holding down the mouse button
@@ -118,7 +122,8 @@ const BulletStateManager = function (manager) {
         addBullet,
         update,
         getBulletState,
-        getAllBulletStates
+        getAllBulletStates,
+        deleteBullet
     };
 };
 

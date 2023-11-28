@@ -15,7 +15,7 @@ const {
 const { BoundingBox } = require("./bounding_box");
 
 const Map = function () {
-    let area = BoundingBox(0, 50, 450, 820); // TODO: change this
+    let area = BoundingBox(0, 20, 475, 820); // TODO: change this
     let platforms = null;
     let items = null;
 

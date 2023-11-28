@@ -226,8 +226,8 @@ const CollisionManager = function (manager) {
 
         if (player[PlayerStateProps.PLATFORM_IDX] != -1) {
             let mapped_platform = platforms[player[PlayerStateProps.PLATFORM_IDX]];
-            if (player[PlayerStateProps.X] < mapped_platform.getLeft() ||
-                player[PlayerStateProps.X] > mapped_platform.getRight() ||
+            if (player[PlayerStateProps.X] < mapped_platform.getLeft()-16 ||
+                player[PlayerStateProps.X] > mapped_platform.getRight()+16 ||
                 player[PlayerStateProps.Y_VEL] < 0) {
 
                 player[PlayerStateProps.IS_FALLING] = true;

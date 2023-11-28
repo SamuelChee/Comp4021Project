@@ -263,7 +263,7 @@ const ScoreBoard = (function(){
     };
 
     const show = function(){
-        $("scoreboard_container").show();
+        $("#scoreboard_container").show();
     }
 
     return {initialize, hide, show};

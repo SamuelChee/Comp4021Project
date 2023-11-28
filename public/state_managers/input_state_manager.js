@@ -21,7 +21,7 @@ const InputStateManager = (function () {
             key = Keys.EQUIP;
         } else if (event.key === 'c' || event.key === 'C') {
             key = Keys.CHEAT;
-        }else if (event.key === '+') {
+        }else if (event.key === '=') {
             key = Keys.CHANGE_WEP;
         }
         return key;

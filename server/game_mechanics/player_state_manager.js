@@ -12,7 +12,7 @@ const {
     MapConsts
 } = require('../../shared/constants');
 
-const {BoundingBox} = require('./bounding_box');
+const { BoundingBox } = require('./bounding_box');
 
 // A constructor function for managing player states
 const PlayerStateManager = function (manager) {
@@ -60,48 +60,50 @@ const PlayerStateManager = function (manager) {
 
         players[username][PlayerStateProps.BOX].printBox()
     }
-    const playerIncreaseHealth = function(username, healing_amount){
+    const playerIncreaseHealth = function (username, healing_amount) {
         let player = players[username];
         player[PlayerStateProps.HEALTH] += healing_amount;
         player[PlayerStateProps.HEALTH] = Math.min(player[PlayerStateProps.HEALTH], PlayerConsts.INI_HP);
         console.log(`Player: ${username} got healed, remaining health: ${player[PlayerStateProps.HEALTH]}`);
     }
-    
-    const playerIncreaseAmmo = function(username, ammo){
+
+    const playerIncreaseAmmo = function (username, ammo) {
         let player = players[username];
         player[PlayerStateProps.AMMO] += ammo;
         player[PlayerStateProps.AMMO] = Math.min(player[PlayerStateProps.AMMO], WepProps[player[PlayerStateProps.WEP_ID]].INI_AMMO);
         console.log(`Player: ${username} got more ammo, remaining ammo: ${player[PlayerStateProps.AMMO]}`);
     }
-    const playerGetHealth = function(username){
+    const playerGetHealth = function (username) {
         return players[username][PlayerStateProps.HEALTH];
     }
-    const playerEquipWeapon = function(username, newWepID){
+    const playerEquipWeapon = function (username, newWepID) {
         players[username][PlayerStateProps.WEP_ID] = newWepID;
         players[username][PlayerStateProps.AMMO] = WepProps[newWepID].INI_AMMO;
     }
-    const playerTakeDamage = function(username, damage){
+    const playerTakeDamage = function (username, damage) {
 
-        players[username][PlayerStateProps.HEALTH]-=damage;
+        players[username][PlayerStateProps.HEALTH] -= damage;
         console.log("Player: ", username, " took damage, remaining health: ", players[username][PlayerStateProps.HEALTH]);
     }
 
-    const playerIsDead = function(username){
+    const playerIsDead = function (username) {
         console.log("Player: ", username, " is dead");
         return players[username][PlayerStateProps.HEALTH] <= 0;
-        
+
     }
     // A method to shoot a bullet which decrements the bullet count
     const shootBullet = function (username) {
         if (players[username][PlayerStateProps.AMMO] > 0) {
-        players[username][PlayerStateProps.AMMO]--;
-        return true;
-        } 
+            players[username][PlayerStateProps.AMMO]--;
+            return true;
+        }
         return false;
     }
-    const getPrevPlayerPos = function(username){
+    const getPrevPlayerPos = function (username) {
         return prevPlayerPositions[username];
     }
+    const WEP_CHANGE_COOLDOWN = 400; // cooldown time in ms
+    let lastWepChangeTime = {}; // object to store the last weapon change time for each player
     // Function to update players' states based on their inputs
     const update = function (inputStateListener) {
         for (let username in players) {
@@ -141,8 +143,16 @@ const PlayerStateManager = function (manager) {
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
-            if(inputStateListener.getKeyPressed(username, Keys.CHEAT) && inputStateListener.getKeyPressed(username, Keys.CHANGE_WEP)) {
-                player[PlayerStateProps.WEP_ID] = (player[PlayerStateProps.WEP_ID] + 1) % 8;
+            const currentTime = Date.now(); // get the current time
+            if (inputStateListener.getKeyPressed(username, Keys.CHEAT)){
+                player[PlayerStateProps.HEALTH] = PlayerConsts.INI_HP;
+            }
+            if (inputStateListener.getKeyPressed(username, Keys.CHEAT) && inputStateListener.getKeyPressed(username, Keys.CHANGE_WEP)) {
+                // Check if enough time has passed since the last weapon change
+                if (!lastWepChangeTime[username] || currentTime - lastWepChangeTime[username] >= WEP_CHANGE_COOLDOWN) {
+                    player[PlayerStateProps.WEP_ID] = (player[PlayerStateProps.WEP_ID] + 1) % 8;
+                    lastWepChangeTime[username] = currentTime; // update the last weapon change time
+                }
             }
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
@@ -156,7 +166,7 @@ const PlayerStateManager = function (manager) {
             y: players[username][PlayerStateProps.Y]
         };
     }
-    
+
     // Function to get a player's direction
     const getPlayerDirection = function (username) {
         return players[username][PlayerStateProps.DIRECTION];
@@ -187,11 +197,11 @@ const PlayerStateManager = function (manager) {
         playerEquipWeapon,
         getPrevPlayerPos,
         playerIncreaseAmmo
-        
+
         // updateBoundingBox,
         // getCollisions
     };
 };
 
 // Export the PlayerStateManager constructor function
-module.exports = {PlayerStateManager};
+module.exports = { PlayerStateManager };

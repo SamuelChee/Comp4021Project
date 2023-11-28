@@ -18,6 +18,7 @@ const PlayerStateManager = function (manager) {
 
     // Object to store all players' states
     let players = {};
+    let prevPlayerPositions = {};
 
     // A way for player state manager to communicate with manager
     let gameManager = manager;
@@ -79,17 +80,18 @@ const PlayerStateManager = function (manager) {
         } 
         return false;
     }
+    const getPrevPlayerPos = function(username){
+        return prevPlayerPositions[username];
+    }
     // Function to update players' states based on their inputs
     const update = function (inputStateListener) {
         for (let username in players) {
             let player = players[username];
-            // console.log("player state update: ", username);
-
-            // save the player's previous position
-            let originalPos = {};
-            originalPos[PlayerStateProps.X] = player[PlayerStateProps.X];
-            originalPos[PlayerStateProps.Y] = player[PlayerStateProps.Y];
-
+            if (!prevPlayerPositions[username]) {
+                prevPlayerPositions[username] = {};
+            }
+            prevPlayerPositions[username][PlayerStateProps.X] = player[PlayerStateProps.X];
+            prevPlayerPositions[username][PlayerStateProps.Y] = player[PlayerStateProps.Y];
             // If player is falling, update Y velocity and position
             if (player[PlayerStateProps.IS_FALLING]) {
                 if (player[PlayerStateProps.Y_VEL] < player[PlayerStateProps.TERMINAL_Y_VEL]) {
@@ -120,31 +122,7 @@ const PlayerStateManager = function (manager) {
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
-            // Check in game area
-            if(!checkInGameArea(username)){
-                // if not in game area, find minimum transformation to move player back into game area
-                const gameArea = gameManager.getGameArea();
-
-                let transform = gameArea.minimumTransform(
-                    player[PlayerStateProps.X], 
-                    player[PlayerStateProps.Y] + PlayerConsts.SPRITE_HEIGHT / 2); // foot of the player
-
-                // set player position
-                player[PlayerStateProps.X] = player[PlayerStateProps.X] + transform.x;
-                player[PlayerStateProps.Y] = player[PlayerStateProps.Y] + transform.y;
-
-                // check if player is at the bottom of the gameArea, if so, stop falling
-                if(transform.y < 0){
-                    player[PlayerStateProps.Y_VEL] = 0;
-                    player[PlayerStateProps.IS_FALLING] = false;
-                }
-
-            }
-            // make adjustments based on platforms
-            checkPlatformCollisions(username, originalPos);
-
-            // Update bounding box
-            updateBoundingBox(username);
+            
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }
@@ -158,64 +136,8 @@ const PlayerStateManager = function (manager) {
         };
     }
 
-    const checkInGameArea = function(username){
-        let player = players[username];
-        const gameArea = gameManager.getGameArea();
-
-        return gameArea.isPointInBox(player[PlayerStateProps.X], player[PlayerStateProps.Y]);
-    }
     
-    const checkPlatformCollisions = function(username, originalPos){
-        let player = players[username];
-        let y_vel = player[PlayerStateProps.Y_VEL];
-        const platforms = gameManager.getMap().getPlatformBoxes();
-
-        // if player is on a platform, check if they are still on it
-        
-        if(player[PlayerStateProps.PLATFORM_IDX] != -1){
-            let mapped_platform = platforms[player[PlayerStateProps.PLATFORM_IDX]];
-            if(player[PlayerStateProps.X] < mapped_platform.getLeft() || 
-            player[PlayerStateProps.X] > mapped_platform.getRight() ||
-            player[PlayerStateProps.Y_VEL] < 0 ){
-
-                player[PlayerStateProps.IS_FALLING] = true;
-                player[PlayerStateProps.PLATFORM_IDX] = -1;
-            }
-        }
-        if(y_vel > 0){
-            // approximate player movement as linear function (raycast);
-            let deltaX = player[PlayerStateProps.X] - originalPos[PlayerStateProps.X];
-            let deltaY = player[PlayerStateProps.Y] - originalPos[PlayerStateProps.Y];
-
-            if(deltaY > 0){
-                for(let i = 0; i < platforms.length; i++){
-                    // get intersection 
-                    const platform = platforms[i];
-                    let t = (platform.getTop() - originalPos[PlayerStateProps.Y]) / deltaY;
-
-                    if(t >= 0 && t <= 1){
-                        let x_intersect =  originalPos[PlayerStateProps.X] + t * deltaX;
-                        // if player's foot intersects with the box, move their foot there
-                        if(x_intersect >= platform.getLeft() && x_intersect <= platform.getRight()){
-                            // stop falling
-                            player[PlayerStateProps.IS_FALLING] = false;
-                            player[PlayerStateProps.Y_VEL] = 0;
     
-                            // move player
-                            player[PlayerStateProps.X] = x_intersect;
-                            player[PlayerStateProps.Y] = platform.getTop() - (PlayerConsts.SPRITE_HEIGHT / 2);
-    
-                            // The player is now mapped to this platform
-                            player[PlayerStateProps.PLATFORM_IDX] = i;
-                            break;
-                        }
-                    }
-                } 
-            }
-
-            
-        }
-    }
     
    /*
    const checkPlatformCollisions = function(username, originalPos){
@@ -240,15 +162,6 @@ const PlayerStateManager = function (manager) {
     }
     */
 
-    const updateBoundingBox = function(username){
-        
-        let player = players[username];
-        player[PlayerStateProps.BOX].setTop(player[PlayerStateProps.Y] - PlayerConsts.SPRITE_HEIGHT / 2);
-        player[PlayerStateProps.BOX].setLeft(player[PlayerStateProps.X] - PlayerConsts.SPRITE_WIDTH / 2);
-        player[PlayerStateProps.BOX].setBottom(player[PlayerStateProps.Y] + PlayerConsts.SPRITE_HEIGHT / 2);
-        player[PlayerStateProps.BOX].setRight(player[PlayerStateProps.X] + PlayerConsts.SPRITE_WIDTH / 2);
-        
-    }
 
     // Function to get a player's direction
     const getPlayerDirection = function (username) {
@@ -267,30 +180,30 @@ const PlayerStateManager = function (manager) {
 
     // function to get all collisions given a set of bounding boxes.
     // boxes is a dictionary where the key are the usernames and the values are {id, box}
-    const getCollisions = function(boxes){
-        // The output collision objects key: username, value array of [id, player y velocity]
-        let collisions = {};
-        for(const username in usernames){
-            let boxesToCheck = boxes[username];
-            let y_vel = players[username][PlayerStateProps.Y_VEL];
-            let collisionForUser = [];
+    // const getCollisions = function(boxes){
+    //     // The output collision objects key: username, value array of [id, player y velocity]
+    //     let collisions = {};
+    //     for(const username in usernames){
+    //         let boxesToCheck = boxes[username];
+    //         let y_vel = players[username][PlayerStateProps.Y_VEL];
+    //         let collisionForUser = [];
 
-            for(const box in boxesToCheck){
-                // if collision is detected
-                if(detectCollision(username, box.box)){
-                    let detection = {};
-                    detection[id] = box.id;
-                    detection[PlayerStateProps.Y_VEL] = y_vel;
+    //         for(const box in boxesToCheck){
+    //             // if collision is detected
+    //             if(detectCollision(username, box.box)){
+    //                 let detection = {};
+    //                 detection[id] = box.id;
+    //                 detection[PlayerStateProps.Y_VEL] = y_vel;
 
-                    collisionForUser.push(detection);
-                }
-            }
+    //                 collisionForUser.push(detection);
+    //             }
+    //         }
 
-            collisions[username] = collisionForUser;
-        }
+    //         collisions[username] = collisionForUser;
+    //     }
 
-        return collisions;
-    }
+    //     return collisions;
+    // }
 
     // Expose public methods
     return {
@@ -304,8 +217,9 @@ const PlayerStateManager = function (manager) {
         takeDamage,
         shootBullet,
         isDead,
-        updateBoundingBox,
-        getCollisions
+        getPrevPlayerPos
+        // updateBoundingBox,
+        // getCollisions
     };
 };
 

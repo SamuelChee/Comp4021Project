@@ -2,6 +2,7 @@ const {InputStateListener} = require("./input_state_listener");
 const {Map} = require("./map");
 const {PlayerStateManager} = require("./player_state_manager");
 const {BulletStateManager} = require("./bullet_state_manager");
+const {CollisionManager} = require("./collision_manager");
 
 const {
     Directions,
@@ -41,6 +42,7 @@ const GameManager = function(id, io){
     let bulletStateManager = null;
     let inputStateListener = null;
     let playerStateManager = null;
+    let collisionManager = null;
     let gameID = id;
 
     // Projectile stuff
@@ -60,6 +62,7 @@ const GameManager = function(id, io){
         bulletStateManager = BulletStateManager(self);
         playerStateManager = PlayerStateManager(self);
         inputStateListener = InputStateListener(self);
+        collisionManager = CollisionManager(self);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
         playerInfos[account1.username] = {
@@ -166,10 +169,9 @@ const GameManager = function(id, io){
     // Update function or gameloop
     const update = function(){
 
-        
         playerStateManager.update(inputStateListener);
         bulletStateManager.update(playerStateManager, inputStateListener);
-
+        collisionManager.update();
         let updateObject = {
             [ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
             [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates()
@@ -236,6 +238,9 @@ const GameManager = function(id, io){
     const getMap = function(){
         return map;
     }
+    const getPlayerStateManager = function(){
+        return playerStateManager;
+    }
 
     return {
         initialize, 
@@ -250,6 +255,7 @@ const GameManager = function(id, io){
         getGameArea,
         getMap, 
         processMouseDown, 
+        getPlayerStateManager,
         processMouseUp};
 };
 

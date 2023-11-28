@@ -148,8 +148,8 @@ const Socket = (function () {
 
             // update score board
             //ScoreBoard.update(statistics);
-            //ScoreBoard.show();
-            $("#scoreboard_container").show();
+            ScoreBoard.show();
+            //$("#scoreboard_container").show();
 
 
             // testing ui

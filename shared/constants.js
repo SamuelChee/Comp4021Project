@@ -9,7 +9,9 @@ const Keys = Object.freeze({
   LEFT: 'left_key',   // Indicates the key for moving left
   RIGHT: 'right_key', // Indicates the key for moving right
   JUMP: 'jump_key',    // Indicates the key for jumping
-  SHOOT: 'mouse_key'
+  SHOOT: 'mouse_key',
+  CHEAT: 'cheat_key',
+  EQUIP: 'equip_key'
 });
 
 // Enum for the possible actions a player can perform
@@ -38,7 +40,8 @@ const PlayerStateProps = Object.freeze({
   AMMO: 'ammo',                          // ammo left
   BOX: "box",
   PLATFORM_IDX: "platform_idx",
-  HEALTH: "health"                       
+  HEALTH: "health",
+  CAN_EQUIP: "can_equip"
 });
 const MapStateProps = {
   PLATFORMS: 'platforms',
@@ -54,6 +57,25 @@ const PlatformDataProps = {
   NUM_PLATFORMS: 'num_platforms'        // Number of platforms
 };
 
+
+const ItemType = {
+  WEP: "wep",
+  AMMO: "ammo",
+  HEALTH: "health"
+}
+const ItemSpawnerDataProps = {
+  X: 'x',
+  Y: 'y',
+  TYPE: 'type',
+  SPAWNED: 'Spawned',
+  CAN_SPAWN: 'can_spawn',
+  BOX: 'box',
+  TIME: 'time',
+  WEP_ID: 'wep_id', // 0 - 7
+  AMMO_COUNT: 'ammo_count', //20-60
+  HEALTH_COUNT: 'health_count' //20 - 60
+};
+
 const LoadLevelProps = {
   GAME_ID: 'gameID',
   PLAYER_STATES: 'playerStates',
@@ -62,7 +84,8 @@ const LoadLevelProps = {
 
 const ServerUpdateProps = {
   PLAYER_STATES: 'playerStates',
-  BULLET_STATES: 'bulletStates'
+  BULLET_STATES: 'bulletStates',
+  ITEM_STATES: 'itemStates'
 };
 
 const KeyEventProps = {
@@ -261,12 +284,19 @@ const BulletProps = {
 //   // 9: BulletTypes.CIRC_ORANGE,
 //   // Add more mappings as required
 // };
-
+let ITEM_Y_OFFESET = 28;
+let ITEM_X_OFFSET = 95;
 const MapConsts = {
   MAP_WIDTH: 32,
   MAP_HEIGHT: 32,
   PLATFORM_WIDTH: 210,
   PLATFORM_HEIGHT: 32,
+  ITEM_WIDTH: 32,
+  ITEM_HEIGHT: 32,
+  ITEM_WIDTH: 32,
+  ITEM_HEIGHT: 32,
+  ITEM_SPAWN_TIME: 3500,
+  ITEM_SPAWN_TIMEOUT: 2500,
   PLATFORMS: [
     { type: "thick", x: 17, y: 400, num_platforms: 7 },
     { type: "thick", x: 635, y: 400, num_platforms: 7 },
@@ -274,6 +304,15 @@ const MapConsts = {
     { type: "thick", x: 17, y: 400 - 100 * 2, num_platforms: 7 },
     { type: "thick", x: 635, y: 400 - 100 * 2, num_platforms: 7 },
     { type: "thick", x: 335, y: 400 - 100 * 3, num_platforms: 7 }
+  ],
+  ITEMS: [
+    { probability: 0.25, x: 17 + ITEM_X_OFFSET, y: 400 - ITEM_Y_OFFESET},
+    { probability: 0.5, x: 635 + ITEM_X_OFFSET, y: 400 - ITEM_Y_OFFESET},
+    { probability: 0.4, x: 335 + ITEM_X_OFFSET, y: 400 - 100 - ITEM_Y_OFFESET},
+    { probability: 0.7, x: 17 + ITEM_X_OFFSET, y: 400 - 100 * 2 - ITEM_Y_OFFESET},
+    { probability: 0.3, x: 635 + ITEM_X_OFFSET, y: 400 - 100 * 2 - ITEM_Y_OFFESET},
+    { probability: 0.3, x: 335 + ITEM_X_OFFSET, y: 400 - 100 * 3 - ITEM_Y_OFFESET}
+
   ]
 };
 // { type: "thick", x: 17, y: 400, num_platforms: 7 }
@@ -300,7 +339,7 @@ const SocketEvents = {
   UPDATE: "update",
   LOAD_LEVEL: "load_level",
   START_GAME_LOOP: "start_game_loop",
-  STOP_GAME_LOOP: "stop_game_loop"
+  STOP_GAME_LOOP: "stop_game_loop",
 
 }
 
@@ -329,6 +368,8 @@ if (typeof window !== 'undefined') {
   window.BulletTypes = BulletTypes;
   window.BulletProps = BulletProps;
   window.BulletStateProps = BulletStateProps;
+  window.ItemSpawnerDataProps = ItemSpawnerDataProps;
+  window.ItemType = ItemType;
 } else {
   // Running in Node.js
   // Export the Enums for use in other modules
@@ -351,5 +392,7 @@ if (typeof window !== 'undefined') {
     BulletTypes,
     BulletProps,
     BulletStateProps,
+    ItemSpawnerDataProps,
+    ItemType
   };
 }

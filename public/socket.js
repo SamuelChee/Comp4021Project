@@ -20,6 +20,7 @@ const Socket = (function () {
         PlatformStateListener.init({ context, socket });
         PlayerStateListener.init({ context, socket });
         BulletStateListener.init({context, socket});
+        MapStateListener.init({context, socket});
         socket.on(SocketEvents.CONNECT, () => {
         });
         socket.on(SocketEvents.CONNECT_ERROR, (err) => {
@@ -106,6 +107,8 @@ const Socket = (function () {
                 elapsedTime = timestamp - startTime;
                 context.clearRect(0, 0, cv.width, cv.height);
                 PlatformStateListener.draw();
+                MapStateListener.update(timestamp);
+                MapStateListener.draw();
                 PlayerStateListener.update(timestamp);
                 PlayerStateListener.draw();
                 BulletStateListener.draw();

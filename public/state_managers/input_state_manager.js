@@ -17,6 +17,8 @@ const InputStateManager = (function () {
             key = Keys.RIGHT;
         } else if (event.key === 'w' || event.key === 'W') {
             key = Keys.JUMP;
+        } else if (event.key === 'e' || event.key === 'E') {
+            key = Keys.EQUIP;
         }
         return key;
     }

@@ -8,7 +8,8 @@ const {
     LoadLevelProps,
     ServerUpdateProps,
     WepProps,
-    PlayerConsts
+    PlayerConsts,
+    MapConsts
 } = require('../../shared/constants');
 
 const {BoundingBox} = require('./bounding_box');
@@ -53,14 +54,24 @@ const PlayerStateManager = function (manager) {
             [PlayerStateProps.AMMO]: WepProps[wepID].INI_AMMO,
             [PlayerStateProps.BOX]: box,
             [PlayerStateProps.PLATFORM_IDX]: -1,
-            [PlayerStateProps.HEALTH]: PlayerConsts.INI_HP
+            [PlayerStateProps.HEALTH]: PlayerConsts.INI_HP,
+            [PlayerStateProps.CAN_EQUIP]: false
         };
 
         players[username][PlayerStateProps.BOX].printBox()
     }
-    const playerHealUp = function(username, healing_amount){
-        players[username][PlayerStateProps.HEALTH]+=healing_amount;
-        console.log("Player: ", username, " got healed, remaining health: ", players[username][PlayerStateProps.HEALTH]);
+    const playerIncreaseHealth = function(username, healing_amount){
+        let player = players[username];
+        player[PlayerStateProps.HEALTH] += healing_amount;
+        player[PlayerStateProps.HEALTH] = Math.min(player[PlayerStateProps.HEALTH], PlayerConsts.INI_HP);
+        console.log(`Player: ${username} got healed, remaining health: ${player[PlayerStateProps.HEALTH]}`);
+    }
+    
+    const playerIncreaseAmmo = function(username, ammo){
+        let player = players[username];
+        player[PlayerStateProps.AMMO] += ammo;
+        player[PlayerStateProps.AMMO] = Math.min(player[PlayerStateProps.AMMO], WepProps[player[PlayerStateProps.WEP_ID]].INI_AMMO);
+        console.log(`Player: ${username} got more ammo, remaining ammo: ${player[PlayerStateProps.AMMO]}`);
     }
     const playerGetHealth = function(username){
         return players[username][PlayerStateProps.HEALTH];
@@ -170,9 +181,10 @@ const PlayerStateManager = function (manager) {
         shootBullet,
         playerIsDead,
         playerGetHealth,
-        playerHealUp,
+        playerIncreaseHealth,
         playerEquipWeapon,
-        getPrevPlayerPos
+        getPrevPlayerPos,
+        playerIncreaseAmmo
         
         // updateBoundingBox,
         // getCollisions

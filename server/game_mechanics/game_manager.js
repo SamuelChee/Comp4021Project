@@ -168,13 +168,14 @@ const GameManager = function(id, io){
 
     // Update function or gameloop
     const update = function(){
-
+        map.update();
         playerStateManager.update(inputStateListener);
         bulletStateManager.update(playerStateManager, inputStateListener);
         collisionManager.update();
         let updateObject = {
             [ServerUpdateProps.PLAYER_STATES]: playerStateManager.getAllPlayerStates(),
-            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates()
+            [ServerUpdateProps.BULLET_STATES]: bulletStateManager.getAllBulletStates(),
+            [ServerUpdateProps.ITEM_STATES]: map.getItemSpawners()
         };
 
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.UPDATE, JSON.stringify(updateObject));
@@ -246,6 +247,10 @@ const GameManager = function(id, io){
         return bulletStateManager;
     }
 
+    const getInputStateListener = function(){
+        return inputStateListener;
+    }
+
     return {
         initialize, 
         getID, 
@@ -261,6 +266,7 @@ const GameManager = function(id, io){
         processMouseDown, 
         getPlayerStateManager,
         getBulletStateManager,
+        getInputStateListener,
         processMouseUp};
 };
 

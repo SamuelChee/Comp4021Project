@@ -70,7 +70,7 @@ const maxID = 1024;
 // TODO: add platforms, items (spawn location and spawn time after being picked up), initial player position and directions here.
 const mapInfo = {
     platforms: MapConsts.PLATFORMS,
-    items: [{ spawnlocation: { x: 0, y: 0 }, time: 20 }],
+    items: MapConsts.ITEMS,
     initialPlayerLocations: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
     initialPlayerDirections: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
 }

@@ -57,8 +57,10 @@ const PlayerStateListener = (function () {
             Object.entries(updateObj.playerStates).forEach(([username, playerState]) => {
                 // Update player's coordinates and weapon rotation
                 players[username].setXY(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
+                players[username].setWeapon(playerState[PlayerStateProps.WEP_ID]);
                 players[username].setWeaponRotation(playerState[PlayerStateProps.AIM_ANGLE]);
-                players[username].adjustHealth(playerState[PlayerStateProps.HEALTH])
+                players[username].adjustHealth(playerState[PlayerStateProps.HEALTH]);
+                players[username].setRemainingAmmo(playerState[PlayerStateProps.AMMO]);
                 let action = playerState[PlayerStateProps.ACTION];
                 let direction = playerState[PlayerStateProps.DIRECTION];
                 // If the player's action or direction has changed, trigger the appropriate animation

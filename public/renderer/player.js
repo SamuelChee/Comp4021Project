@@ -4,7 +4,8 @@
 // - `y` - The initial y position of the player
 // - `gameArea` - The bounding box of the game area
 const Player = function (ctx, x, y, username) {
-
+    let can_equip = false;
+    let remaining_ammo = 0;
     // This is the sprite sequences of the player facing different directions.
     // It contains the idling sprite sequences `idleLeft`, `idleUp`, `idleRight` and `idleDown`,
     // and the moving sprite sequences `moveLeft`, `moveUp`, `moveRight` and `moveDown`.
@@ -14,10 +15,10 @@ const Player = function (ctx, x, y, username) {
         move: { x: 0, y: 18, width: 16, height: 16, count: 4, timing: 70, loop: true },
     };
     let INFO_DISPLAY_OFFSET = 35;
-    let infoDisplay = CharacterInfoDisplay(ctx, x, y - INFO_DISPLAY_OFFSET, username); // Position 30 pixels above the player
-
+    let infoDisplay = CharacterInfoDisplay(ctx, x, y - INFO_DISPLAY_OFFSET, username, remaining_ammo, can_equip); // Position 30 pixels above the player
     // This is the sprite object of the player created from the Sprite module.
     const sprite = Sprite(ctx, x, y);
+
 
     // The sprite object is configured for the player sprite here.
     sprite.setSequence(sequences.idle)
@@ -58,9 +59,9 @@ const Player = function (ctx, x, y, username) {
 
             weapon.draw();
         }
-
-        // Draw the character info
         infoDisplay.draw();
+
+  
     };
 
     // In your setXY function...
@@ -81,7 +82,15 @@ const Player = function (ctx, x, y, username) {
         infoDisplay.setHealth(amount);
     };
 
+    const setRemainingAmmo = function (ammo) {
+        remaining_ammo = ammo;
+        infoDisplay.setAmmo(ammo);
+    };
 
+    const setCanEquip = function (canEquip) {
+        can_equip = canEquip;
+        infoDisplay.setCanEquip(canEquip);
+    };
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
     const move_animation = function (dir) {
@@ -150,10 +159,14 @@ const Player = function (ctx, x, y, username) {
         setWeaponRotation: setWeaponRotation,
         setXY: setXY,
         adjustHealth,
+        setCanEquip,
+        setRemainingAmmo,
         getXY: sprite.getXY,
         getBoundingBox: sprite.getBoundingBox,
         draw: draw,
         setOnLoad: sprite.setOnLoad,
-        update: update
+        update: update,
+        setCanEquip,
+        setRemainingAmmo
     };
 };

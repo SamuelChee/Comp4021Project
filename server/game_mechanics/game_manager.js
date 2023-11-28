@@ -25,19 +25,22 @@ const GameManager = function(id, io){
 
     // Mainly server stuff
     let playerInfos = {}; // contains name, avatar and profile
+
     // let playerStates = {};
     let usernames = [];
     let player_sockets = {};
     let isReady = {};
     let server_socket = io;
+    let self = null;
 
     // Gameplay stuff
     let players = {};
     
     let map = Map(); // Creates a new instance of `Map`
-    let inputStateListener = InputStateListener();
-    let playerStateManager = PlayerStateManager();
-    let bulletStateManager = BulletStateManager();
+
+    let bulletStateManager = null;
+    let inputStateListener = null;
+    let playerStateManager = null;
     let gameID = id;
 
     // Projectile stuff
@@ -46,9 +49,17 @@ const GameManager = function(id, io){
     let projectiles = {};
     
 
-    const initialize = function(account1, account2, mapState, sockets){
+    const initialize = function(account1, account2, mapState, sockets, instance){
         // Initialize map
         map.initialize(account1, account2, mapState);
+
+        // A way for the manager to refer to itself;
+        self = instance;
+
+        // Init managers
+        bulletStateManager = BulletStateManager(self);
+        playerStateManager = PlayerStateManager(self);
+        inputStateListener = InputStateListener(self);
 
         // initialize player information. Contains username, name, avatar and username of opponent.
         playerInfos[account1.username] = {
@@ -78,7 +89,6 @@ const GameManager = function(id, io){
 
         isReady[account1.username] = false;
         isReady[account2.username] = false;
-
 
         console.log("emitting load level");
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.LOAD_LEVEL, JSON.stringify({
@@ -212,22 +222,6 @@ const GameManager = function(id, io){
         let parsedmouseEventObj = JSON.parse(mouseEventObj);
         inputStateListener.updateKeyDown(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
 
-        // console.log("Mouse Down Game Manager:   ", parsedmouseEventObj[MouseEventProps.USERNAME], parsedmouseEventObj[MouseEventProps.ANGLE]);
-    
-        // let username = parsedmouseEventObj[MouseEventProps.USERNAME];
-        // let playerState = playerStateManager.getPlayerState(username);
-        
-        // let initPosition = {
-        //     x: playerState[PlayerStateProps.X],
-        //     y: playerState[PlayerStateProps.Y]
-        // };
-        
-        // let weaponId = playerState[PlayerStateProps.WEP_ID];
-        // let bulletType = WeaponIdToBulletType[weaponId];
-        
-        // let direction = parsedmouseEventObj[MouseEventProps.ANGLE];
-        
-        // bulletStateManager.addBullet(username, bulletType, initPosition, direction);
     };
 
     const processMouseUp = function(mouseEventObj){
@@ -235,7 +229,28 @@ const GameManager = function(id, io){
         inputStateListener.updateKeyUp(parsedmouseEventObj[MouseEventProps.USERNAME], Keys.SHOOT);
     }
 
-    return {initialize, getID, disconnectPlayer, start, update, ready, processKeyDown, processKeyUp, processMouseMove, processMouseDown, processMouseUp};
+    const getGameArea = function(){
+        return map.getGameArea();
+    }
+
+    const getMap = function(){
+        return map;
+    }
+
+    return {
+        initialize, 
+        getID, 
+        disconnectPlayer, 
+        start, 
+        update, 
+        ready, 
+        processKeyDown, 
+        processKeyUp, 
+        processMouseMove,
+        getGameArea,
+        getMap, 
+        processMouseDown, 
+        processMouseUp};
 };
 
 if(typeof(module) === "object")

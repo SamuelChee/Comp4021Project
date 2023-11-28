@@ -35,7 +35,9 @@ const PlayerStateProps = Object.freeze({
   IS_FALLING: 'isFalling',              // Flag for falling state
   X_DIRECTION_MULTIPLE: 'xDirectionMultiple',  // X Direction Multiple
   WEP_ID: 'wepID',                       // Weapon ID
-  AMMO: 'ammo'                          // ammo left
+  AMMO: 'ammo',                          // ammo left
+  BOX: "box",
+  PLATFORM_IDX: "platform_idx"                       // Weapon ID
 });
 const MapStateProps = {
   PLATFORMS: 'platforms',
@@ -243,8 +245,8 @@ const BulletProps = {
 const MapConsts = {
   MAP_WIDTH: 32,
   MAP_HEIGHT: 32,
-  PLATFORM_WIDTH: 0,
-  PLATFORM_HEIGHT: 0,
+  PLATFORM_WIDTH: 210,
+  PLATFORM_HEIGHT: 32,
   PLATFORMS: [
     { type: "thick", x: 17, y: 400, num_platforms: 7 },
     { type: "thick", x: 635, y: 400, num_platforms: 7 },

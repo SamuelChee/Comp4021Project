@@ -8,10 +8,14 @@ const {
   ServerUpdateProps,
   PlayerConsts
 } = require('../../shared/constants');
-const InputStateListener = function() {
+
+
+const InputStateListener = function(manager) {
 
     const playerKeyStates = {};
     const playerAimAngles = {};
+
+    let gameManager = manager;
     
     const initUserKeystate = (username) => {
       playerKeyStates[username] = {

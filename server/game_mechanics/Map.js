@@ -6,15 +6,20 @@ const {
     PlatformDataProps,
     LoadLevelProps,
     ServerUpdateProps,
-    MapStateProps
+    MapStateProps,
+    MapConsts
 } = require('../../shared/constants');
 
 const {BoundingBox} = require("./bounding_box");
 
 const Map = function () {
-    let area = BoundingBox(165, 60, 420, 800); // TODO: change this
+    let area = BoundingBox(0, 50, 450, 820); // TODO: change this
     let platforms = null;
     let items = null;
+
+    let offset = 100;
+
+    let platform_boxes = [];
 
     let initialPlayerLocations = {};
     let initialPlayerDirections = {};
@@ -25,7 +30,21 @@ const Map = function () {
         // mapinfo could contain boundingboxes for obstacles, position of the items and their 
         // spawn probabilities?
 
-        platforms = mapState[MapStateProps.PLATFORMS];
+        // convert platforms into bounding boxes
+        platforms = MapConsts.PLATFORMS;
+
+        for(let i = 0; i < platforms.length; i++){
+            let platform = platforms[i];
+
+            let box = BoundingBox(
+                platform.y - MapConsts.PLATFORM_HEIGHT / 2,
+                platform.x - MapConsts.PLATFORM_WIDTH / 2 + offset,
+                platform.y + MapConsts.PLATFORM_HEIGHT / 2,
+                platform.x + MapConsts.PLATFORM_WIDTH / 2 + offset
+            )
+            platform_boxes.push(box);
+            box.printBox();
+        }
         console.log(platforms);
         // TODO: initialize items 
         // if you don't want to randomly initialize items then just assign items from mapinfo to Map.items
@@ -67,15 +86,26 @@ const Map = function () {
         return platforms;
     };
 
+    const getPlatformBoxes = function(){
+        return platform_boxes;
+    };
+
     const getItems = function(){
         return items;
     };
 
-    const checkInGameArea = function(box, position){
-        box.isPointInBox(position.x, position.y);
+    const getGameArea = function(){
+        return area;
     };
 
-    return { initialize, getMapState, getPlatforms, getItems, getPlayerInitialPos, getPlayerInitialDir, checkInGameArea};
+    return { initialize, 
+        getMapState, 
+        getPlatforms, 
+        getItems, 
+        getPlayerInitialPos, 
+        getPlayerInitialDir, 
+        getGameArea,
+        getPlatformBoxes};
 };
 
 module.exports = {Map};

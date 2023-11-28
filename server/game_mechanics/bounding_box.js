@@ -50,7 +50,7 @@ const BoundingBox = function(top, left, bottom, right) {
     }
 
     const setLeft = function(l){
-        left = t;
+        left = l;
     }
 
     const setRight = function(r){
@@ -107,6 +107,30 @@ const BoundingBox = function(top, left, bottom, right) {
         return {x, y};
     };
 
+    // this function generates the minmum transformation needed to move a point back inside a bounding box
+    const minimumTransform = function(x, y){
+        let transform = {x: 0, y: 0};
+        if(x > right){
+            transform.x = right - x;
+        }
+        else if(x < left){
+            transform.x = left - x;
+        }
+
+        if(y > bottom){
+            transform.y = bottom - y;
+        }
+        else if(y < top){
+            transform.y = top - y;
+        }
+
+        return transform;
+    }
+
+    const printBox = function(){
+        console.log("Top: " + top + " Left: " + left + " Bottom: " + bottom + " Right: " + right);
+    }
+
     // The methods are returned as an object here.
     return {
         getTop: getTop,
@@ -120,7 +144,9 @@ const BoundingBox = function(top, left, bottom, right) {
         setTop: setTop,
         setBottom: setBottom,
         setLeft: setLeft,
-        setRight: setRight
+        setRight: setRight,
+        minimumTransform: minimumTransform,
+        printBox: printBox
     };
 };
 

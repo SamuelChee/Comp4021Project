@@ -34,7 +34,7 @@ const Socket = (function () {
             // update the appearance of the queue button
             Lobby.update(false);
             // update console to inform client queue has been joined
-            console.log("Joined queue! Position: " + queue_position.toString());
+            Console.update("Joined Queue! Position: " + queue_position);
 
         });
 
@@ -43,9 +43,10 @@ const Socket = (function () {
             // TODO: change UI to show that user has left the queue. Change the leave queue button to join queue button.
             // TODO: maybe add a mechanism to stop someone from spamming the queue button.
             // update the appearance of the queue button
+            console.log("Left queue called");
             Lobby.update(true);
             // update console to inform client queue has been joined
-            console.update("Left queue!");
+            Console.update("Left queue!");
 
         });
 

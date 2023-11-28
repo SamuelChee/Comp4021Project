@@ -11,7 +11,7 @@ const {
 
 
 // BulletStateManager constructor function
-const BulletStateManager = function () {
+const BulletStateManager = function (manager) {
     let bullets = {};
     let bulletCount = 0;
 

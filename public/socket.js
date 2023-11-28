@@ -128,14 +128,27 @@ const Socket = (function () {
         })
 
         // Handles game over calls
-        socket.on(SocketEvents.GAMEOVER, (statistics) => {
+        socket.on(SocketEvents.GAME_OVER, (statistics) => {
             // TODO: display gameover screen.
 
             // Statistics contain statistics about both players, and whether they are the winner
 
             // statistics, key: usernames, value: playerState (health, ammo, etc.), 
             // Statistics (kills, shots_fired, etc.), winner (true if corresponding user is winner)
+
+            console.log("Game over called!");
             statistics = JSON.parse(statistics);
+
+            // stop game loop
+            gameLoopStarted = false;
+
+            $("#scoreboard_container").show();
+            
+
+            // testing ui
+            // Hide UI
+            //$("#container").show();
+            
         })
     };
 
@@ -168,8 +181,6 @@ const Socket = (function () {
         console.log("leaving game");
         socket.emit(SocketEvents.LEAVE_GAME);
     }
-
-  
 
     return {
         getSocket,

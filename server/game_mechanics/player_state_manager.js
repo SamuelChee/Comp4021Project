@@ -60,6 +60,7 @@ const PlayerStateManager = function (manager) {
     }
     const playerHealUp = function(username, healing_amount){
         players[username][PlayerStateProps.HEALTH]+=healing_amount;
+        manager.registerHealingStatistic(username, healing_amount);
         console.log("Player: ", username, " got healed, remaining health: ", players[username][PlayerStateProps.HEALTH]);
     }
     const playerGetHealth = function(username){
@@ -72,6 +73,7 @@ const PlayerStateManager = function (manager) {
     const playerTakeDamage = function(username, damage){
 
         players[username][PlayerStateProps.HEALTH]-=damage;
+        manager.registerDamageStatistic(username, damage);
         console.log("Player: ", username, " took damage, remaining health: ", players[username][PlayerStateProps.HEALTH]);
     }
 
@@ -83,6 +85,7 @@ const PlayerStateManager = function (manager) {
     // A method to shoot a bullet which decrements the bullet count
     const shootBullet = function (username) {
         if (players[username][PlayerStateProps.AMMO] > 0) {
+            manager.registerShotsFiredStatistics(username);
         players[username][PlayerStateProps.AMMO]--;
         return true;
         } 

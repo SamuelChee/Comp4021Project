@@ -271,3 +271,39 @@ button.icon:active {
     justify-content: center;
     width: 100%;
   }
+
+  #signin-username {
+    color: black; 
+  }
+  
+  #signin-password {
+    color: black; 
+  }
+
+  #register-username {
+    color: black; 
+  }
+
+  #register-avatar {
+    color: black; 
+  }
+  
+  #avatar-select {
+    color: black; 
+  }
+
+  #avatar-select option {
+    color: black; 
+  }
+
+  #register-name {
+    color: black; 
+  }
+
+  #register-password {
+    color: black; 
+  }
+
+  #register-confirm {
+    color: black; 
+  }

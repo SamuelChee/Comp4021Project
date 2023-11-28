@@ -1,3 +1,14 @@
+const {
+  Directions,
+  Keys,
+  Actions,
+  PlayerStateProps,
+  PlatformDataProps,
+  LoadLevelProps,
+  ServerUpdateProps,
+  PlayerConsts
+} = require('../../shared/constants');
+
 const InputStateListener = function() {
 
     const playerKeyStates = {};
@@ -14,7 +25,7 @@ const InputStateListener = function() {
     }
   
     const updateKeyUp = (username, key) => {
-      key = key.toLowerCase();
+      //key = key.toLowerCase();
       
       if(!playerKeyStates[username]) {
         initUserKeystate(username);
@@ -24,7 +35,7 @@ const InputStateListener = function() {
     }
   
     const updateKeyDown = (username, key) => {
-      key = key.toLowerCase();
+      //key = key.toLowerCase();
       
       if(!playerKeyStates[username]) {
         initUserKeystate(username);
@@ -42,7 +53,7 @@ const InputStateListener = function() {
     }
   
     const getKeyPressed = (username, key) => {
-      key = key.toLowerCase();
+      //key = key.toLowerCase();
       
       if(!playerKeyStates[username] || !playerKeyStates[username].curKeyState) {
         return false;

@@ -4,16 +4,16 @@ const fs = require("fs");
 const session = require("express-session");
 const path = require('path');
 const {
-    SocketEvents
+    SocketEvents, KeyEventProps, MapConsts
 } = require('./shared/constants');
 const Mutex = require('async-mutex').Mutex;
 
 // utility functions
 const { Util } = require("./util/Util");
 // queue
-const {disconnectableQueue} = require("./util/disconnectableQueue");
+const { disconnectableQueue } = require("./util/disconnectableQueue")
 // Gamemanager
-const  {GameManager} = require("./server/game_mechanics/game_manager");
+const { GameManager } = require("./server/game_mechanics/game_manager");
 
 // Create the Express app
 const app = express();
@@ -69,7 +69,7 @@ const maxID = 1024;
 // for only one map
 // TODO: add platforms, items (spawn location and spawn time after being picked up), initial player position and directions here.
 const mapInfo = {
-    platforms: [],
+    platforms: MapConsts.PLATFORMS,
     items: [{ spawnlocation: { x: 0, y: 0 }, time: 20 }],
     initialPlayerLocations: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
     initialPlayerDirections: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
@@ -402,15 +402,17 @@ io.on("connection", (socket) => {
         let account = JSON.parse(socket.request.session.user);
         let username = account.username;
 
-        // if user is in a game
-        if (username in usersToGames) {
+        if (action[KeyEventProps.USERNAME] == action.username) {
 
-            // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+            if (username in usersToGames) {
 
-            // ask the corresponding gamemanager to process the action from the user
-            game.processKeyDown(username, action);
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processKeyDown(action);
+            }
         }
 
     });
@@ -422,14 +424,36 @@ io.on("connection", (socket) => {
         let username = account.username;
 
         // if user is in a game
-        if (username in usersToGames) {
+        if (action[KeyEventProps.USERNAME] == action.username) {
 
-            // find the game the user is in
-            let gameID = usersToGames[username];
-            let game = onGoingGames[gameID];
+            if (username in usersToGames) {
 
-            // ask the corresponding gamemanager to process the action from the user
-            game.processKeyUp(username, action);
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processKeyUp(action);
+            }
+        }
+
+    });
+
+    socket.on(SocketEvents.ON_MOUSE_MOVE, (action) => {
+
+        let account = JSON.parse(socket.request.session.user);
+        let username = account.username;
+        if (action[KeyEventProps.USERNAME] == action.username) {
+            // if user is in a game
+            if (username in usersToGames) {
+
+                // find the game the user is in
+                let gameID = usersToGames[username];
+                let game = onGoingGames[gameID];
+
+                // ask the corresponding gamemanager to process the action from the user
+                game.processMouseMove(action);
+            }
         }
 
     });

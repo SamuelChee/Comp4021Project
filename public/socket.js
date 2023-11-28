@@ -169,24 +169,6 @@ const Socket = (function () {
         socket.emit(SocketEvents.LEAVE_GAME);
     }
 
-    // Call this when the player holds down a key in game
-    // action could be the key that the player pressed or some sort of enum 
-    const onKeyDown = function (action) {
-        // console.log("player pressed " + action);
-        socket.emit(SocketEvents.ON_KEY_DOWN, JSON.parse(action));
-    }
-
-    // Call this when the player stops pressing a key in game
-    // action could be the key that the player pressed or some sort of enum 
-    const onKeyUp = function (action) {
-        // console.log("player stopped pressing " + action);
-        socket.emit(SocketEvents.ON_KEY_UP, JSON.parse(action));
-    }
-
-    const onMouseMove = function (action) {
-        // console.log("player stopped pressing " + action);
-        socket.emit(SocketEvents.ON_MOUSE_MOVE, JSON.parse(action));
-    }
 
     return {
         getSocket,
@@ -195,9 +177,6 @@ const Socket = (function () {
         joinQueue,
         leaveQueue,
         ready,
-        leaveGame,
-        onMouseMove,
-        onKeyDown,
-        onKeyUp
+        leaveGame
     };
 })();

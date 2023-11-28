@@ -299,7 +299,7 @@ const UI = (function() {
 
 const FetchScoreBoardData =(function(){
     // The scoreboard from server, Please replace it here
-  fetch('/scoreboard')
+  fetch('user.json')
   .then(response => response.json())
   .then(data => {
     // The function written at the bottom for populating the scoreboard

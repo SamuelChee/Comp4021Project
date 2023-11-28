@@ -33,13 +33,13 @@ const InputStateManager = (function () {
         $(document).on('keydown', function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
-            socket.emit(SocketEvents.ON_KEY_DOWN, JSON.stringify({ username, key }));
+            socket.emit(SocketEvents.ON_KEY_DOWN, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
         $(document).on("keyup", function (event) {
             const key = getKeyFromEvent(event);
             if (!key) return;
-            socket.emit(SocketEvents.ON_KEY_UP, JSON.stringify({ username, key }));
+            socket.emit(SocketEvents.ON_KEY_UP, JSON.stringify({ [KeyEventProps.USERNAME]: username, [KeyEventProps.KEY]: key }));
         });
 
         $(document).on('mousemove', function (evt) {
@@ -49,7 +49,7 @@ const InputStateManager = (function () {
             const rect = cv.getBoundingClientRect();
             const mouseX = evt.pageX - rect.left;
             const mouseY = evt.pageY - rect.top;
-            const player_self = PlayerStateListener.getPlayer("username");
+            const player_self = PlayerStateListener.getPlayer(username);
 
             const { x: playerX, y: playerY } = player_self.getXY();
 

@@ -38,7 +38,8 @@ const PlayerStateListener = (function () {
         
             // Iterate over player states from the event data and populate the players object
             Object.entries(eventData.playerStates).forEach(([username, playerState]) => {
-                players[username] = Player(context, playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
+                players[username] = Player(context, playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y], username);
+
                 console.log("USERNAME IN LOAD LEVEL", username);
                 players[username].setWeapon(playerState[PlayerStateProps.WEP_ID]);
         
@@ -57,6 +58,7 @@ const PlayerStateListener = (function () {
                 // Update player's coordinates and weapon rotation
                 players[username].setXY(playerState[PlayerStateProps.X], playerState[PlayerStateProps.Y]);
                 players[username].setWeaponRotation(playerState[PlayerStateProps.AIM_ANGLE]);
+                players[username].adjustHealth(playerState[PlayerStateProps.HEALTH])
                 let action = playerState[PlayerStateProps.ACTION];
                 let direction = playerState[PlayerStateProps.DIRECTION];
                 // If the player's action or direction has changed, trigger the appropriate animation

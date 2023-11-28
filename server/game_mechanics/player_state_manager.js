@@ -65,6 +65,10 @@ const PlayerStateManager = function (manager) {
     const playerGetHealth = function(username){
         return players[username][PlayerStateProps.HEALTH];
     }
+    const playerEquipWeapon = function(username, newWepID){
+        players[username][PlayerStateProps.WEP_ID] = newWepID;
+        players[username][PlayerStateProps.AMMO] = WepProps[newWepID].INI_AMMO;
+    }
     const playerTakeDamage = function(username, damage){
 
         players[username][PlayerStateProps.HEALTH]-=damage;
@@ -167,7 +171,9 @@ const PlayerStateManager = function (manager) {
         playerIsDead,
         playerGetHealth,
         playerHealUp,
+        playerEquipWeapon,
         getPrevPlayerPos
+        
         // updateBoundingBox,
         // getCollisions
     };

@@ -3,7 +3,7 @@
 // - `x` - The initial x position of the player
 // - `y` - The initial y position of the player
 // - `gameArea` - The bounding box of the game area
-const Player = function (ctx, x, y) {
+const Player = function (ctx, x, y, username) {
 
     // This is the sprite sequences of the player facing different directions.
     // It contains the idling sprite sequences `idleLeft`, `idleUp`, `idleRight` and `idleDown`,
@@ -13,6 +13,8 @@ const Player = function (ctx, x, y) {
         idle: { x: 0, y: 1, width: 16, height: 16, count: 1, timing: 0, loop: false },
         move: { x: 0, y: 18, width: 16, height: 16, count: 4, timing: 70, loop: true },
     };
+    let INFO_DISPLAY_OFFSET = 35;
+    let infoDisplay = CharacterInfoDisplay(ctx, x, y - INFO_DISPLAY_OFFSET, username); // Position 30 pixels above the player
 
     // This is the sprite object of the player created from the Sprite module.
     const sprite = Sprite(ctx, x, y);
@@ -44,7 +46,8 @@ const Player = function (ctx, x, y) {
             weapon.setRotation(rot);
         }
     };
-    const draw = function() {
+    // In your draw function...
+    const draw = function () {
         // Draw the player sprite
         sprite.draw();
 
@@ -55,7 +58,12 @@ const Player = function (ctx, x, y) {
 
             weapon.draw();
         }
-    }
+
+        // Draw the character info
+        infoDisplay.draw();
+    };
+
+    // In your setXY function...
     const setXY = function (newX, newY) {
         sprite.setXY(newX, newY);
 
@@ -63,25 +71,34 @@ const Player = function (ctx, x, y) {
         if (weapon) {
             weapon.setXY(newX + weaponOffset.x, newY + weaponOffset.y);
         }
+
+        // Move the character info with the player
+        infoDisplay.setXY(newX, newY - INFO_DISPLAY_OFFSET);
     };
+
+    // Method to adjust player's health
+    const adjustHealth = function (amount) {
+        infoDisplay.setHealth(amount);
+    };
+
 
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
     const move_animation = function (dir) {
-            switch (dir) {
-                case Directions.LEFT: {
-                    sprite.setSequence(sequences.move);
-                    sprite.setFlip(true);
-                    break;
-                }
-                case Directions.RIGHT: {
-                    sprite.setSequence(sequences.move);
-                    sprite.setFlip(false);
-                    break;
-                }
-                
+        switch (dir) {
+            case Directions.LEFT: {
+                sprite.setSequence(sequences.move);
+                sprite.setFlip(true);
+                break;
             }
-            direction = dir;
+            case Directions.RIGHT: {
+                sprite.setSequence(sequences.move);
+                sprite.setFlip(false);
+                break;
+            }
+
+        }
+        direction = dir;
     };
 
     // This function stops the player from moving.
@@ -99,7 +116,7 @@ const Player = function (ctx, x, y) {
                     sprite.setFlip(false);
                     break;
                 }
-        
+
             }
         }
     };
@@ -117,7 +134,7 @@ const Player = function (ctx, x, y) {
     // This function updates the player depending on his movement.
     // - `time` - The timestamp when this function is called
     const update = function (time) {
-       
+
         sprite.update(time);
     };
 
@@ -132,6 +149,7 @@ const Player = function (ctx, x, y) {
         setWeapon: setWeapon,
         setWeaponRotation: setWeaponRotation,
         setXY: setXY,
+        adjustHealth,
         getXY: sprite.getXY,
         getBoundingBox: sprite.getBoundingBox,
         draw: draw,

@@ -36,10 +36,10 @@ const PlayerStateProps = Object.freeze({
   WEP_ID: 'wepID'                       // Weapon ID
 });
 const MapStateProps = {
-  PLATFORMS: 'platforms',                         
-  ITEMS: 'items',                               
-  INI_PLAYER_LOCS: 'initialPlayerLocations',                             
-  INI_PLAYER_DIRS: 'initialPlayerDirections'       
+  PLATFORMS: 'platforms',
+  ITEMS: 'items',
+  INI_PLAYER_LOCS: 'initialPlayerLocations',
+  INI_PLAYER_DIRS: 'initialPlayerDirections'
 };
 // Enum for the properties of the platform's data
 const PlatformDataProps = {
@@ -50,25 +50,77 @@ const PlatformDataProps = {
 };
 
 const LoadLevelProps = {
-  GAME_ID: 'gameID',                         
-  PLAYER_STATES: 'playerStates',                               
-  MAP_STATE: 'mapState'                        
+  GAME_ID: 'gameID',
+  PLAYER_STATES: 'playerStates',
+  MAP_STATE: 'mapState'
 };
 
 const ServerUpdateProps = {
-  PLAYER_STATES: 'playerStates'                      
+  PLAYER_STATES: 'playerStates'
 };
 
 const KeyEventProps = {
   USERNAME: 'username',
-  KEY: 'key'                      
+  KEY: 'key'
 };
 
 const MouseEventProps = {
   USERNAME: 'username',
-  ANGLE: 'angle'                      
+  ANGLE: 'angle'
+};
+const WepIds = {
+  WEP_0: 0,
+  WEP_1: 1,
+  WEP_2: 2,
+  WEP_3: 3,
+  WEP_4: 4,
+  WEP_5: 5,
+  WEP_6: 6,
+  WEP_7: 7
 };
 
+const WepProps = {
+  [WepIds.WEP_0]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 100,
+    DAMAGE: 10
+  },
+  [WepIds.WEP_1]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 200,
+    DAMAGE: 20
+  },
+  [WepIds.WEP_2]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 300,
+    DAMAGE: 30
+  },
+  [WepIds.WEP_3]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 400,
+    DAMAGE: 40
+  },
+  [WepIds.WEP_4]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 500,
+    DAMAGE: 50
+  },
+  [WepIds.WEP_5]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 600,
+    DAMAGE: 60
+  },
+  [WepIds.WEP_6]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 700,
+    DAMAGE: 70
+  },
+  [WepIds.WEP_7]: {
+    SPRITE_SCALE: 1.7,
+    AMMO: 800,
+    DAMAGE: 80
+  }
+};
 const PlayerConsts = {
   SPRITE_WIDTH: 32,
   SPRITE_HEIGHT: 32,
@@ -78,8 +130,61 @@ const PlayerConsts = {
   PLAYER_2_INI_Y: 100,
   PLAYER_1_INI_DIR: Directions.RIGHT,
   PLAYER_2_INI_DIR: Directions.LEFT,
-  PLAYER_1_INI_WEP_ID: 0,
-  PLAYER_2_INI_WEP_ID: 0
+  PLAYER_1_INI_WEP_ID: WepIds.WEP_0,
+  PLAYER_2_INI_WEP_ID: WepIds.WEP_0
+};
+
+
+
+const BulletTypes = {
+  PURPLE: "purple",
+  YELLOW: "yellow",
+  BLUE: "blue",
+  RED: "red",
+  RECT_RED: "rectangular red",
+  THIN_GREEN: "thin green",
+  CIRC_PINK: "circular pink",
+  THIN_BLUE: "thin blue",
+  CIRC_ORANGE: "circular orange"
+};
+
+const BulletProps = {
+  [BulletTypes.PURPLE]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 10
+  },
+  [BulletTypes.YELLOW]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 20
+  },
+  [BulletTypes.BLUE]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 30
+  },
+  [BulletTypes.RED]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 40
+  },
+  [BulletTypes.RECT_RED]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 50
+  },
+  [BulletTypes.THIN_GREEN]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 60
+  },
+  [BulletTypes.CIRC_PINK]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 70
+  },
+  [BulletTypes.THIN_BLUE]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 80
+  },
+  [BulletTypes.CIRC_ORANGE]: {
+    SPRITE_SCALE: 1.3,
+    SPEED: 90
+  }
 };
 
 const MapConsts = {
@@ -142,6 +247,10 @@ if (typeof window !== 'undefined') {
   window.SocketEvents = SocketEvents;
   window.PlayerConsts = PlayerConsts;
   window.MapConsts = MapConsts;
+  window.WepIds = WepIds;
+  window.BulletTypes = BulletTypes;
+  window.BulletProps = BulletProps;
+  window.WepProps = WepProps;
 
 } else {
   // Running in Node.js
@@ -159,6 +268,10 @@ if (typeof window !== 'undefined') {
     MapStateProps,
     SocketEvents,
     PlayerConsts,
-    MapConsts
+    MapConsts,
+    WepIds,
+    BulletTypes,
+    BulletProps,
+    WepProps
   };
 }

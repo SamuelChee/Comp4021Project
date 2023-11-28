@@ -19,7 +19,7 @@ const Socket = (function () {
         context = cv.getContext("2d");
         PlatformStateListener.init({ context, socket });
         PlayerStateListener.init({ context, socket });
-
+        BulletStateListener.init({context, socket});
         socket.on(SocketEvents.CONNECT, () => {
         });
         socket.on(SocketEvents.CONNECT_ERROR, (err) => {
@@ -107,7 +107,7 @@ const Socket = (function () {
                 PlatformStateListener.draw();
                 PlayerStateListener.update(timestamp);
                 PlayerStateListener.draw();
-
+                BulletStateListener.draw();
                 if (gameLoopStarted) {
                     requestAnimationFrame(gameLoop);
                 }

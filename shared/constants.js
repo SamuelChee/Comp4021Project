@@ -124,53 +124,52 @@ const WepProps = {
   [WepIds.WEP_0]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5, // converted to milliseconds
-    BULLET_TYPE: BulletTypes.PURPLE
+    FIRE_RATE: 1000 / 5 * 1.8,  // lowest fire rate
+    BULLET_TYPE: BulletTypes.PURPLE  // weakest bullet
   },
   [WepIds.WEP_1]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
+    FIRE_RATE: 1000 / 5 * 1.5,
     BULLET_TYPE: BulletTypes.YELLOW
   },
   [WepIds.WEP_2]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
+    FIRE_RATE: 1000 / 5 * 1.2,
     BULLET_TYPE: BulletTypes.BLUE
   },
   [WepIds.WEP_3]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
+    FIRE_RATE: 1000 / 5 * 0.9,
     BULLET_TYPE: BulletTypes.RED
   },
   [WepIds.WEP_4]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
-    BULLET_TYPE: BulletTypes.RECT_RED
+    FIRE_RATE: 1000 / 5 * 0.8,  // original fire rate
+    BULLET_TYPE: BulletTypes.THIN_GREEN
   },
   [WepIds.WEP_5]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
-    BULLET_TYPE: BulletTypes.THIN_GREEN
+    FIRE_RATE: 1000 / 5 * 0.7,
+    BULLET_TYPE: BulletTypes.CIRC_PINK
   },
   [WepIds.WEP_6]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
-    BULLET_TYPE: BulletTypes.CIRC_PINK
+    FIRE_RATE: 1000 / 5 * 0.6,
+    BULLET_TYPE: BulletTypes.THIN_BLUE
   },
   [WepIds.WEP_7]: {
     SPRITE_SCALE: 1.7,
     INI_AMMO: 100,
-    FIRE_RATE: 1000 / 5,
-    BULLET_TYPE: BulletTypes.THIN_BLUE
+    FIRE_RATE: 1000 / 5 * 0.5,  // highest fire rate
+    BULLET_TYPE: BulletTypes.CIRC_ORANGE  // strongest bullet
   }
 };
-
 const PlayerConsts = {
   SPRITE_WIDTH: 32,
   SPRITE_HEIGHT: 32,
@@ -197,76 +196,67 @@ const BulletStateProps = {
   SPEED: 'speed',
   IS_ACTIVE: 'is_actiuve'
 };
-
 const BulletProps = {
   [BulletTypes.PURPLE]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 0.6,  // weakest damage
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 0.6,  // slowest speed
     OFFSET: 30,
     WIDTH: 20,
     HEIGHT: 12
   },
   [BulletTypes.YELLOW]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 0.7,
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 0.7,
     OFFSET: 30,
     WIDTH: 20,
     HEIGHT: 12
   },
   [BulletTypes.BLUE]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 0.8,
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 0.8,
     OFFSET: 30,
     WIDTH: 20,
     HEIGHT: 12
   },
   [BulletTypes.RED]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 0.9,
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 0.9,
     OFFSET: 30,
     WIDTH: 20,
     HEIGHT: 12
   },
-  [BulletTypes.RECT_RED]: {
-    DAMAGE: 5,
-    SPRITE_SCALE: 1.3,
-    SPEED: 10,
-    OFFSET: 30,
-    WIDTH: 20,
-    HEIGHT: 14
-  },
   [BulletTypes.THIN_GREEN]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 1.0,  // original damage
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 1.0,  // original speed
     OFFSET: 30,
     WIDTH: 14,
     HEIGHT: 6
   },
   [BulletTypes.CIRC_PINK]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 1.1,
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 1.2,
     OFFSET: 30,
     WIDTH: 10,
     HEIGHT: 10
   },
   [BulletTypes.THIN_BLUE]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 1.3,
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 1.4,
     OFFSET: 30,
     WIDTH: 14,
     HEIGHT: 5
   },
   [BulletTypes.CIRC_ORANGE]: {
-    DAMAGE: 5,
+    DAMAGE: 5 * 1.5,  // strongest damage
     SPRITE_SCALE: 1.3,
-    SPEED: 10,
+    SPEED: 10 * 1.6,  // fastest speed
     OFFSET: 30,
     WIDTH: 10,
     HEIGHT: 10

@@ -19,6 +19,10 @@ const InputStateManager = (function () {
             key = Keys.JUMP;
         } else if (event.key === 'e' || event.key === 'E') {
             key = Keys.EQUIP;
+        } else if (event.key === 'c' || event.key === 'C') {
+            key = Keys.CHEAT;
+        }else if (event.key === '+') {
+            key = Keys.CHANGE_WEP;
         }
         return key;
     }

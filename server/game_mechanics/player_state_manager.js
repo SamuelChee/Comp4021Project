@@ -141,7 +141,9 @@ const PlayerStateManager = function (manager) {
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
-            
+            if(inputStateListener.getKeyPressed(username, Keys.CHEAT) && inputStateListener.getKeyPressed(username, Keys.CHANGE_WEP)) {
+                player[PlayerStateProps.WEP_ID] = (player[PlayerStateProps.WEP_ID] + 1) % 8;
+            }
             // Update aim angle based on input state manager
             player[PlayerStateProps.AIM_ANGLE] = inputStateListener.getAimAngle(username);
         }

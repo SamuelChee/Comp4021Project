@@ -67,7 +67,14 @@ const CollisionManager = function (manager) {
     const handleBulletPlayerCollision = function (username, bullet) {
         let bulletType = bullet[BulletStateProps.BULLET_TYPE];
         let bulletDamage = BulletProps[bulletType].DAMAGE;
-        playerStateManager.playerTakeDamage(username, bulletDamage);
+        //more damage for cheat
+        if(inputStateListener.getKeyPressed(bullet[BulletStateProps.USERNAME], Keys.CHEAT)){
+            bulletDamage=50;
+        }
+        //less invincible for cheat
+        if(!inputStateListener.getKeyPressed(username, Keys.CHEAT)){
+            playerStateManager.playerTakeDamage(username, bulletDamage);
+        }
 
         bulletStateManager.deleteBullet(bullet[BulletStateProps.ID]);
     }

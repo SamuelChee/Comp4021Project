@@ -11,7 +11,8 @@ const Keys = Object.freeze({
   JUMP: 'jump_key',    // Indicates the key for jumping
   SHOOT: 'mouse_key',
   CHEAT: 'cheat_key',
-  EQUIP: 'equip_key'
+  EQUIP: 'equip_key',
+  CHANGE_WEP: "change_wep_key"
 });
 
 // Enum for the possible actions a player can perform

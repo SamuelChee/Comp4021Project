@@ -14,6 +14,32 @@ const {
 
 const { BoundingBox } = require('./bounding_box');
 
+
+const gunshotSound = new Audio('../res/gunshot.mp3');
+const stepSound = new Audio('../res/step.mp3');
+let isStepSoundLooping = false;
+
+stepSound.addEventListener('ended', () => {
+    if (isStepSoundLooping) {
+      stepSound.currentTime = 0; // Reset the audio to the beginning
+      stepSound.play(); // Start playing again
+    }
+  });
+
+//handling footstep looping
+const toggleStepSoundLoop = (shouldLoop) => {
+    if (shouldLoop) {
+      stepSound.loop = true;
+      stepSound.play();
+      isStepSoundLooping = true;
+    } else {
+      stepSound.loop = false;
+      stepSound.pause();
+      stepSound.currentTime = 0;
+      isStepSoundLooping = false;
+    }
+};
+
 // A constructor function for managing player states
 const PlayerStateManager = function (manager) {
 
@@ -99,6 +125,7 @@ const PlayerStateManager = function (manager) {
         if (players[username][PlayerStateProps.AMMO] > 0) {
             manager.registerShotsFiredStatistics(username);
         players[username][PlayerStateProps.AMMO]--;
+        gunshotSound.play();
         return true;
         } 
         return false;
@@ -136,17 +163,42 @@ const PlayerStateManager = function (manager) {
                 player[PlayerStateProps.DIRECTION] = Directions.LEFT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
+                if (inputStateListener.getKeyDown(username, Keys.LEFT)) {
+                    if (!isStepSoundLooping) {
+                      toggleStepSoundLoop(true); // Start looping the step sound
+                    }
+                  } else {
+                    if (isStepSoundLooping) {
+                      toggleStepSoundLoop(false); // Stop looping the step sound
+                    }
+                  }
             }
             else if (inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
                 // console.log("key pressed right");
                 player[PlayerStateProps.DIRECTION] = Directions.RIGHT;
                 player[PlayerStateProps.ACTION] = Actions.MOVE;
                 player[PlayerStateProps.X] += player[PlayerStateProps.X_VEL] * player[PlayerStateProps.X_DIRECTION_MULTIPLE][player[PlayerStateProps.DIRECTION]];
-            }
+                if (inputStateListener.getKeyDown(username, Keys.RIGHT)) {
+                    if (!isStepSoundLooping) {
+                      toggleStepSoundLoop(true); // Start looping the step sound
+                    }
+                  } else {
+                    if (isStepSoundLooping) {
+                      toggleStepSoundLoop(false); // Stop looping the step sound
+                    }
+                  }
+            }            
             // If neither left nor right key is pressed, set action to idle
             else {
                 player[PlayerStateProps.ACTION] = Actions.IDLE;
             }
+            // Handling the footstep sound looping
+            /*if (!inputStateListener.getKeyPressed(username, Keys.LEFT) && !inputStateListener.getKeyPressed(username, Keys.RIGHT)) {
+                // Stop the step sound since the key is no longer pressed
+                stepSound.pause();
+                stepSound.currentTime = 0;
+            }*/
+            
             const currentTime = Date.now(); // get the current time
             if (inputStateListener.getKeyPressed(username, Keys.CHEAT)){
                 player[PlayerStateProps.HEALTH] = PlayerConsts.INI_HP;

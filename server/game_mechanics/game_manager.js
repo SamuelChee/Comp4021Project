@@ -4,6 +4,9 @@ const {PlayerStateManager} = require("./player_state_manager");
 const {BulletStateManager} = require("./bullet_state_manager");
 const {CollisionManager} = require("./collision_manager");
 
+const gamingbgm = new Audio('../res/gaming_bgm.mp3');
+const gameoverbgm = new Audio('../res/login_bgm.mp3');
+
 const {
     Directions,
     Keys,
@@ -181,7 +184,9 @@ const GameManager = function(id, io){
         // Tell the clients that the game can start
         // server_socket.to(JSON.stringify(gameID)).emit("start");
         console.log("emit start")
-
+        //incase re-Entry the game
+        gameoverbgm.pause();
+        gamingbgm.play();
         // Store current time
         startTime = performance.now();
         server_socket.to(JSON.stringify(gameID)).emit(SocketEvents.START_GAME_LOOP);
@@ -217,7 +222,8 @@ const GameManager = function(id, io){
         console.log("Game over!!!");
         // TODO: Stop the gameloop timers
         clearInterval(updateInterval);
-
+        gamingbgm.pause();
+        gameoverbgm.play();
         // update time survived.
         let time = performance.now() - startTime;
 

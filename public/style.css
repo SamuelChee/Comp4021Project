@@ -261,7 +261,7 @@ button.icon:active {
     display: inline-block;
     width: 70px;
     height: 48px;
-    background-image: url("gameicon.png");
+    background-image: url("res/gameicon.png");
     background-size: cover;
     /* Add any additional styling as needed */
   }
@@ -270,4 +270,40 @@ button.icon:active {
     display: flex;
     justify-content: center;
     width: 100%;
+  }
+
+  #signin-username {
+    color: black; 
+  }
+  
+  #signin-password {
+    color: black; 
+  }
+
+  #register-username {
+    color: black; 
+  }
+
+  #register-avatar {
+    color: black; 
+  }
+  
+  #avatar-select {
+    color: black; 
+  }
+
+  #avatar-select option {
+    color: black; 
+  }
+
+  #register-name {
+    color: black; 
+  }
+
+  #register-password {
+    color: black; 
+  }
+
+  #register-confirm {
+    color: black; 
   }

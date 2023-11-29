@@ -14,17 +14,21 @@
     --online-users-panel-background: linear-gradient(to right, #24211e, #facba6);
     --chat-panel-background: none;
 
-    --title-color: white;
-    --caption-color: white;
+    --title-color: black;
+    --caption-color: black;
 
+<<<<<<< HEAD
+    --font-color: rgb(0, 0, 0  );
+=======
     --font-color: rgb(0, 0, 0);
+>>>>>>> f1cb71e4634c8765ffe625a281a6fa9ca15f7199
     --date-color: gray;
 
     --register-form-background: linear-gradient(#043b83, #1d1815);
     --warning-color: red;
 
-    --button-color: rgb(213, 247, 245);
-    --button-background: #01022e;
+    --button-color: rgb(255, 255, 255);
+    --button-background: #005481;
     --button-background-hover: #f8b58b;
 }
 * {

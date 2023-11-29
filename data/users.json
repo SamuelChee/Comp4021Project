@@ -33,7 +33,7 @@
          "Kills": 29,
          "Deaths": 6,
          "GamesPlayed": 0,
-         "Loses": 6
+         "Loses": 5
       }
    },
    "b": {
@@ -41,7 +41,7 @@
       "name": "b",
       "password": "$2b$10$LPCG9rSwhMsUZA4Xq82tVevYz7jbz4mri1sg2qvAEGwQb0SEMG9fa",
       "profile": {
-         "Wins": 7,
+         "Wins": 6,
          "Losses": 0,
          "Kills": 6,
          "Deaths": 29,

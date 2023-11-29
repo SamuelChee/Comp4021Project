@@ -17,11 +17,7 @@
     --title-color: black;
     --caption-color: black;
 
-<<<<<<< HEAD
-    --font-color: rgb(0, 0, 0  );
-=======
     --font-color: rgb(0, 0, 0);
->>>>>>> f1cb71e4634c8765ffe625a281a6fa9ca15f7199
     --date-color: gray;
 
     --register-form-background: linear-gradient(#043b83, #1d1815);
@@ -240,9 +236,8 @@ button.icon:active {
 
 /* Signin overlay */
 #signin-form {
-    width: 380px;
+    width: 270px;
     align-self: stretch;
-    align-items: center;
 }
 #register-form {
     width: 380px;

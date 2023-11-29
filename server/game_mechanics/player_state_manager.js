@@ -18,6 +18,14 @@ const { BoundingBox } = require('./bounding_box');
 const gunshotSound = new Audio('../res/gunshot.mp3');
 const stepSound = new Audio('../res/step.mp3');
 let isStepSoundLooping = false;
+
+stepSound.addEventListener('ended', () => {
+    if (isStepSoundLooping) {
+      stepSound.currentTime = 0; // Reset the audio to the beginning
+      stepSound.play(); // Start playing again
+    }
+  });
+
 //handling footstep looping
 const toggleStepSoundLoop = (shouldLoop) => {
     if (shouldLoop) {

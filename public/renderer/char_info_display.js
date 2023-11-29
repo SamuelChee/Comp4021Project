@@ -30,21 +30,21 @@ const CharacterInfoDisplay = function (ctx, x, y, username, ammo_, canEquip_) {
         // Draw the username
         ctx.textAlign = 'center';
         ctx.font = '12px Arial';
-
         // Check if the username belongs to the current player
         if (username === Authentication.getUser().username) {
             ctx.fillStyle = '#00FF00'; // Change to the desired color for the current player
         } else {
             ctx.fillStyle = '#FF0000'; // Default color for other players
         }
+        
+      
+        ctx.fillText(username, x, y + USERNAME_OFFSET_Y);
+
          // Draw ammo
          ctx.fillStyle = "white";
          ctx.font = "12px Eurostile";
          ctx.fillText(`Ammo: ${ammo}`, x, y - 10); 
  
-      
-        ctx.fillText(username, x, y + USERNAME_OFFSET_Y);
-
         // Draw the health bar border
         ctx.strokeStyle = '#000000';
         ctx.strokeRect(healthBarX, healthBarY, fullWidth, fullHeight);

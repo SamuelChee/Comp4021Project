@@ -28,9 +28,9 @@
       "name": "a",
       "password": "$2b$10$GjPgnBZB9GL/3B4PEmYGIuxHG3C9UrwkFLGHo96oardqzOwi2qITe",
       "profile": {
-         "Wins": 26,
+         "Wins": 29,
          "Losses": 0,
-         "Kills": 26,
+         "Kills": 29,
          "Deaths": 6,
          "GamesPlayed": 0,
          "Loses": 6
@@ -44,9 +44,9 @@
          "Wins": 7,
          "Losses": 0,
          "Kills": 6,
-         "Deaths": 26,
+         "Deaths": 29,
          "GamesPlayed": 0,
-         "Loses": 26
+         "Loses": 29
       }
    }
 }

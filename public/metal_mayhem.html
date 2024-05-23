@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <style>
+        #gameContainer {
+            width: 845px;
+            height: 480px;
+            border: 1px solid black;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #staticBackground,
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #staticBackground {
+            z-index: 1;
+        }
+
+        #gameCanvas {
+            z-index: 2;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        #Description {
+        font-family: Apple Chancery, cursive
+        }
+
+        #HowToPlay {
+        font-family: Jazz LET, fantasy;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!--Lobby-->
+    <div id="container" class="col">
+        <div id="header" class="row">
+            <div id="title">METAL MEYHAM!!!
+            </div>
+
+            <div class="spacer-grow"></div>
+
+            <div id="user-panel" class="row">
+                <div class="field-content row shadow">
+                    <span class="user-avatar"></span>
+                    <span class="user-name">-</span>
+                </div>
+                <button id="signout-button" class="icon"><span class="material-icons">logout</span></button>
+            </div>
+        </div>
+
+        <div id="main-panel" class="row" >
+            <div id="lobby" class="row">
+                <button id="queue-button">QUEUE UP</button>
+                <button id="profile-button">SHOW PROFILE</button>
+                <div id="Intro">
+                    <span class="game-icon"  style="width: 450px; height: 280px; position: absolute; top: 100px; left: 40%; "></span>
+                    <p id="Description">
+                        Welcome to Metal Mayhem! In this game, you will be engaging in a gunfight with another player.
+                        Salvage whatever ammo you can find on the map and use them to eliminate your opponent with
+                        your trusty rifle. Recover from wounds by salvaging health packs randomly spawned on the map.
+                    </p>
+                
+                    <div id="HowToPlay">
+                        <p>How to play:</p>
+                        <ul>
+                            <li style="font-family: Andale Mono, monospace;">Use the A and D keys to move the player left and right, respectively.</li>
+                            <li style="font-family: Andale Mono, monospace;">Press the W key to make the player jump.</li>
+                            <li style="font-family: Andale Mono, monospace;">Press E to equip and pickup items, Press C to get infinite health and ammo and increased damage, press C in combination with = to get a new weapon</li>
+                            <li style="font-family: Andale Mono, monospace;">Pick up ammo for your gun. Pick up health packs to heal.</li>
+                            <li style="font-family: Andale Mono, monospace;">Use your mouse to aim. Left-click to fire your weapon and OBLITERATE YOUR ENEMIES!!!</li>
+                            <li style="font-family: Trebuchet MS, sans-serif;">Press the C key to enable GOD MODE!!!</li>
+                        </ul>
+                    </div>
+                </div>       
+                
+            
+            </div>
+        </div>
+
+        <p id="console" style=
+                "position:absolute; 
+                bottom:0; 
+                left:0;
+                padding-left:30px;
+                padding-right:30px;
+                color:red"></p>
+
+        <!-- profile -->
+        <div id="profile" class="overlay" style="background-color: rgba(0,0,0,0); padding-top: 50px">
+            <p id="profile title" style="font-size: 300%;"> Profile </p>
+            <div id="append"></div>
+
+            <button id="profile-back-button">BACK</button>
+        </div>
+
+    </div>
+
+    <!-- sign in and registration -->
+   <div id="signin-overlay" class="overlay row">
+        <div class="content shadow row">            
+    
+            <div class="form-container">
+                <form id="signin-form" class="col">
+                    <span class="game-icon"  style="width: 380px; height: 240px;"></span>
+                    <div class="caption">SIGN IN WITH YOUR ACCOUNT</div>
+                    
+                    <div class="spacer-0"></div>
+                    <input id="signin-username" placeholder="Enter your username"></input>
+                    <input id="signin-password" type="password" placeholder="Enter your password"></input>
+                    <div class="spacer-0"></div>
+                    <button type="submit">Sign In</button>
+                    <div id="signin-message" class="warning center"></div>
+                    <div class="spacer-grow"></div>
+                </form>
+                <div class="spacer-0"></div>
+                <form id="register-form" class="col">
+                    <div class="caption">OR, REGISTER IF YOU DO NOT HAVE ONE</div>
+                    <div class="spacer-0"></div>
+                    <input id="register-username" maxlength="10" placeholder="Enter your username"></input>
+                    <select id="register-avatar">
+                        <option value="">Select your avatar</option>
+                    </select>
+                    <input id="register-name" maxlength="16" placeholder="Enter your name"></input>
+                    <input id="register-password" type="password" placeholder="Enter your password"></input>
+                    <input id="register-confirm" type="password" placeholder="Enter your password again"></input>
+                    <div class="spacer-0"></div>
+                    <button type="submit">Register</button>
+                    <div id="register-message" class="warning center"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <!-- Your sprites will be appended here -->
+    <div id="gameContainer" style="position: relative">
+        <div id="staticBackground" style="position: absolute"></div>
+        <canvas id="gameCanvas" width="845px" height="480px" style="position: absolute"></canvas>
+        <!-- <div id="test" style="position: absolute">Testing</div> -->
+    </div>
+
+   <div id="scoreboard_container" style="position: fixed;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 3;">
+        <title>Scoreboard</title>
+        <style>
+          table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+      
+          th, td {
+            text-align: left;
+            padding: 8px;
+          }
+      
+          th {
+            background-color: #f2f2f2;
+          }
+        </style>
+
+        <h1 id="game_over_title">GAME OVER!!!</h1>
+        <table id="scoreboard">
+        <thead>
+            <tr>
+            <th>Rank</th>
+            <th>Player Name</th>
+            <th>Total Damage</th>
+            <th>Total Healing</th>
+            <th>Shots Fired</th>
+            <th>Time Survived</th>
+            </tr>
+            <tr>
+                <th id="rank1">1</th>
+                <th id="name1">0</th>
+                <th id="dmg1">0</th>
+                <th id="heal1">0</th>
+                <th id="shots1">0</th>
+                <th id="time1">0</th>
+            </tr>
+            <tr>
+                <th id="rank2">1</th>
+                <th id="name2">0</th>
+                <th id="dmg2">0</th>
+                <th id="heal2">0</th>
+                <th id="shots2">0</th>
+                <th id="time2">0</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Insert the Player one by one according the Rank here -->
+        </tbody>
+        </table>
+
+        <button id="Rematch">Request Rematch</button>
+        <button id="Return">Return To Lobby </button>
+    </div> 
+
+
+    <!-- renderer -->
+    <script src="renderer/background/background_sprite.js"></script>
+    <script src="renderer/background/generate_pipes.js"></script>
+    <script src="renderer/background/generate_vents.js"></script>
+    <script src="renderer/weapon.js"></script>
+    <script src="renderer/sprite.js"></script>
+    <script src="renderer/item.js"></script>
+    <script src="renderer/platform.js"></script>
+    <script src="renderer/bounding_box.js"></script>
+    <script src="renderer/item_ctrl.js"></script>
+    <script src="renderer/background/generate_background.js"></script>
+    <script src="renderer/player.js"></script>
+    <script src="renderer/bullet.js"></script>
+    <script src="renderer/char_info_display.js"></script>
+
+    <script src="renderer/itemSpawner.js"></script>
+
+
+    <!-- Server -->
+    <script src="/socket.io/socket.io.min.js"></script>
+    <script src="ui.js"></script>
+    <script src="authentication.js"></script>
+    <script src="avatar.js"></script>
+    <script src="registration.js"></script>
+    <script src="socket.js"></script>
+
+    <!-- Constants -->
+    <script src="../shared/constants.js"></script>
+
+    <!-- State Listener -->
+    <script src="state_listeners/platform_state_listener.js"></script>
+    <script src="state_listeners/player_state_listener.js"></script>
+    <script src="state_listeners/bullet_state_listener.js"></script>
+    <script src="state_listeners/map_state_listener.js"></script>
+
+    <!-- State Manager -->
+    <script src="state_managers/input_state_manager.js"></script>
+
+
+
+
+
+
+
+    <script>
+        $(document).ready(function () {
+
+         
+            
+            UI.initialize();
+
+            // Validate the signin
+            Authentication.validate(
+                () => {
+                    SignInForm.hide();
+                    UserPanel.update(Authentication.getUser());
+                    UserPanel.show();
+
+                    Socket.connect();
+                },
+                () => { SignInForm.show(); }
+            );
+
+            
+
+
+            // $(document).on('keydown', function (event) {
+            //     let key;
+            //     if (event.key === 'a' || event.key === 'A') {
+            //         key = Keys.LEFT;
+            //     } else if (event.key === 'd' || event.key === 'D') {
+            //         key = Keys.RIGHT;
+            //     }
+            //     else if (event.key === 'w' || event.key === 'W') {
+
+            //         key = Keys.JUMP;
+            //     }
+            //     else {
+            //         return;
+            //     }
+
+            //     Socket.onKeyDown(JSON.stringify({ username, key }));
+            // });
+
+            // $(document).on("keyup", function (event) {
+            //     let key;
+            //     if (event.key === 'a' || event.key === 'A') {
+            //         key = Keys.LEFT;
+            //     } else if (event.key === 'd' || event.key === 'D') {
+            //         key = Keys.RIGHT;
+            //     }
+            //     else if (event.key === 'w' || event.key === 'W') {
+            //         key = Keys.JUMP;
+            //     }
+            //     else {
+            //         return;
+            //     }
+            //     Socket.onKeyUp(JSON.stringify({ username, key }));
+            // });
+
+            // $(document).on('mousemove', function (evt) {
+
+            //     if (!PlayerStateListener.getIsLoaded()) {
+            //         return; // If the players object has not been populated yet, do not handle the event
+            //     }
+            //     const rect = cv.getBoundingClientRect();
+            //     const mouseX = evt.pageX - rect.left;
+            //     const mouseY = evt.pageY - rect.top;
+            //     player_self = PlayerStateListener.getPlayer("username");
+            //     // // Assuming `player` is your Player object
+            //     const { x: playerX, y: playerY } = player_self.getXY();
+
+            //     // Calculate the angle between the player and the mouse
+            //     const angle = Math.atan2(mouseY - playerY, mouseX - playerX) * (180.0 / Math.PI);
+
+            //     Socket.onMouseMove(JSON.stringify({ username, angle }));
+            //     // // Set the rotation of the weapon
+            // });
+
+
+
+        });
+
+    </script>
+</body>
+
+</html>

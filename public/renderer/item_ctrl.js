@@ -41,7 +41,7 @@ const ItemCtrl = function ({ context: ctx, platforms: platforms }) {
                     const { x, y } = boundingBox.randomPoint();
                     let newY = boundingBox.getTop();
                     
-                    const item = Item({ctx: ctx, wep_id: wep_id, x: x, y: newY, lifetime: weapon_spawn_params.itemLifetime[wep_id]});
+                    const item = Item({ctx: ctx, wep_id: wep_id, x: x, y: newY-10, lifetime: weapon_spawn_params.itemLifetime[wep_id]});
                   
                     items.push(item);
                 }

@@ -26,8 +26,16 @@ const Platform = function ({ ctx, type, x, y, num_platforms}) {
         
         sprite_grp.addSprite(sprite);
     }
-    
+    const drawBoundingBox = function () {
+        const box = sprite_grp.getBoundingBox();
+        ctx.beginPath();
+        ctx.rect(box.getLeft(), box.getTop(), box.getRight() - box.getLeft(), box.getBottom() - box.getTop());
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+    };
     return {
+        drawBoundingBox: drawBoundingBox,
         getXY: sprite_grp.getXY,
         setXY: sprite_grp.setXY,
         getBoundingBox: sprite_grp.getBoundingBox,
@@ -38,3 +46,5 @@ const Platform = function ({ ctx, type, x, y, num_platforms}) {
     };
 
 };
+
+

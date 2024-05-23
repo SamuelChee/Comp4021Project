@@ -1,24 +1,27 @@
+const {LinkedList, LinkedListNode} = require("./linkedList");
+
 const disconnectableQueue = function(){
     const queue = LinkedList();
     const queuedPlayers = {};
 
     const enqueue = function(account){
         // account should have the username, avatar, name, profile
-        if(!(account.username in queuedPlayer)){
+        if(!(account.username in queuedPlayers)){
             queuedPlayers[account.username] = {
                 name: account.name, 
                 avatar: account.avatar,
                 profile: account.profile};
 
-            let newNode = LinkedListNode;
-            newNode.initialize(account.username);
-            queue.addNode(newNode);
+            queue.addNode(account.username);
         }    
+        console.log(numOfQueuedPlayers());
     };
 
     const dequeue = function(){
         // remove player from queue
         user = queue.removeNode();
+        console.log(user);
+        console.log(typeof(user));
         // Get account information back
         let account = {
             username: user, 
@@ -29,15 +32,23 @@ const disconnectableQueue = function(){
         // remove from queuedplayer list
         delete queuedPlayers[user];
 
+        console.log(numOfQueuedPlayers());
+
         return account;
     };
 
     // handle cases when the player decides to leave the queue or disconnected while in queue
     const removeFromQueue = function(playerToRemove){
+        console.log("remove from queue called");
+        console.log("Queued players " + Object.keys(queuedPlayers));
+        console.log("Player to remove: " + playerToRemove);
+
         if(playerToRemove in queuedPlayers){
-            queue.removeElement(user);
-            delete queuedPlayers[user];
+            console.log("Removing queue");
+            queue.removeElement(playerToRemove);
+            delete queuedPlayers[playerToRemove];
         }
+        console.log(numOfQueuedPlayers());
     };
 
     const peak = function(){
@@ -54,3 +65,6 @@ const disconnectableQueue = function(){
 
     return {enqueue, dequeue, removeFromQueue, peak, numOfQueuedPlayers, inQueue};
 };
+
+if(typeof(module) === "object")
+    module.exports = {disconnectableQueue};

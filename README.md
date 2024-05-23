@@ -65,6 +65,12 @@ Got it, I've updated the TODO section with the requirement for a stateless serve
 
 ## TODO
 
+### General
+
+- [ ] Add game logo and refine UI design and layout to be more suited with the game theme.
+- [ ] Add game sounds for OST, bullets, collisions, damage, items, etc.
+- [ ] Store user data in a database instead of JSON.
+
 ### Fix Server Bugs
 
 - [ ] Investigate and fix the server crash issue when a client closes the window and reconnects.

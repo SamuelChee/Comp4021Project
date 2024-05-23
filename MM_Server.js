@@ -543,11 +543,21 @@ io.on("connection", (socket) => {
     });
 });
 
-
-
-
+const os = require('os');
+function getLocalIpAddress() {
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return 'localhost';
+}
+const port = 8000;
 // Use a web server to listen at port 8000
-httpServer.listen(8000, () => {
-    console.log("The chat server has started...");
+httpServer.listen(port, '0.0.0.0', () => {
+    const localIp = getLocalIpAddress();
+    console.log(`The game server has started and is accessible on the local network at http://${localIp}:${port}`);
 });
-

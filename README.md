@@ -8,7 +8,7 @@ A 2D multiplayer platform shooter game built with JavaScript and Express.js.
 
 Metal Mayhem is a 2D multiplayer platform shooter game where players can queue up and play 1-on-1 against an opponent. The game features:
 
-- 10 unique weapons with diverse bullet types
+- 10 unique weapons and bullet types
 - Random spawns of ammunition, health, and new weapons on the ground
 - No game engine; animations are rendered using HTML canvas
 
@@ -18,7 +18,7 @@ The game's art assets are from [Eragoth's tiny 2D platform shooter](https://erag
 
 ## Course Project
 
-This project was developed as part of the Internet Computing (COMP4021) course. Its implementation highlights the following key concepts:
+This project was developed as part of the HKUST Internet Computing (COMP4021) course. Its implementation utilizes the following concepts:
 
 ### Client-Server Architecture
 - REST and WebSocket Protocols: REST for initial setup, WebSockets for real-time communication.

@@ -61,8 +61,6 @@ Use these example login credentials:
 - Press `C` to gain full health and ammunition
 - Press `C` in combination with `=` to cycle through and try all unique weapons
 
-Got it, I've updated the TODO section with the requirement for a stateless server and an external database for containerization:
-
 ## TODO
 
 ### General

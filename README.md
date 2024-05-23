@@ -3,6 +3,7 @@
 A 2D multiplayer platform shooter game built with JavaScript and Express.js.
 
 ![Gameplay Screenshot](gameplay.png)
+![Gameplay GIF](gameplay.gif)
 
 ## Description
 

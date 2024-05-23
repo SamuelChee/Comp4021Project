@@ -2,7 +2,7 @@
 
 A 2D multiplayer platform shooter game built with JavaScript and Express.js.
 
-![Gameplay GIF][]
+![gameplay.png][]
 
 ## Description
 
@@ -60,3 +60,32 @@ Use these example login credentials:
 ### Cheats
 - Press `C` to gain full health and ammunition
 - Press `C` in combination with `=` to cycle through and try all unique weapons
+
+Got it, I've updated the TODO section with the requirement for a stateless server and an external database for containerization:
+
+## TODO
+
+### Fix Server Bugs
+
+- [ ] Investigate and fix the server crash issue when a client closes the window and reconnects.
+  - [ ] Implement proper disconnect handling on the server-side.
+  - [ ] Handle reconnection scenarios gracefully.
+  - [ ] Ensure game state is correctly updated and synchronized for reconnecting players.
+
+### Enhance Queueing System
+
+- [ ] Refactor the queueing system to handle more players efficiently.
+  - [ ] Implement a scalable queuing mechanism 
+  - [ ] Handle queue overflows and player timeouts.
+  - [ ] Ensure fair matchmaking and load balancing across game instances.
+
+### Explore Deployment Methods
+
+- [ ] Test and evaluate different deployment methods for the game server.
+  - [ ] Test and deploy the game server on an Amazon EC2 instance.
+  - [ ] Investigate and implement a container architecture (e.g., Docker) for the game server.
+    - [ ] Explore a stateless server architecture and an external database for storing game state.
+        - [ ] Decouple game state from server instances.
+        - [ ] Set up a suitable external database to store game state and user info
+    - [ ] Containerize the stateless server instances.
+

@@ -33,9 +33,9 @@ This project was developed as part of the Internet Computing (COMP4021) course. 
 
 ### Data Structures and Algorithms
 - Using appropriate data structures for game entities (players, bullets, platforms).
-- Implementing collision detection algorithms and spatial partitioning techniques.
+- Implementing collision detection algorithms.
 
-### Security
+### User Authentication
 - Authentication and Authorization: Implementing user authentication and session management to ensure secure access.
 
 ## Running the Game
@@ -46,7 +46,7 @@ This project was developed as part of the Internet Computing (COMP4021) course. 
 4. Connect to the game using `ipaddress:8000` on port 8000.
 5. Log in and queue up.
 
-Example login credentials:
+Use these example login credentials:
 - Username: `a`, Password: `a`
 - Username: `b`, Password: `b`
 
